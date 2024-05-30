@@ -186,7 +186,11 @@ app.whenReady().then(() => {
         }
     })
 
-    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+    if (process.argv[1]) {
+        dataDir = path.resolve(process.argv[1]);
+    } else {
+        dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+    }
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
@@ -195,7 +199,11 @@ app.whenReady().then(() => {
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+            if (process.argv[1]) {
+                dataDir = path.resolve(process.argv[1]);
+            } else {
+                dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+            }
             if (!dataDir.match(/\/$/)) {
                 dataDir += "/";
             }

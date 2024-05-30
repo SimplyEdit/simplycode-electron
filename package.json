@@ -1,5 +1,5 @@
 {
-  "name": "simply-code-app",
+  "name": "simplycode",
   "version": "1.0.0",
   "description": "Simplycode in electron to build websites",
   "main": "main.js",
