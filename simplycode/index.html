@@ -1,0 +1,4070 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- Component CSS -->
+    <style>
+      /* QUnit iframe */
+      .qunit-code {
+        display: none;
+      }
+      iframe.qunit {
+        border: 0;
+        width: 100%;
+        height: 0px;
+      }
+      /* code-method block */
+      .sb-code-method {
+        width: 100%;
+      }
+      .sb-component summary span[data-count] {
+        font-weight: bold;
+      }
+      .sb-component summary span[data-count]:after {
+        content: '(' attr(data-count) ')';
+      }
+      .sb-component summary span[data-count=""],
+      .sb-component summary span[data-count="0"] {
+        font-weight: normal;
+      }
+      .sb-component summary span[data-count=""]:after,
+      .sb-component summary span[data-count="0"]:after {
+        content: '';
+      }
+      /* deleted-parts */
+      .sb-part[data-deleted="true"] {
+        opacity: 0.3;
+      }
+      /* simply dragdrop */
+      [data-simply-list].simply-dragdrop-receiving {
+        outline: 2px dashed var(--highlight-dark);
+      }
+      .sb-component [data-simply-list].sb-code-method.simply-empty:before {
+        content: "Nothing here yet... add or drop code blocks here.";
+        font-style: italic;
+      }
+      .sb-component [data-simply-list].sb-code-method:before {
+        content: "Drop code blocks here.";
+        font-style: italic;
+      }
+      [draggable] {
+        cursor: move;
+      }
+      /* HTML validator */
+      .sb-html-valid,
+      .sb-html-invalid {
+        padding: 4px 10px;
+        background-color: #D2E0E6;
+        color: #2B81AF;
+      }
+      .sb-html-valid {
+        border-top: 5px solid #C6E746; /* pass color from qunit */
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        margin-bottom: 10px;
+      }
+      .sb-html-invalid {
+        border-top: 5px solid #EE5757; /* fail color from qunit */
+      }
+      .sb-html-messages:not(.simply-empty) {
+        padding: 4px 10px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        margin-bottom: 10px;
+        background-color: #D2E0E6;
+        color: #2B81AF;
+      }
+      .sb-html-message:not(:last-child) {
+        border-bottom: 1px solid #2B81AF;
+      }
+      .sb-html-message [data-simply-field=firstLine]:not(:empty):after {
+        content: " - ";
+      }
+      /* App full preview */
+      .sb-preview-code {
+        display: none;
+      }
+      .sb-preview-data {
+        display: none;
+      }
+      .sb-preview-code [data-simply-list-item]:last-child .trailingComma {
+        display: none;
+      }
+      .sb-full-preview-container {
+        height: calc(0.6 * 768px);
+        width: calc(0.6 * 1280px);
+      }
+      iframe.sb-full-preview {
+        width: 1280px;
+        height: 768px;
+        transform: scale(0.6);
+        transform-origin: top left;
+        position: absolute;
+        background-color: white;
+      }
+      :root {
+        --sb-component-preview-scale: 0.4;
+      }
+      iframe.sb-component-preview {
+        width: calc(480px/var(--sb-component-preview-scale));
+        height: calc(300px/var(--sb-component-preview-scale));
+        transform: scale(var(--sb-component-preview-scale));
+        transform-origin: top left;
+        position: absolute;
+        background-color: white;
+      }
+    </style>
+    <!-- /Component CSS -->
+    <!-- Page CSS -->
+    <style>
+      /* sb-fullscreen-preview */
+      main.sb-fullscreen-preview iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        transform: none;
+        border: 0;
+        z-index: 10;
+      }
+      body:has(main.sb-fullscreen-preview) header, 
+      body:has(main.sb-fullscreen-preview) nav {
+        display: none;
+      }
+    </style>
+    <!-- /Page CSS -->
+    <!-- Head HTML -->
+    <!-- base layout -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/extra.css">
+    <!-- /Head HTML -->
+    <script>
+      var simplyDataApi = {};
+      var simplyApp = {};
+      window.addEventListener("simply-content-loaded", function() {
+        simply.bind = false;
+        /* Raw API */
+        var simplyRawApi = {
+          "delete" : function(endpoint, params={}) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/" + simplyRawApi.encodeGetParams(params), {
+              mode : 'cors',
+              headers: this.headers,
+              method: "DELETE"
+            });
+          },
+          "encodeGetParams" : function(params) {
+            if (!params) {
+              return "";
+            }
+            return Object.entries(params).map(function(keyvalue) {
+              return "?" + keyvalue.map(encodeURIComponent).join("=")
+            }).join("&");
+          },
+          "get" : function(endpoint, params={}) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/" + simplyRawApi.encodeGetParams(params), {
+              mode : 'cors',
+              headers: this.headers
+            });
+          },
+          "headers" : {
+          	'Accept': 'application/json',
+          	'Content-Type': 'application/json'
+          },
+          "post" : function(endpoint, params={}) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/", {
+              mode : 'cors',
+              headers: this.headers,
+              method: "POST",
+              body: JSON.stringify(params, null, "\t")
+            });
+          },
+          "postRaw" : function(endpoint, params={}, body) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/", {
+              mode : 'cors',
+              headers: this.headers,
+              method: "POST",
+              body: body
+            });
+          },
+          "put" : function(endpoint, params={}) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/", {
+              mode: 'cors',
+              headers: this.headers,
+              method: "PUT",
+              body: JSON.stringify(params, null, "\t")
+            });
+          },
+          "putRaw" : function(endpoint, params={}, body) {
+            if (!params.token && editor.pageData.token) {
+              params.token = editor.pageData.token;
+            }
+            if (params.token) {
+              this.headers['Authorization'] = "Bearer " + params.token;
+              delete params.token;
+            } else {
+              delete this.headers.Authentication;
+            }
+            return fetch(simplyRawApi.url + endpoint + "/", {
+              mode: 'cors',
+              headers: this.headers,
+              method: "PUT",
+              body: body
+            });
+          },
+          "url" : "/api/"
+        };
+        /* End of Raw API */
+        /* Data API */
+        simplyDataApi = {
+          "deletePart" : function(basePath, part) {
+            switch (part) {
+              case "meta":
+                return simplyRawApi.delete(basePath + "/meta.json");
+                break;
+              default:
+                return simplyRawApi.delete(basePath + "/" + part);
+                break;
+            }
+          },
+          "mergeComponent" : function(component) {
+            // this function morphs the component parts for seperate files back into one structure.
+            component.forEach(function(componentPart) {
+              switch(componentPart.id) {
+                case "meta.json":
+                  componentPart.id = "meta";
+                  break;
+                case "routes":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.json$/)) {
+                        partId = partFile.id.replace(/\.json$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            name : partId
+                          }
+                        }
+                        contents[partId]['route'] = JSON.parse(partFile.contents);
+                      }
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            name : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "componentCss":
+                case "pageCss":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.css$/)) {
+                        partId = partFile.id.replace(/\.css$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            name : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "componentTemplates":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.html$/)) {
+                        partId = partFile.id.replace(/\.html$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            component : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\.json$/)) {
+                        partId = partFile.id.replace(/\.json$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            component : partId
+                          }
+                        }
+                        contents[partId]['sampledata'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "pageTemplates":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.html$/)) {
+                        partId = partFile.id.replace(/\.html$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            page : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\.json$/)) {
+                        partId = partFile.id.replace(/\.json$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            page : partId
+                          }
+                        }
+                        contents[partId]['sampledata'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "rawApi":
+                case "dataApi":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            method : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "actions":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            action : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/^tests$/)) {
+                        tests = {};
+                        partFile.contents.forEach(function(testSet) {
+                          testSetPartId = testSet.id;
+                          if (typeof contents[testSetPartId] === "undefined") {
+                            contents[testSetPartId] = {
+                              action : testSetPartId
+                            }
+                          }
+                          testSet.contents.forEach(function(test) {
+                            if (typeof tests[testSet.id] === "undefined") {
+                              tests[testSet.id] = [];
+                            }
+                            tests[testSet.id].push({
+                              name : test.id.replace(/\.js$/, ''),
+                              "test-code" : test.contents
+                            });
+                          });
+                          contents[testSet.id]['tests'] = Object.values(tests[testSet.id]);
+                        });
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "commands":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            command : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/^tests$/)) {
+                        tests = {};
+                        partFile.contents.forEach(function(testSet) {
+                          testSetPartId = testSet.id;
+                          if (typeof contents[testSetPartId] === "undefined") {
+                            contents[testSetPartId] = {
+                              command : testSetPartId
+                            }
+                          }
+                          testSet.contents.forEach(function(test) {
+                            if (typeof tests[testSet.id] === "undefined") {
+                              tests[testSet.id] = [];
+                            }
+                            tests[testSet.id].push({
+                              name : test.id.replace(/\.js$/, ''),
+                              "test-code" : test.contents
+                            });
+                          });
+                          contents[testSet.id]['tests'] = Object.values(tests[testSet.id]);
+                        });
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "dataSources":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\-get.js$/)) {
+                        partId = partFile.id.replace(/\-get.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            dataSource : partId
+                          }
+                        }
+                        contents[partId]['get-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\-set.js$/)) {
+                        partId = partFile.id.replace(/\-set.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            dataSource : partId
+                          }
+                        }
+                        contents[partId]['set-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\-load.js$/)) {
+                        partId = partFile.id.replace(/\-load.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            dataSource : partId
+                          }
+                        }
+                        contents[partId]['load-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\-save.js$/)) {
+                        partId = partFile.id.replace(/\-save.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            dataSource : partId
+                          }
+                        }
+                        contents[partId]['save-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/^tests$/)) {
+                        tests = {};
+                        partFile.contents.forEach(function(testSet) {
+                          testSetPartId = testSet.id;
+                          if (typeof contents[testSetPartId] === "undefined") {
+                            contents[testSetPartId] = {
+                              dataSource : testSetPartId
+                            }
+                          }
+                          testSet.contents.forEach(function(test) {
+                            if (typeof tests[testSet.id] === "undefined") {
+                              tests[testSet.id] = [];
+                            }
+                            tests[testSet.id].push({
+                              name : test.id.replace(/\.js$/, ''),
+                              "test-code" : test.contents
+                            });
+                          });
+                          contents[testSet.id]['tests'] = Object.values(tests[testSet.id]);
+                        });
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "transformers":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\-render.js$/)) {
+                        partId = partFile.id.replace(/\-render.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            transformer : partId
+                          }
+                        }
+                        contents[partId]['render-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/\-extract.js$/)) {
+                        partId = partFile.id.replace(/\-extract.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            transformer : partId
+                          }
+                        }
+                        contents[partId]['extract-code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/^tests$/)) {
+                        tests = {};
+                        partFile.contents.forEach(function(testSet) {
+                          testSetPartId = testSet.id;
+                          if (typeof contents[testSetPartId] === "undefined") {
+                            contents[testSetPartId] = {
+                              transformer : testSetPartId
+                            }
+                          }
+                          testSet.contents.forEach(function(test) {
+                            if (typeof tests[testSet.id] === "undefined") {
+                              tests[testSet.id] = [];
+                            }
+                            tests[testSet.id].push({
+                              name : test.id.replace(/\.js$/, ''),
+                              "test-code" : test.contents
+                            });
+                          });
+                          contents[testSet.id]['tests'] = Object.values(tests[testSet.id]);
+                        });
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "sorters":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            sorter : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "headHtml":
+                case "bodyHtml":
+                case "footHtml":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.html$/)) {
+                        partId = partFile.id.replace(/\.html$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            name : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+              }
+            });
+            return component;
+          },
+          "mergePageFrame" : function(component) {
+            var contents = {};
+            component.forEach(function(partFile) {
+              if (partFile.id.match(/\.html$/)) {
+                partFile.id = partFile.id.replace(/\.html$/, '');
+              }
+            });
+            return component;
+          },
+          "savePart" : function(basePath, part, contents) {
+            var results = [];
+          
+            switch (part) {
+              case "meta":
+                return simplyRawApi.putRaw(basePath + "/meta.json", {}, JSON.stringify(contents));
+                break;
+              case "routes":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.name) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".json"));
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".js"));
+                  } else { 
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.name + ".json", {},
+                      JSON.stringify(componentPart.route)
+                    ));
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.name + ".js", {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
+              case "componentCss":
+              case "pageCss":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.name) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".css"));
+                  } else { 
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.name + ".css", {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
+              case "componentTemplates":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.component) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.component + ".html"));
+                    if (componentPart.sampledata) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.component + ".json"));
+                    }
+                  } else { 
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.component + ".html", {},
+                      componentPart.code
+                    ));
+                    if (componentPart.sampledata) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.component + ".json", {},
+                        componentPart.sampledata
+                      ));
+                    }
+                  }
+                });
+                break;
+              case "pageTemplates":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.page) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.page + ".html"));
+                    if (componentPart.sampledata) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.page + ".json"));
+                    }
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.page + ".html", {},
+                      componentPart.code
+                    ));
+                    if (componentPart.sampledata) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.page + ".json", {},
+                        componentPart.sampledata
+                      ));
+                    }
+                  }
+                });
+                break;
+              case "rawApi":
+              case "dataApi":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.method) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.method + ".js"));
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.method + ".js", {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
+              case "actions":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.action) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.action + ".js"));
+                    if (componentPart.tests && componentPart.tests.length) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.action + "/"));
+                    }
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.action + ".js", {},
+                      componentPart.code
+                    ));
+                    if (componentPart.tests) {
+                      componentPart.tests.forEach(function(test) {
+                        if (!test.name) {
+                          throw new Error("Required test name is empty");
+                        }
+                        if (test.deleted == "true") {
+                          results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js"));
+                        } else {
+                          results.push(simplyRawApi.putRaw(
+                            basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js", {},
+                            test['test-code']
+                          ));
+                        }
+                      });
+                    }
+                  }
+                });
+                break;
+              case "commands":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.command) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.command + ".js"));
+                    if (componentPart.tests && componentPart.tests.length) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.command + "/"));
+                    }
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.command + ".js", {},
+                      componentPart.code
+                    ));
+                    if (componentPart.tests) {
+                      componentPart.tests.forEach(function(test) {
+                        if (!test.name) {
+                          throw new Error("Required test name is empty");
+                        }
+                        if (test.deleted == "true") {
+                          results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js"));
+                        } else {
+                          results.push(simplyRawApi.putRaw(
+                            basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js", {},
+                            test['test-code']
+                          ));
+                        }
+                      });
+                    }
+                  }
+                });
+                break;
+              case "dataSources":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.dataSource) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "-get.js"));
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "-set.js"));
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "-load.js"));
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "-save.js"));
+                    if (componentPart.tests && componentPart.tests.length) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "/"));
+                    }
+                  } else {
+                    if (componentPart['get-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.dataSource + "-get.js", {},
+                        componentPart['get-code']
+                      ));
+                    }
+                    if (componentPart['set-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.dataSource + "-set.js", {},
+                        componentPart['set-code']
+                      ));
+                    }
+                    if (componentPart['load-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.dataSource + "-load.js", {},
+                        componentPart['load-code']
+                      ));
+                    }
+                    if (componentPart['save-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.dataSource + "-save.js", {},
+                        componentPart['save-code']
+                      ));
+                    }
+                    if (componentPart.tests) {
+                      componentPart.tests.forEach(function(test) {
+                        if (!test.name) {
+                          throw new Error("Required test name is empty");
+                        }
+                        if (test.deleted == "true") {
+                          results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js"));
+                        } else {
+                          results.push(simplyRawApi.putRaw(
+                            basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js", {},
+                            test['test-code']
+                          ));
+                        }
+                      });
+                    }
+                  }
+                });
+                break;
+              case "transformers":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.transformer) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.transformer + "-render.js"));
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.transformer + "-extract.js"));
+                    if (componentPart.tests && componentPart.tests.length) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.transformer + "/"));
+                    }
+                  } else {
+                    if (componentPart['render-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.transformer + "-render.js", {},
+                        componentPart['render-code']
+                      ));
+                    }
+                    if (componentPart['extract-code']) {
+                      results.push(simplyRawApi.putRaw(
+                        basePath + "/" + part + "/" + componentPart.transformer + "-extract.js", {},
+                        componentPart['extract-code']
+                      ));
+                    }
+                    if (componentPart.tests) {
+                      componentPart.tests.forEach(function(test) {
+                        if (!test.name) {
+                          throw new Error("Required test name is empty");
+                        }
+                        if (test.deleted == "true") {
+                          results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js"));
+                        } else {
+                          results.push(simplyRawApi.putRaw(
+                            basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js", {},
+                            test['test-code']
+                          ));
+                        }
+                      });
+                    }
+                  }
+                });
+                break;
+              case "sorters":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.sorter) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.sorter + ".js"));
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.sorter + ".js", {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
+              case "headHtml":
+              case "bodyHtml":
+              case "footHtml":
+                contents.forEach(function(componentPart) {
+                  if (!componentPart.name) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".html"));
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.name + ".html", {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
+              case "fullApp":
+              case "componentPreview":
+              case "pagePreview":
+                results.push(simplyRawApi.putRaw(basePath + "/" + part + ".html", {}, contents));
+                break;
+              default:
+                results.push(simplyRawApi.putRaw(basePath + "/" + part, {}, JSON.stringify(contents)));
+                break;
+            }
+            return Promise.all(results)
+              .then(function(responses) {
+              for (var i=0; i<responses.length; i++) {
+                if (responses[i].status !== 200) {
+                  return responses[i]; // return an error if we have one
+                }
+              }
+              return responses[0];
+            });
+          },
+          "browse" : function(path) {
+            return simplyRawApi.get(path)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("browse failed", response.status);
+            });
+          },
+          "deleteBaseComponent" : function(component) {
+            return simplyRawApi.delete("base-components/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteComponent failed", response.status);
+            });
+          },
+          "deleteBaseComponentPart" : function(component, part) {
+            return simplyRawApi.delete("base-components/" + component + "/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // throw new Error("deleteBaseComponentPart failed", response.status);
+              // allowed while data upgrade is needed
+            });
+          },
+          "getBaseComponent" : function(component) {
+            return simplyRawApi.get("base-components/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getBaseComponent failed", response.status);
+            })
+              .then(function(component) {
+              return simplyDataApi.mergeComponent(component);
+            });
+          },
+          "saveBaseComponentPart" : function(component, part, contents) {
+            return simplyDataApi.savePart("base-components/" + component, part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("base-components/" + component, part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("saveBaseComponentPart failed", response.status);
+              });
+            });
+          },
+          "listBaseComponents" : function() {
+            return simplyRawApi.get("base-components")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("listBaseComponents failed", response.status);
+            })
+              .then(function(components) {
+              components.forEach(function(component) {
+                simplyDataApi.mergeComponent(component.contents);
+              });
+              return components;
+            });
+          },
+          "deleteComponent" : function(component) {
+              return simplyRawApi.delete("components/" + component)
+              .then(function(response) {
+                  if (response.status === 200) {
+                      return response.json();
+                  }
+                  throw new Error("deleteComponent failed", response.status);
+              });
+          },
+          "deleteComponentPart" : function(component, part) {
+           return simplyRawApi.delete("components/" + component + "/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteComponentPart failed", response.status);
+            });
+          },
+          "getComponent" : function(component) {
+            return simplyRawApi.get("components/" + component)
+            .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getComponent failed", response.status);
+            })
+            .then(function(component) {
+              return simplyDataApi.mergeComponent(component);
+            });
+          },
+          "saveComponentPart" : function(component, part, contents) {
+            return simplyDataApi.savePart("components/" + component, part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("components/" + component, part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("saveComponentPart failed", response.status);
+              });
+            });
+          },
+          "listComponents" : function() {
+            return simplyRawApi.get("components")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("listComponents failed", response.status);
+            })
+              .then(function(components) {
+              components.forEach(function(component) {
+                simplyDataApi.mergeComponent(component.contents);
+              });
+              return components;
+            });
+          },
+          "deletePage" : function(component) {
+            return simplyRawApi.delete("pages/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteComponent failed", response.status);
+            });
+          },
+          "deletePagePart" : function(component, part) {
+            return simplyRawApi.delete("pages/" + component + "/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deletePagePart failed", response.status);
+            });
+          },
+          "getPage" : function(component) {
+            return simplyRawApi.get("pages/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getPage failed", response.status);
+            })
+              .then(function(component) {
+              return simplyDataApi.mergeComponent(component);
+            });
+          },
+          "savePagePart" : function(component, part, contents) {
+            return simplyDataApi.savePart("pages/" + component, part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("pages/" + component, part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("savePagePart failed", response.status);
+              });
+            });
+          },
+          "deletePageFramePart" : function(part) {
+            return simplyRawApi.delete("page-frame/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // throw new Error("deletePageFramePart failed", response.status);
+              // allowed while data upgrade is needed
+            });
+          },
+          "getPageFrame" : function() {
+            return simplyRawApi.get("page-frame")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getPageFrame failed", response.status);
+            })
+              .then(function(component) {
+              return simplyDataApi.mergePageFrame(component);
+            })
+              .catch(function() {
+              let defaults = {
+                "componentPreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\"&gt;\n      &#123;&#123;componentPreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
+                "fullApp.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      var simplyDataApi = &#123;&#125;;\n      var simplyApp = &#123;&#125;;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        simply.bind = false;\n        /* Raw API */\n        var simplyRawApi = &#123;\n          &#123;&#123;rawApi&#125;&#125;\n        &#125;;\n        /* End of Raw API */\n        /* Data API */\n        simplyDataApi = &#123;\n          &#123;&#123;dataApi&#125;&#125;\n        &#125;;\n        /* End of Data API */\n        simplyApp = simply.app(&#123;\n          /* Actions */\n          actions: &#123;\n            &#123;&#123;actions&#125;&#125;\n          &#125;,\n          /* /Actions */\n          /* Commands */\n          commands: &#123;\n            &#123;&#123;commands&#125;&#125;\n          &#125;,\n          /* /Commands */\n          /* Routes */\n          routes: &#123;\n            &#123;&#123;routes&#125;&#125;\n          &#125;\n          /* /Routes */\n        &#125;);\n      &#125;);\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Body HTML --&gt;\n    &#123;&#123;bodyHtml&#125;&#125;\n    &lt;!-- /Body HTML --&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;header data-simply-path=\"/\" data-simply-field=\"header\" data-simply-content=\"template\" data-simply-default-value=\"Header\"&gt;\n      &lt;template data-simply-template='Header' rel=\"header\"&gt;&lt;/template&gt;\n    &lt;/header&gt;\n    &lt;nav&gt;\n      &lt;div is=\"simply-component\" rel=\"menu\"&gt;&lt;/div&gt;\n    &lt;/nav&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n    &lt;!-- Page HTML templates --&gt;\n    &#123;&#123;pageTemplates&#125;&#125;\n    &lt;!-- /Page HTML templates --&gt;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
+                "pagePreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;header data-simply-path=\"/\" data-simply-field=\"header\" data-simply-content=\"template\" data-simply-default-value=\"Header\"&gt;\n      &lt;template data-simply-template='Header' rel=\"header\"&gt;&lt;/template&gt;\n    &lt;/header&gt;\n    &lt;nav&gt;\n      &lt;div is=\"simply-component\" rel=\"menu\"&gt;&lt;/div&gt;\n    &lt;/nav&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n      &#123;&#123;pagePreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;"
+              };
+          
+              let elements = {};
+              let component = [];
+              for (i in defaults) {
+                elements[i] = document.createElement("pre");
+                elements[i].innerHTML = defaults[i];
+          
+                component.push({
+                  "id" : i,
+                  "contents" : elements[i].innerText
+                });
+              }
+              return simplyDataApi.mergePageFrame(component);
+            });
+          },
+          "savePageFramePart" : function(part, contents) {
+            if (part == "meta") {
+              return '"ok"';
+            }
+            return simplyDataApi.savePart("page-frame", part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("page-frame", part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("savePageFramePart failed", response.status);
+              });
+            });
+          },
+          "listPages" : function() {
+            return simplyRawApi.get("pages")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("listPages failed", response.status);
+            })
+              .then(function(components) {
+              components.forEach(function(component) {
+                simplyDataApi.mergeComponent(component.contents);
+              });
+              return components;
+            });
+          },
+          "saveAppHtml" : function(appHtml) {
+            return simplyRawApi.putRaw("generated.html", {}, appHtml)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("saveAppHtml failed", response.status);
+            });
+          }
+        };
+        /* End of Data API */
+        simplyApp = simply.app({
+          /* Actions */
+          actions: {
+            "getComponentNameField" : function(component) { 
+              /*
+              var nameOptions = [
+                'name', // routes, componentCss, pageCss, headHtml, bodyHtml, footHtml
+                'component', // componentTemplates
+                'action', // actions
+                'command', // commands
+                'page', // pageTemplates
+                'method', // rawApi, dataApi
+                'dataSource', // dataSources
+                'transformer', // transformers
+                'sorter' // sorters
+              ];
+              */
+              switch (component) {
+                case "componentTemplates":
+                  return 'component';
+                case 'actions':
+                  return 'action';
+                case 'commands':
+                  return 'command';
+                case 'pageTemplates':
+                  return 'page';
+                case 'rawApi':
+                case 'dataApi':
+                  return 'method';
+                case 'dataSources':
+                  return 'dataSource';
+                case 'transformers':
+                  return 'transformer';
+                case 'sorters':
+                  return 'sorter';
+                default:
+                  return 'name';
+              }
+            },
+            "browse" : function(path) {
+              return simplyDataApi.browse(path)
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "getMainMenu" : function() {
+              return new Promise(function(resolve, reject) {
+                return resolve(
+                  [
+                    {
+                      item : {
+                        innerHTML : "Base components",
+                        href : "#base",
+                        "data-path" : "base-components"
+                      }
+                    },
+                    {
+                      item : {
+                        innerHTML : "Components",
+                        href : "#components",
+                        "data-path" : "components"
+                      }
+                    },
+                    {
+                      item : {
+                        innerHTML : "Page frame",
+                        href : "#page-frame",
+                        "data-path" : "page-frame"
+                      }
+                    },
+                    {
+                      item : {
+                        innerHTML : "Pages",
+                        href : "#pages",
+                        "data-path" : "pages"
+                      }
+                    }
+                  ]
+                );
+              });
+            },
+            "deleteBaseComponent" : function(component) {
+              return simplyDataApi.deleteBaseComponent(component);
+            },
+            "getBaseComponent" : function(component) {
+              return simplyDataApi.getBaseComponent(component);
+            },
+            "saveBaseComponent" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) { 
+                  promises.push(simplyDataApi.saveBaseComponentPart(component.id, name, component.parts[name]));
+                } else {
+                  editor.pageData.parts.forEach(function(part) {
+                    if (part.id == name) {
+                      promises.push(simplyDataApi.deleteBaseComponentPart(component.id, name));
+                    }
+                  });
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.saveBaseComponentPart(meta.id, "meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "listBaseComponents" : function() {
+              return simplyDataApi.listBaseComponents()
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "deleteComponent" : function(component) {
+                return simplyDataApi.deleteComponent(component);
+            },
+            "getComponent" : function(component) {
+              return simplyDataApi.getComponent(component);
+            },
+            "saveComponent" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) { 
+                  promises.push(simplyDataApi.saveComponentPart(component.id, name, component.parts[name]));
+                } else {
+                  editor.pageData.parts.forEach(function(part) {
+                    if (part.id == name) {
+                      promises.push(simplyDataApi.deleteComponentPart(component.id, name));
+                    }
+                  });
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.saveComponentPart(meta.id, "meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "listComponents" : function() {
+              return simplyDataApi.listComponents()
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "deletePage" : function(component) {
+              return simplyDataApi.deletePage(component);
+            },
+            "getPage" : function(component) {
+              return simplyDataApi.getPage(component);
+            },
+            "savePage" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) { 
+                  promises.push(simplyDataApi.savePagePart(component.id, name, component.parts[name]));
+                } else {
+                  editor.pageData.parts.forEach(function(part) {
+                    if (part.id == name) {
+                      promises.push(simplyDataApi.deletePagePart(component.id, name));
+                    }
+                  });
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.savePagePart(meta.id, "meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "getPageFrame" : function() {
+              return simplyDataApi.getPageFrame()
+              .catch(function(error) {
+                return [];
+              });
+            },
+            "savePageFrame" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) {
+                  promises.push(simplyDataApi.savePageFramePart(name, component.parts[name]));
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.savePageFramePart("meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "listPages" : function() {
+              return simplyDataApi.listPages()
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "getAppData" : function() {
+              var appData = {
+              };
+              return simplyApp.actions.getPageFrame()
+                .then(function(component) {
+                var frame = {};
+                component.forEach(function(part) {
+                  if (part.id == "meta") {
+                    return;
+                  };
+                  frame[part.id] = part.contents;
+                });
+                appData.pageFrame = frame;
+              })
+              .then(function() {
+                var promises = [
+                  simplyApp.actions.listBaseComponents(),
+                  simplyApp.actions.listComponents(),
+                  simplyApp.actions.listPages()
+                ];
+                return Promise.all(promises);
+              })
+              .then(function(appComponents) {
+                appComponents.forEach(function(appComponent) {
+                  appComponent.forEach(function(component) {
+                    component.contents.forEach(function(part) {
+                      if (part.id == "meta") {
+                        return;
+                      };
+            
+                      if (typeof appData[part.id] === "undefined") {
+                        appData[part.id] = [];
+                      }
+                      parts = JSON.parse(part.contents);
+                      parts.forEach(function(entry) {
+                        appData[part.id].push(entry);
+                      });
+                    });
+                  });
+                });
+              })
+              .then(function() {
+                if (appData["routes"]) {
+                  appData["routes"].sort(function(a, b) {
+                    routeAWeight = simplyApp.actions.getRouteWeight(a);
+                    routeBWeight = simplyApp.actions.getRouteWeight(b);
+                    if (routeAWeight > routeBWeight) {
+                      return -1;
+                    } else if (routeAWeight < routeBWeight) {
+                      return 1;
+                    } else {
+                      if (a > b) {
+                        return -1;
+                      } else if (a < b) {
+                        return 1;
+                      } else {
+                        return 0;
+                      }
+                    }
+                  });
+                }
+                return appData;
+              });
+            },
+            "getBaseComponents" : function() {
+              var promises = [];
+              return simplyApp.actions.listBaseComponents()
+                .then(function(baseComponents) {
+                baseComponents.forEach(function(baseComponent) {
+                  promises.push(simplyApp.actions.getBaseComponent(baseComponent.id));
+                });
+              })
+                .then(function() {
+                return Promise.all(promises);
+              });
+            },
+            "getComponents" : function() {
+              var promises = [];
+              return simplyApp.actions.listComponents()
+                .then(function(components) {
+                components.forEach(function(component) {
+                  promises.push(simplyApp.actions.getComponent(component.id));
+                });
+              })
+                .then(function() {
+                return Promise.all(promises);
+              });
+            },
+            "getPages" : function() {
+              var promises = [];
+              return simplyApp.actions.listPages()
+                .then(function(pages) {
+                pages.forEach(function(page) {
+                  promises.push(simplyApp.actions.getPage(page.id));
+                });
+              })
+                .then(function() {
+                return Promise.all(promises);
+              });
+            },
+            "getRouteWeight" : function(route) {
+              var pathicles = route.route.split("/");
+              var weight = "";
+              pathicles.forEach(function(pathicle) {
+                if (pathicle.length === 0) {
+                  return;
+                }
+                if (pathicle.match(/^:/)) {
+                  weight += "0";
+                } else {
+                  weight += "1";
+                }
+              });
+              if (weight == "") {
+                weight = -1;
+              }
+              return parseInt(weight);
+            },
+            "saveAppHtml" : function(appHtml) {
+              return simplyDataApi.saveAppHtml(appHtml);
+            }
+          },
+          /* /Actions */
+          /* Commands */
+          commands: {
+            "autoRunPreviews" : function(el) {
+              var previewRunners = document.querySelectorAll("iframe.sb-full-preview");
+              previewRunners.forEach(function(previewRunner) {
+                previewRunner.contentWindow.document.previewRunner = previewRunner;
+                simplyApp.commands.resetPreview(previewRunner)
+                  .then(function(previewRunner) {
+                  previewRunner.contentWindow.document.open();
+                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".sb-preview-code").innerText);
+                  previewRunner.contentWindow.document.close();
+                });
+              });
+            
+              var previewRunners = document.querySelectorAll("iframe.sb-component-preview");
+              previewRunners.forEach(function(previewRunner) {
+                previewRunner.contentWindow.document.previewRunner = previewRunner;
+                simplyApp.commands.resetPreview(previewRunner)
+                  .then(function(previewRunner) {
+                  previewRunner.contentWindow.document.open();
+                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".sb-preview-code").innerText);
+                  previewRunner.contentWindow.document.close();
+                  previewRunner.contentWindow.addEventListener("simply-content-loaded", function() {
+                    var previewData = previewRunner.parentNode.querySelector(".sb-preview-data").innerText;
+                    try {
+                      previewData = JSON.parse(previewData);
+                    } catch(e) {
+                      previewData = {};
+                    }
+                    previewRunner.contentWindow.editor.pageData = previewData;
+                  });
+                });
+              });
+            },
+            "resetPreview" : function(el) {
+              return new Promise(function(resolve, reject) {
+                var newRunner = el.cloneNode(false);
+                newRunner.addEventListener("load", function() {
+                  resolve(newRunner);
+                });
+                el.parentNode.insertBefore(newRunner, el);
+                el.remove();
+              });
+            },
+            "autoRunTests" : function(el) {
+              var testRunners = document.querySelectorAll(".sb-component[open] iframe.qunit");
+              testRunners.forEach(function(testRunner) {
+                testRunner.contentWindow.document.testRunner = testRunner;
+                testRunner.contentWindow.document.open();
+                testRunner.contentWindow.document.write(testRunner.parentNode.querySelector(".qunit-code").innerText);
+                testRunner.contentWindow.document.close();
+              });
+            },
+            "codeMirrorInit" : function() {
+              var textareas = document.querySelectorAll(".sb-component[open] textarea[data-codemirror-mode]:not([style])");
+              textareas.forEach(function(textarea) {
+                var mode = "javascript";
+                if (textarea.hasAttribute("data-codemirror-mode")) {
+                  mode = textarea.getAttribute("data-codemirror-mode");
+                }
+                switch (mode) {
+                  case "css":
+                    // no change needed
+                    break;
+                  case "html":
+                    mode = {
+                      name: "html",
+                      htmlMode : true,
+                      matchClosing : true
+                    }
+                    break;
+                  case "htmlmixed":
+                    mode = {
+                      name: "htmlmixed",
+                      tags: {
+                        style: [[null, null, "css"]],
+                        script: [[null, null, "javascript"]]
+                      }
+                    };
+                    break;
+                  case "javascript":
+                    // no change needed
+                    break;
+                  case "json":
+                    mode = {
+                      name : "javascript",
+                      json : true
+                    };
+                    break;
+                  default:
+                    mode = "javascript";
+                    break;
+                }
+                var cm = CodeMirror.fromTextArea(textarea, {
+                  lineNumbers: true,
+                  theme: "base16-dark",
+                  mode: mode
+                });
+                cm.on("change", function(event) {
+                  cm.getTextArea().dataBinding.set(cm.getValue());
+                });
+              });
+            },
+            "addAction" : function(el) {
+              editor.pageData.component.parts.actions.push({});
+            },
+            "addBodyHtml" : function(el) {
+              editor.pageData.component.parts.bodyHtml.push({});
+            },
+            "addCommand" : function(el) {
+              editor.pageData.component.parts.commands.push({});
+            },
+            "addComponentCss" : function(el) {
+              editor.pageData.component.parts.componentCss.push({});
+            },
+            "addComponentTemplate" : function(el) {
+              editor.pageData.component.parts.componentTemplates.push({});
+            },
+            "addDataApiMethod" : function(el) {
+              editor.pageData.component.parts.dataApi.push({});
+            },
+            "addDataSource" : function(el) {
+              editor.pageData.component.parts.dataSources.push({});
+            },
+            "addFootHtml" : function(el) {
+              editor.pageData.component.parts.footHtml.push({});
+            },
+            "addHeadHtml" : function(el) {
+              editor.pageData.component.parts.headHtml.push({});
+            },
+            "addPageCss" : function(el) {
+              editor.pageData.component.parts.pageCss.push({});
+            },
+            "addPageTemplate" : function(el) {
+              editor.pageData.component.parts.pageTemplates.push({});
+            },
+            "addTest" : function(el) {
+              el.previousElementSibling.dataBinding.config.data.tests.push({});
+            },
+            "addRawApiMethod" : function(el) {
+              editor.pageData.component.parts.rawApi.push({});
+            },
+            "addRoute" : function(el) {
+              editor.pageData.component.parts.routes.push({});
+            },
+            "addSorter" : function(el) {
+              editor.pageData.component.parts.sorters.push({});
+            },
+            "addTransformer" : function(el) {
+              editor.pageData.component.parts.transformers.push({});
+            },
+            "deleteEntry" : function(el) {
+              if (!confirm("Delete this?")) {
+                return;
+              }
+              el.dataBinding.config.data.deleted = true;
+            },
+            "initEditors" : function(el) {
+              if (el.parentNode.hasAttribute("open")) {
+                el.parentNode.removeAttribute("open");
+              } else {
+                el.parentNode.setAttribute("open", "");
+              }
+              simplyApp.commands.codeMirrorInit();
+              simplyApp.commands.autoRunTests();
+            },
+            "collapseMenu" : function(el) {
+              if (!el.hasAttribute("open")) {
+                return simplyApp.commands.expandMenu(el);
+              }
+              el.removeAttribute("open");
+              el.querySelector("ul").dataBinding.set([]);
+            },
+            "expandMenu" : function(el) {
+              if (el.hasAttribute("open")) {
+                return simplyApp.commands.collapseMenu(el);
+              }
+              el.setAttribute("open", "");
+              var path = el.querySelector("a").getAttribute("data-path");
+              var link =  el.querySelector("a").href;
+              simplyApp.actions.browse(path)
+                .then(function(components) {
+                var menu = [];
+                components.forEach(function(component) {
+                  menu.push(
+                    {
+                      item : {
+                        innerHTML : component.id,
+                        href : link + "/" + component.id
+                      }
+                    }
+                  );
+                });
+                el.querySelector("ul").dataBinding.set(menu);
+              });
+            },
+            "navigate" : function(el) {
+              if (el.hasAttribute("href")) {
+                document.location.href = el.getAttribute("href");
+              } else if (el.querySelector("[href]")) {
+                document.location.href = el.querySelector("[href]").getAttribute("href");
+              }
+            },
+            "deleteBaseComponent" : function() {
+              if (!confirm("Delete base component?")) {
+                return;
+              }
+              simplyApp.actions.deleteBaseComponent(
+                editor.pageData.component.id
+              )
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "BaseComponent deleted.",
+                  "state" : "new"
+                });
+                document.location.hash="base/";
+              });
+            },
+            "saveBaseComponent" : function() {
+              simplyApp.actions.saveBaseComponent(editor.pageData.component)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "BaseComponent saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "createBaseComponent" : function() {
+              var newComponent = editor.pageData.newComponent;
+              simplyApp.actions.saveBaseComponent(newComponent)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "BaseComponent created.",
+                  "state" : "new"
+                });
+                document.location.hash="base/" + newComponent.id;
+              });
+            },
+            "deleteComponent" : function() {
+              if (!confirm("Delete component?")) {
+                return;
+              }
+              simplyApp.actions.deleteComponent(
+                editor.pageData.component.id
+              )
+              .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Component deleted.",
+                  "state" : "new"
+                });
+                document.location.hash="components/";
+              });
+            },
+            "saveComponent" : function() {
+              simplyApp.actions.saveComponent(editor.pageData.component)
+              .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Component saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "createComponent" : function() {
+              var newComponent = editor.pageData.newComponent;
+              simplyApp.actions.saveComponent(newComponent)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Component created.",
+                  "state" : "new"
+                });
+                document.location.hash="components/" + newComponent.id;
+              });
+            },
+            "deletePage" : function() {
+              if (!confirm("Delete page?")) {
+                return;
+              }
+              simplyApp.actions.deletePage(
+                editor.pageData.component.id
+              )
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Page deleted.",
+                  "state" : "new"
+                });
+                document.location.hash="pages/";
+              });
+            },
+            "savePage" : function() {
+              simplyApp.actions.savePage(editor.pageData.component)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Page saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "savePageFrame" : function() {
+              simplyApp.actions.savePageFrame(editor.pageData.component)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Page frame saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "createPage" : function() {
+              var newComponent = editor.pageData.newComponent;
+              simplyApp.actions.savePage(newComponent)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Page created.",
+                  "state" : "new"
+                });
+                document.location.hash="pages/" + newComponent.id;
+              });
+            },
+            "saveAppHtml" : function() {
+              var appHtml = document.querySelector(".sb-preview-code").innerText;
+              appHtml = appHtml.replaceAll(/^(\n)+/g, '');
+              appHtml = appHtml.replaceAll(/(\n)+/g, '\n');
+              simplyApp.actions.saveAppHtml(appHtml)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "App published!",
+                  "state" : "new"
+                });
+              });
+            }
+          },
+          /* /Commands */
+          /* Routes */
+          routes: {
+            "#preview/components/:component/:partType/:part" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getComponent(params.component);
+              })
+                .then(function(parts) {
+                var result;
+                parts.forEach(function(part) {
+                  if (part.id == params.partType) {
+                    partContent = JSON.parse(part.contents);
+            		switch (part.id) {
+                      case "componentTemplates":
+                        partContent.forEach(function(componentTemplate) {
+                          if (componentTemplate.component == decodeURI(params.part)) {
+            				result = componentTemplate;
+                          }
+                        });
+                      break;
+                    }
+                  }
+                });
+                for (i in result) {
+                  editor.pageData[i] = result[i];
+                }
+                editor.pageData.page = "preview-component";
+              })
+                .then(function() {
+                setTimeout(function() { // FIXME: Wait for the CSS to be available;
+                  simplyApp.commands.autoRunPreviews();
+                }, 1000);
+              });
+            },
+            "#preview/pages/:page/:partType/:part" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getPage(params.page);
+              })
+                .then(function(parts) {
+                var result;
+                parts.forEach(function(part) {
+                  if (part.id == params.partType) {
+                    partContent = JSON.parse(part.contents);
+            		switch (part.id) {
+                      case "pageTemplates":
+                        partContent.forEach(function(pageTemplate) {
+                          if (pageTemplate.page == decodeURI(params.part)) {
+            				result = pageTemplate;
+                          }
+                        });
+                      break;
+                    }
+                  }
+                });
+                for (i in result) {
+                  editor.pageData[i] = result[i];
+                }
+                editor.pageData.page = "preview-component";
+              })
+                .then(function() {
+                setTimeout(function() { // FIXME: Wait for the CSS to be available;
+                  simplyApp.commands.autoRunPreviews();
+                }, 1000);
+              });
+            },
+            "#base/:component" : function(params) {
+              simplyApp.actions.getBaseComponent(params.component)
+                .then(function(parts) {
+                var component = {
+                  id : params.component
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = params.component;
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {
+                    headHtml : [],
+                    bodyHtml : [],
+                    footHtml : [],
+                    commands : [],
+                    actions : [],
+                    routes : [],
+                    rawApi : []
+                  };
+                }
+                var count = {};
+                parts.forEach(function(part) {
+                  component.parts[part.id] = JSON.parse(part.contents);
+                  count[part.id] = component.parts[part.id].length;
+                });
+                editor.pageData.component = component;
+                editor.pageData.parts = parts;
+                editor.pageData.count = count;
+                editor.pageData.page = "Edit base component";
+              });
+            },
+            "#components/:component" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getComponent(params.component);
+              })
+                .then(function(parts) {
+                var component = {
+                  id : params.component
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = params.component;
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {
+                    componentTemplates : [],
+                    componentCss : [],
+                    commands : [],
+                    actions : [],
+                    dataApi : [],
+                    routes : [],
+                    transformers : [],
+                    dataSources : [],
+                    sorters : []
+                  };
+                }
+                var count = {};
+                parts.forEach(function(part) {
+                  component.parts[part.id] = JSON.parse(part.contents);
+                  count[part.id] = component.parts[part.id].length;
+                });
+                editor.pageData.component = component;
+                editor.pageData.parts = parts;
+                editor.pageData.count = count;
+                editor.pageData.page = "Edit component";
+              })
+                .then(function() {
+                setTimeout(function() { // FIXME: Wait for the CSS to be available;
+                  simplyApp.commands.autoRunPreviews();
+                }, 1000);
+              });
+            },
+            "#pages/:component" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getPage(params.component);
+              })
+                .then(function(parts) {
+                var component = {
+                  id : params.component
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = params.component;
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {
+                    pageTemplates : [],
+                    pageCss : [],
+                    commands : [],
+                    actions : [],
+                    dataApi : [],
+                    routes : [],
+                    transformers : [],
+                    dataSources : [],
+                    sorters : []
+                  };
+                }
+                var count = {};
+                parts.forEach(function(part) {
+                  component.parts[part.id] = JSON.parse(part.contents);
+                  count[part.id] = component.parts[part.id].length;
+                });
+                editor.pageData.component = component;
+                editor.pageData.parts = parts;
+                editor.pageData.count = count;
+                editor.pageData.page = "Edit page";
+              })
+                .then(function() {
+                setTimeout(function() { // FIXME: Wait for the CSS to be available;
+                  simplyApp.commands.autoRunPreviews();
+                }, 1000);
+              });
+            },
+            "#base" : function() {
+              simplyApp.actions.listBaseComponents()
+                .then(function(components) {
+                editor.pageData.components = components;
+                editor.pageData.page = "Base components";
+              });
+            },
+            "#components" : function() {
+                simplyApp.actions.listComponents()
+                .then(function(components) {
+                    editor.pageData.components = components;
+                    editor.pageData.page = "List components";
+                });
+            },
+            "#page-frame" : function() {
+              simplyApp.actions.getPageFrame()
+                .then(function(parts) {
+                var component = {
+                  id : "page-frame"
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = "page-frame";
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {};
+                }
+                parts.forEach(function(part) {
+                  component.parts[part.id] = part.contents;
+                });
+                editor.pageData.component = component;
+                editor.pageData.count = {};
+                editor.pageData.page = "Edit page frame";
+              });
+            },
+            "#pages" : function() {
+              simplyApp.actions.listPages()
+                .then(function(components) {
+                editor.pageData.components = components;
+                editor.pageData.page = "Pages";
+              });
+            },
+            "#preview" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+                editor.pageData.page = "preview-app";
+              })
+                .then(function() {
+                simplyApp.commands.autoRunPreviews();
+              });
+            },
+            "#publish" : function() {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+                editor.pageData.page = "Publish App";
+              })
+                .then(function() {
+                simplyApp.commands.autoRunPreviews();
+              });
+            },
+            "/" : function() {
+                simplyApp.actions.listComponents()
+                .then(function(components) {
+                    editor.pageData.components = components;
+                    editor.pageData.page = "List components";
+                });
+            }
+          }
+          /* /Routes */
+        });
+      });
+      function clone(ob) {
+        return JSON.parse(JSON.stringify(ob));
+      }
+      function updateDataSource(name) {
+        document.querySelectorAll('[data-simply-data="'+name+'"]').forEach(function(list) {
+          editor.list.applyDataSource(list, name);
+          list.dataBindingPaused = 0;
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Body HTML -->
+    <!-- Load main menu -->
+    <script>
+      window.addEventListener("simply-content-loaded", function() {
+        simplyApp.actions.getMainMenu()
+          .then(function(menu) {
+          editor.pageData.menu = menu;
+        });
+      });
+    </script>
+    <!-- HTML structure -->
+    <div class="simply-toasts">
+      <ul class="simply-toasts simply-space" data-simply-list="alerts">
+        <template data-simply-template="error">
+          <li class="simply-toast simply-toast-error simply-toast-autohide" data-simply-field="state" data-simply-content="attributes" data-simply-attributes="data-state">
+            <div class="simply-space" data-simply-field="message"></div>
+          </li>
+        </template>
+        <template data-simply-template="warning">
+          <li class="simply-toast simply-toast-warning simply-toast-autohide" data-simply-field="state" data-simply-content="attributes" data-simply-attributes="data-state">
+            <div class="simply-space" data-simply-field="message"></div>
+          </li>
+        </template>
+        <template data-simply-template="info">
+          <li class="simply-toast simply-toast-info simply-toast-autohide" data-simply-field="state" data-simply-content="attributes" data-simply-attributes="data-state">
+            <div class="simply-space" data-simply-field="message"></div>
+          </li>
+        </template>
+      </ul>
+    </div>
+    <!-- Toast styles -->
+    <style>
+      .simply-toasts {
+        position: relative;
+        z-index: 101;
+      }
+    </style>
+    
+    <!-- /Body HTML -->
+    <!-- Component HTML templates -->
+    <template id="componentActions">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Actions provide the internal API for the app to use. It is called by routes and commands, and makes use of the Data API. Actions should not do any DOM access.">
+        <span data-simply-field="count.actions" data-simply-content="attributes" data-simply-attributes="data-count">
+          Actions
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addAction">Add action</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.actions">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="action" placeholder="Action name, eg getItemList">
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" value="tests" data-simply-field="editor">
+                  <span>Tests</span>
+                </label>
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-deleted="false" data-simply-command="deleteEntry">Delete action</button>
+              </div>
+            </div>
+            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <template data-simply-template="code">
+                <div class="sb-editor-code">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+                  <div is="simply-component" rel="componentQUnitActionRunner"></div>
+                </div>
+              </template>
+              <template data-simply-template="tests">
+                <div class="sb-editor-code">
+                  <div is="simply-component" rel="componentQUnitTests"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentBodyHtml">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These are added to the top of the &lt;body&gt; of the HTML">
+        <span data-simply-field="count.bodyHtml" data-simply-content="attributes" data-simply-attributes="data-count">
+          Additional body HTML
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addBodyHtml">Add body HTML</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.bodyHtml">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
+                <div is="simply-component" rel="componentHtmlValidator"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentCommands">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Commands come from user interaction on the DOM, for instance clicking a button. Commands are aware of the DOM, and use actions to execute logic.">
+        <span data-simply-field="count.commands" data-simply-content="attributes" data-simply-attributes="data-count">
+          Commands
+        </span>
+        <span class='sb-controls'>
+          <button class="sb-button" data-simply-command="addCommand">Add command</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.commands">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="command" placeholder="Command name, eg getItemList">
+                <label class="sb-tab">
+                  <input type="radio" name="commandEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="commandEditor" value="tests" data-simply-field="editor">
+                  <span>Tests</span>
+                </label>
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete command</button>
+              </div>
+            </div>
+            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <template data-simply-template="code">
+                <div class="sb-editor-code">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+                  <div is="simply-component" rel="componentQUnitCommandRunner"></div>
+                </div>
+              </template>
+              <template data-simply-template="tests">
+                <div class="sb-editor-code">
+                  <div is="simply-component" rel="componentQUnitTests"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    
+    </template>
+    <template id="componentComponentCss">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Set component CSS - this CSS is globally available.">
+        <span data-simply-field="count.componentCss" data-simply-content="attributes" data-simply-attributes="data-count">
+          Component CSS collections
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addComponentCss">Add CSS collection</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.componentCss">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name this CSS collection">
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="css" data-simply-field="code" placeholder="div {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentComponentTemplate">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These templates are used to build up page templates.">
+        <span data-simply-field="count.componentTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
+          Component HTML template
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addComponentTemplate">Add component HTML template</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.componentTemplates">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="component" placeholder="Component name">
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" value="sampledata" data-simply-field="editor">
+                  <span>Sample data</span>
+                </label>
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="sb-editors sb-dual-preview">
+              <div class="sb-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+                <template data-simply-template="code">
+                  <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Component Html</div></main>"></textarea>
+                </template>
+                <template data-simply-template="sampledata">
+                  <textarea data-codemirror-mode="json" data-simply-field="sampledata" placeholder="{}"></textarea>
+                </template>
+              </div>
+              <div class="sb-previews">
+                <div is="simply-component" rel="componentPreview"></div>
+              </div>
+            </div>
+            <div is="simply-component" rel="componentHtmlValidator"></div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentDataApi">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="The Data API layer provides functions to load en store data types. Makes use of the Raw API and provides data for actions">
+        <span data-simply-field="count.dataApi" data-simply-content="attributes" data-simply-attributes="data-count">
+          Data API
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addDataApiMethod">Add method</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.dataApi">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentDataSources">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Data sources provide list information from an external data source. Use this to provide lists that are not part of the subject of the page. Used as data-simply-data on data-simply-lists">
+        <span data-simply-field="count.dataSources" data-simply-content="attributes" data-simply-attributes="data-count">
+          Data sources
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addDataSource">Add data source</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.dataSources">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="dataSource" placeholder="Data source name, eg itemList">
+                <label class="sb-tab" title="Load code is used to fetch the data source and render it in the list. Save code is used to gather data from the data source and save it back to where it came from.">
+                  <input type="radio" checked name="dataSourceEditor" value="code" data-simply-field="editor">
+                  <span>Load/Save</span>
+                </label>
+                <label class="sb-tab" title="Get/Set is used to populate the data-simply-list value.">
+                  <input type="radio" checked name="dataSourceEditor" value="getset" data-simply-field="editor">
+                  <span>Get/Set</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="dataSourceEditor" value="tests" data-simply-field="editor">
+                  <span>Tests</span>
+                </label>
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete data source</button>
+              </div>
+            </div>
+            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <template data-simply-template="code">
+                <div class="sb-editor-code sb-dual">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="load-code" placeholder="function() {...}"></textarea>
+                  <textarea data-codemirror-mode="javascript" data-simply-field="save-code" placeholder="function() {...}"></textarea>
+                </div>
+              </template>
+              <template data-simply-template="getset">
+                <div class="sb-editor-code sb-dual">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="get-code" placeholder="function() {...}"></textarea>
+                  <textarea data-codemirror-mode="javascript" data-simply-field="set-code" placeholder="function() {...}"></textarea>
+                </div>
+              </template>
+              <template data-simply-template="tests">
+                <div class="sb-editor-code">
+                  <div is="simply-component" rel="componentQUnitTests"></div>
+                </div>
+              </template>
+              <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+                <template data-simply-template="code">
+                  <div class="sb-editor-code sb-dual">
+                    <textarea data-codemirror-mode="javascript" data-simply-field="load-code" placeholder="function() {...}"></textarea>
+                    <textarea data-codemirror-mode="javascript" data-simply-field="save-code" placeholder="function() {...}"></textarea>
+                  </div>
+                </template>
+                <template data-simply-template="getset">
+                  <div class="sb-editor-code sb-dual">
+                    <textarea data-codemirror-mode="javascript" data-simply-field="get-code" placeholder="function() {...}"></textarea>
+                    <textarea data-codemirror-mode="javascript" data-simply-field="set-code" placeholder="function() {...}"></textarea>
+                  </div>
+                </template>
+                <template data-simply-template="tests">
+                  <div class="sb-editor-code">
+                    <div is="simply-component" rel="componentQUnitTests"></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentDescription">
+      <details class="sb-component">
+      <summary title="Describe this component for your own use.">
+        Description
+      </summary>
+      <textarea placeholder="Describe this component" data-simply-field="component.description"></textarea>
+    </details>
+    </template>
+    <template id="componentFootHtml">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These templates are added just before the &lt;/body&gt; in the HTML">
+        <span data-simply-field="count.footHtml" data-simply-content="attributes" data-simply-attributes="data-count">
+          Additional foot HTML
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addFootHtml">Add foot HTML</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.footHtml">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+              </div>
+              <div class="sb-options">
+    			<button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
+                <div is="simply-component" rel="componentHtmlValidator"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentHeadHtml">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These are added to the &lt;head&gt; section of the HTML">
+        <span data-simply-field="count.headHtml" data-simply-content="attributes" data-simply-attributes="data-count">
+          Additional head HTML
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addHeadHtml">Add head HTML</button>
+        </span> 
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.headHtml">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete head HTML</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
+                <div is="simply-component" rel="componentHtmlValidator"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentPageCss">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Set page specific CSS - this CSS is only used for this page and is removed when we are on another page.">
+        <span data-simply-field="count.pageCss" data-simply-content="attributes" data-simply-attributes="data-count">
+          Page CSS collections
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addPageCss">Add CSS collection</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.pageCss">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name this CSS collection">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="css" data-simply-field="code" placeholder="div {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentPageFrame">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These make up the page frame together with the Simply App parts.">
+        Page frame
+      </summary>
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <label class="sb-tab">Full app</label>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.fullApp" placeholder="<!DOCTYPE...">
+    &lt;!DOCTYPE HTML>
+    &lt;html lang="en">
+    &lt;/html></textarea>
+          </div>
+        </div>
+      </div>
+    
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <label class="sb-tab">Page preview</label>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.pagePreview" placeholder="<!DOCTYPE...">
+    &lt;!DOCTYPE HTML>
+    &lt;html lang="en">
+    &lt;/html></textarea>
+          </div>
+        </div>
+      </div>
+    
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <label class="sb-tab">Component preview</label>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.componentPreview" placeholder="<!DOCTYPE...">
+    &lt;!DOCTYPE HTML>
+    &lt;html lang="en">
+    &lt;/html></textarea>
+          </div>
+        </div>
+      </div>  
+    </details>
+    </template>
+    <template id="componentPageTemplate">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="These templates are used in routes to set the HTML of the requested page.">
+        <span data-simply-field="count.pageTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
+          Page HTML template
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addPageTemplate">Add page HTML template</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.pageTemplates">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="page" placeholder="Page name">
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="actionEditor" value="sampledata" data-simply-field="editor">
+                  <span>Sample data</span>
+                </label>
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="sb-editors sb-dual">
+              <div class="sb-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+                <template data-simply-template="code">
+                  <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Page contents</div></main>"></textarea>
+                </template>
+                <template data-simply-template="sampledata">
+                  <textarea data-codemirror-mode="json" data-simply-field="sampledata" placeholder="{}"></textarea>
+                </template>
+              </div>
+              <div class="sb-previews">
+                <div is="simply-component" rel="pagePreview"></div>
+              </div>
+            </div>
+            <div is="simply-component" rel="componentHtmlValidator"></div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentQUnitActionRunner">
+      <div class="qunit-runner">
+            <iframe class="qunit"></iframe>
+            <div class="qunit-code">
+    <pre>
+    &lt;!DOCTYPE HTML>
+    &lt;html lang="nl">
+      &lt;head>
+    </pre>
+    <pre class="head">
+      &lt;meta charset="utf-8">
+      &lt;title>QUnit test&lt;/title>
+      &lt;link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.19.0.css">
+      &lt;style>
+        html,body { padding: 0; margin: 0 }
+        #qunit-header { display: none; }
+        #qunit-tests a { display: none; }
+        #qunit-testrunner-toolbar { display: none; }
+        #qunit-userAgent { display: none; }
+      &lt;/style>
+    </pre>
+    <pre>
+      &lt;/head>
+      &lt;body>
+    </pre>
+    <pre class="body">
+      &lt;div id="qunit">&lt;/div>
+      &lt;div id="qunit-fixture">&lt;/div>
+      &lt;script src="//code.jquery.com/qunit/qunit-1.19.0.js">&lt;/script>
+    </pre>
+    <pre class="actions">
+      &lt;script>
+        var actions = {
+    </pre>
+    <pre class="action">
+        "<span data-simply-field="action"></span>" : <span data-simply-field="code" data-simply-transformer="indentCode" data-indent=8></span>
+    </pre>
+    <pre>
+        };
+      &lt;/script>
+    </pre>
+    <pre>
+      &lt;script>
+        QUnit.config.reorder = false;
+        QUnit.done(function() {
+            document.testRunner.style.height = document.body.offsetHeight + "px";
+        });
+        QUnit.module("[Action] <span data-simply-field="action"></span>");
+    </pre>
+                <div data-simply-list="tests">
+                  <template>
+    <pre>
+        QUnit.test(
+        "<span data-simply-field="name"></span>",
+    <span data-simply-field="test-code" data-simply-transformer="htmlEscape" data-indent=8></span>
+        );
+    </pre>
+                  </template>
+                </div>
+    <pre>
+      &lt;/script>
+    </pre>
+    <pre>
+    &lt;/body>
+    &lt;/html>
+    </pre>
+            </div>
+          </div>
+    
+    </template>
+    <template id="componentQUnitCommandRunner">
+            <div class="qunit-runner">
+            <iframe class="qunit"></iframe>
+            <div class="qunit-code">
+    <pre>
+    &lt;!DOCTYPE HTML>
+    &lt;html lang="nl">
+      &lt;head>
+    </pre>
+    <pre class="head">
+      &lt;meta charset="utf-8">
+      &lt;title>QUnit test&lt;/title>
+      &lt;link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.19.0.css">
+      &lt;style>
+        html,body { padding: 0; margin: 0 }
+        #qunit-header { display: none; }
+        #qunit-tests a { display: none; }
+        #qunit-testrunner-toolbar { display: none; }
+        #qunit-userAgent { display: none; }
+      &lt;/style>
+    </pre>
+    <pre>
+      &lt;/head>
+      &lt;body>
+    </pre>
+    <pre class="body">
+      &lt;div id="qunit">&lt;/div>
+      &lt;div id="qunit-fixture">&lt;/div>
+      &lt;script src="//code.jquery.com/qunit/qunit-1.19.0.js">&lt;/script>
+    </pre>
+    <pre class="commands">
+      &lt;script>
+        var commands = {
+    </pre>
+    <pre class="command">
+        "<span data-simply-field="command"></span>" : <span data-simply-field="code" data-simply-transformer="indentCode" data-indent=8></span>
+    </pre>
+    <pre>
+        };
+      &lt;/script>
+    </pre>
+    <pre>
+      &lt;script>
+        QUnit.config.reorder = false;
+        QUnit.done(function() {
+            document.testRunner.style.height = document.body.offsetHeight + "px";
+        });
+        QUnit.module("[Command] <span data-simply-field="command"></span>");
+    </pre>
+                <div data-simply-list="tests">
+                  <template>
+    <pre>
+        QUnit.test(
+        "<span data-simply-field="name"></span>",
+    <span data-simply-field="test-code" data-simply-transformer="htmlEscape" data-indent=8></span>
+        );
+    </pre>
+                  </template>
+                </div>
+    <pre>
+      &lt;/script>
+    </pre>
+    <pre>
+    &lt;/body>
+    &lt;/html>
+    </pre>
+            </div>
+          </div>
+    </template>
+    <template id="componentQUnitTests">
+      <div class="sb-editor-qunit-tests">
+      <div class="sb-tests" data-simply-list="tests">
+        <template>
+          <div class="sb-test" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-test-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Test name">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete test</button>
+              </div>
+            </div>
+            <div class="sb-test-editor">
+              <textarea data-codemirror-mode="javascript" data-simply-field="test-code" placeholder="function() {...}"></textarea>
+            </div>
+          </div>
+        </template>
+      </div>
+      <button class="sb-button" data-simply-command="addTest">Add test</button>
+    </div>
+    </template>
+    <template id="componentRawApi">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="The Raw API layer provides lower level functions to access an API. It handles things like authentication, connection, encoding and the likes. It exposes 'get', 'post' methods.">
+        <span data-simply-field="count.rawApi" data-simply-content="attributes" data-simply-attributes="data-count">
+          Raw API
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addRawApiMethod">Add method</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.rawApi">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentRoutes">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Routes provide a translation from a URL to something the app should do. Routes make use of actions to fetch or store data">
+        <span data-simply-field="count.routes" data-simply-content="attributes" data-simply-attributes="data-count">
+          Routes
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addRoute">Add route</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.routes">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="name" placeholder="Name of the route">
+                <input class="sb-tab" data-simply-field="route" placeholder="#route/:variable">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete route</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentSorters">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Sorters are utility function that are used to sort arrays, used in datasources, actions.">
+        <span data-simply-field="count.sorters" data-simply-content="attributes" data-simply-attributes="data-count">
+          Sorters
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addSorter">Add sorter</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.sorters">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="sorter" placeholder="Sorter name, eg sortByDescription">
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete sorter</button>
+              </div>
+            </div>
+            <div class="sb-editors">
+              <div class="sb-editor-code">
+                <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentTransformers">
+      <details class="sb-component">
+      <summary data-simply-command="initEditors" title="Transformers provide a last moment change to data, just before it is rendered. Use as a value of data-simply-transform on a data-simply-field">
+        <span data-simply-field="count.transformers" data-simply-content="attributes" data-simply-attributes="data-count">
+          Transformers
+        </span>
+        <span class="sb-controls">
+          <button class="sb-button" data-simply-command="addTransformer">Add transformer</button>
+        </span>
+      </summary>
+      <div class="sb-code-method" data-simply-list="component.parts.transformers">
+        <template>
+          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="sb-part-header">
+              <div class="sb-tabs">
+                <input class="sb-tab" data-simply-field="transformer" placeholder="Transformer name, eg itemNameFromId">
+                <label class="sb-tab" title="Render code transforms the data from what is stored into what the user sees. Extract takes the data as provided from the DOM and transforms it for storage">
+                  <input type="radio" checked name="transformerEditor" value="code" data-simply-field="editor">
+                  <span>Render/Extract</span>
+                </label>
+                <label class="sb-tab">
+                  <input type="radio" name="transformerEditor" value="tests" data-simply-field="editor">
+                  <span>Tests</span>
+                </label>
+              </div>
+              <div class="sb-options">
+                <button class="sb-button" draggable="true">Drag to move</button>
+                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete transformer</button>
+              </div>
+            </div>
+            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <template data-simply-template="code">
+                <div class="sb-editor-code sb-dual">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="render-code" placeholder="function() {...}"></textarea>
+                  <textarea data-codemirror-mode="javascript" data-simply-field="extract-code" placeholder="function() {...}"></textarea>
+                </div>
+              </template>
+              <template data-simply-template="tests">
+                <div class="sb-editor-code">
+                  <div is="simply-component" rel="componentQUnitTests"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="header">
+      <h1>Simply Code - Build something awesome!</h1>
+    <div class="sb-controls">
+      <a href="#publish" class="sb-button">Preview and publish!</a>
+    </div>
+    </template>
+    <template id="componentHtmlValidator">
+      <div data-simply-field="code" data-simply-transformer="validateHtml"></div>
+    <div class="sb-html-messages" data-simply-list="validateResult.messages">
+      <template>
+        <div class="sb-html-message">
+          <span data-simply-field="message"></span><br>
+          <span data-simply-field="extract" data-simply-transformer="escapeHtml"></span> on line <span data-simply-field="firstLine"></span> <span data-simply-field="lastLine"></span>
+        </div>
+      </template>
+    </div>
+    </template>
+    <template id="menu">
+      <ul data-simply-list="menu">
+      <template>
+        <li data-simply-command="expandMenu">
+          <a data-simply-command="navigate" href="#" data-simply-field="item"></a>
+          <div is="simply-component" rel="menu"></div>
+        </li>
+      </template>
+    </ul>
+    </template>
+    <template id="componentPreview">
+      <div class="sb-component-preview-container">
+      <iframe class="sb-component-preview"></iframe>
+      <div class="sb-preview-code">
+        <pre>
+          <span data-simply-field="code" data-simply-transformer="simplyPreviewComponent"></span>
+    </pre>
+      </div>
+      <div class="sb-preview-data">
+        <pre>
+          <span data-simply-field="sampledata" data-simply-transformer="htmlEscape" data-indent=4></span>
+    </pre>
+      </div>
+    </div>
+    </template>
+    <template id="fullAppPreview">
+      <div class="sb-full-preview-container">
+      <iframe class="sb-full-preview"></iframe>
+      <div class="sb-preview-code" data-simply-field="app" data-simply-transformer="simplyPreviewFullApp"></div>
+    </div>
+    </template>
+    <template id="pagePreview">
+      <div class="sb-component-preview-container">
+      <iframe class="sb-component-preview"></iframe>
+      <div class="sb-preview-code">
+        <pre>
+          <span data-simply-field="code" data-simply-transformer="simplyPreviewPage"></span>
+    </pre>
+      </div>
+      <div class="sb-preview-data">
+        <pre>
+          <span data-simply-field="sampledata" data-simply-transformer="htmlEscape" data-indent=4></span>
+    </pre>
+      </div>
+    </div>
+    </template>
+    <!-- /Component HTML templates -->
+    <header data-simply-path="/" data-simply-field="header" data-simply-content="template" data-simply-default-value="Header">
+      <template data-simply-template='Header' rel="header"></template>
+    </header>
+    <nav>
+      <div is="simply-component" rel="menu"></div>
+    </nav>
+    <div class="main" data-simply-field="page" data-simply-content="template">
+    <!-- Page HTML templates -->
+    <template data-simply-template="Edit base component">
+      <main>
+      <div class="sb-header">
+        <h1>Edit base component: <span data-simply-field="component.id"></span></h1>
+        <div class="sb-controls">
+          <button class="sb-button" data-simply-command="saveBaseComponent">Save</button>
+          <button class="sb-button" data-simply-command="deleteBaseComponent">Delete</button>
+        </div>
+      </div>
+      <div is="simply-component" rel="componentDescription"></div>
+      <div is="simply-component" rel="componentHeadHtml"></div>
+      <div is="simply-component" rel="componentBodyHtml"></div>
+      <div is="simply-component" rel="componentFootHtml"></div>
+      <div is="simply-component" rel="componentCommands"></div>
+      <div is="simply-component" rel="componentActions"></div>
+      <div is="simply-component" rel="componentRoutes"></div>
+      <div is="simply-component" rel="componentRawApi"></div>
+    </main>
+    </template>
+    <template data-simply-template="Base components">
+      <main>
+      <h1>Base components</h1>
+      <ul class="sb-components-list" data-simply-list="components">
+        <template>
+          <li data-simply-command="navigate">
+            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="baseComponentLink"><span data-simply-field="id"></span></a>
+            <p data-simply-field="description"></p>
+          </li>
+        </template>
+      </ul>
+      <h1>Add base component</h1>
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+          </div>
+          <div class="sb-options">
+            <button class="sb-button" data-simply-command="createBaseComponent">Create</button>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+    </template>
+    <template data-simply-template="Edit component">
+      <main>
+      <div class="sb-header">
+        <h1>Edit component: <span data-simply-field="component.id"></span></h1>
+        <div class="sb-controls">
+          <button class="sb-button" data-simply-command="saveComponent">Save</button>
+          <button class="sb-button" data-simply-command="deleteComponent">Delete</button>
+        </div>
+      </div>
+      <div is="simply-component" rel="componentDescription"></div>
+      <div is="simply-component" rel="componentComponentTemplate"></div>
+      <div is="simply-component" rel="componentComponentCss"></div>
+      <div is="simply-component" rel="componentCommands"></div>
+      <div is="simply-component" rel="componentActions"></div>
+      <div is="simply-component" rel="componentDataApi"></div>
+      <div is="simply-component" rel="componentRoutes"></div>
+      <div is="simply-component" rel="componentTransformers"></div>
+      <div is="simply-component" rel="componentDataSources"></div>
+      <div is="simply-component" rel="componentSorters"></div>
+    </main>
+    </template>
+    <template data-simply-template="List components">
+      <main>
+      <h1>Components</h1>
+      <ul class="sb-components-list" data-simply-list="components">
+        <template>
+          <li data-simply-command="navigate">
+            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink"><span data-simply-field="id"></span></a>
+            <p data-simply-field="description"></p>
+          </li>
+        </template>
+      </ul>
+      <h1>Add component</h1>
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+          </div>
+          <div class="sb-options">
+            <button class="sb-button" data-simply-command="createComponent">Create</button>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    </template>
+    <template data-simply-template="Edit page">
+      <main>
+      <div class="sb-header">
+        <h1>Edit page: <span data-simply-field="component.id"></span></h1>
+        <div class="sb-controls">
+          <button class="sb-button" data-simply-command="savePage">Save</button>
+          <button class="sb-button" data-simply-command="deletePage">Delete</button>
+        </div>
+      </div>
+      <div is="simply-component" rel="componentDescription"></div>
+      <div is="simply-component" rel="componentPageTemplate"></div>
+      <div is="simply-component" rel="componentPageCss"></div>
+      <div is="simply-component" rel="componentCommands"></div>
+      <div is="simply-component" rel="componentActions"></div>
+      <div is="simply-component" rel="componentDataApi"></div>
+      <div is="simply-component" rel="componentRoutes"></div>
+      <div is="simply-component" rel="componentTransformers"></div>
+      <div is="simply-component" rel="componentDataSources"></div>
+      <div is="simply-component" rel="componentSorters"></div>
+    </main>
+    </template>
+    <template data-simply-template="Edit page frame">
+      <main>
+      <div class="sb-header">
+        <h1>Edit page frame</h1>
+        <div class="sb-controls">
+          <button class="sb-button" data-simply-command="savePageFrame">Save</button>
+        </div>
+      </div>
+      <div is="simply-component" rel="componentDescription"></div>
+      <div is="simply-component" rel="componentPageFrame"></div>
+    </main>
+    </template>
+    <template data-simply-template="Pages">
+      <main>
+      <h1>Pages</h1>
+      <ul class="sb-components-list" data-simply-list="components">
+        <template>
+          <li data-simply-command="navigate">
+            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="pageLink"><span data-simply-field="id"></span></a>
+            <p data-simply-field="description"></p>
+          </li>
+        </template>
+      </ul>
+      <h1>Add page</h1>
+      <div class="sb-part">
+        <div class="sb-part-header">
+          <div class="sb-tabs">
+            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+          </div>
+          <div class="sb-options">
+            <button class="sb-button" data-simply-command="createPage">Create</button>
+          </div>
+        </div>
+        <div class="sb-editors">
+          <div class="sb-editor-code">
+            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    </template>
+    <template data-simply-template="preview-app">
+      <main class="sb-fullscreen-preview">
+      <div is="simply-component" rel="componentAppFullPreview"></div>
+    </main>
+    </template>
+    <template data-simply-template="preview-component">
+      <main class="sb-fullscreen-preview">
+      <div is="simply-component" rel="componentPreview"></div>
+      <div is="simply-component" rel="componentPreviewAppHead"></div>
+      <div is="simply-component" rel="componentPreviewAppFoot"></div>
+    </main>
+    </template>
+    <template data-simply-template="Publish App">
+      <main>
+      <h1>App preview</h1>
+      <div class="field">
+        <button class="sb-button" data-simply-command="saveAppHtml">Publish App</button>
+      </div>
+      <div is="simply-component" rel="fullAppPreview"></div>
+    </main>
+    </template>
+    <!-- /Page HTML templates -->
+    </div>
+    <script src="js/simply.everything.js"></script>
+    <script src="js/simply-edit.js" data-api-key="muze"></script>
+    <script>
+      /* Transformers */
+      editor.transformers = {
+        "validateHtml" : {
+          render : function(data) {
+            this.simplyData = data;
+            var element = this;
+            let htmlData = "<!doctype html><html lang='en'><head><title>Test</title></head><body>" + data + "</body></html>";
+            if (typeof element.validateTimeout !== "undefined") {
+              window.clearTimeout(element.validateTimeout);
+            }
+            element.validateTimeout = window.setTimeout(function() {
+              fetch("https://validator.w3.org/nu/?out=json", {
+                mode : 'cors',
+                headers: {
+                  "Content-type" : "text/html; charset=utf-8"
+                },
+                method: "POST",
+                body: htmlData
+              })
+                .then(function(result) {
+                return result.json();
+              })
+                .then(function(validateResult) {
+                element.dataBinding.config.data.validateResult = validateResult;
+                if(validateResult.messages.length) {
+                  element.className = "sb-html-invalid";
+                  element.innerHTML = "HTML validation failed:";
+                } else {
+                  element.innerHTML = "HTML validated!";
+                  element.className = "sb-html-valid";
+                }
+              });
+            }, 1000);
+            element.dataBinding.config.data.validateResult = {};
+            return "Validating...";
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
+        "simplyPreviewActions" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.action + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewBodyHtml" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('<!-- ' + method.name + ' -->');
+              methods.push(method.code);
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewCommands" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.command + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewComponent" : {
+          render : function(data) {
+            this.originalData = data;
+            
+            var componentPreview = editor.pageData.app.pageFrame.componentPreview;
+            let replacements = {
+              "componentPreview" : data,
+              "actions" : editor.transformers.simplyPreviewActions.render(editor.pageData.app.actions ?? []),
+              "commands" : editor.transformers.simplyPreviewCommands.render(editor.pageData.app.commands ?? []),
+              "dataApi" : editor.transformers.simplyPreviewDataApi.render(editor.pageData.app.dataApi ?? []),
+              "rawApi" : editor.transformers.simplyPreviewRawApi.render(editor.pageData.app.rawApi ?? []),
+              "routes" : editor.transformers.simplyPreviewRoutes.render(editor.pageData.app.routes ?? []),
+              "dataSources" : editor.transformers.simplyPreviewDataSources.render(editor.pageData.app.dataSources ?? []),
+              "transformers" : editor.transformers.simplyPreviewTransformers.render(editor.pageData.app.transformers ?? []),
+              "sorters" : editor.transformers.simplyPreviewSorters.render(editor.pageData.app.sorters ?? []),
+              "pageTemplates" :editor.transformers.simplyPreviewPageTemplates.render(editor.pageData.app.pageTemplates ?? []),
+              "pageCss" : editor.transformers.simplyPreviewPageCss.render(editor.pageData.app.pageCss ?? []),
+              "componentCss" : editor.transformers.simplyPreviewComponentCss.render(editor.pageData.app.componentCss ?? []),
+              "componentTemplates" : editor.transformers.simplyPreviewComponentTemplates.render(editor.pageData.app.componentTemplates ?? []),
+              "headHtml": editor.transformers.simplyPreviewHeadHtml.render(editor.pageData.app.headHtml ?? []),
+              "footHtml": editor.transformers.simplyPreviewFootHtml.render(editor.pageData.app.footHtml ?? []),
+              "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(editor.pageData.app.bodyHtml ?? [])
+            };
+          
+            // replace keys with the indentation as given
+            Object.keys(replacements).forEach(function(replacement) {
+              matches = componentPreview.match("(\\s+){{" + replacement + "}}");
+              if (matches) {
+                componentPreview = componentPreview.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
+              }
+            });
+          
+            // escape html
+            var dataDiv = document.createElement("div");
+            dataDiv.appendChild(document.createTextNode(componentPreview));
+            return dataDiv.innerHTML;
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewComponentCss" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('/* ' + method.name + ' */');
+              methods.push(method.code);
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewComponentTemplates" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('<template id="' + method.component + '">');
+              methods.push('  ' + method.code);
+              methods.push('</template>');
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewDataApi" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.method + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewDataSources" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+          	methods.push('editor.addDataSource("' + method.dataSource + '", {');
+              methods.push('  load : function(el, callback) {');
+              methods.push('    ' + method['load-code']);
+              methods.push('  },');
+              methods.push('  save : function(data) {');
+              methods.push('    ' + method['save-code']);
+              methods.push('  },');
+              methods.push('  get : function(el) {');
+              methods.push('    ' + method['get-code']);
+              methods.push('  },');
+              methods.push('  set : function(el, data) {');
+              methods.push('    ' + method['set-code']);
+              methods.push('  },');
+              methods.push('});');
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewFootHtml" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('<!-- ' + method.name + ' -->');
+              methods.push(method.code);
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewFullApp" : {
+          render : function(data) {
+            this.originalData = data;
+            if (!data.pageFrame) {
+              return;
+            }
+            if (!data.pageFrame.fullApp) {
+              return;
+            }
+            var fullApp = data.pageFrame.fullApp;
+            let replacements = {
+              "actions" : editor.transformers.simplyPreviewActions.render(data.actions ?? []),
+              "commands" : editor.transformers.simplyPreviewCommands.render(data.commands ?? []),
+              "dataApi" : editor.transformers.simplyPreviewDataApi.render(data.dataApi ?? []),
+              "rawApi" : editor.transformers.simplyPreviewRawApi.render(data.rawApi ?? []),
+              "routes" : editor.transformers.simplyPreviewRoutes.render(data.routes ?? []),
+              "dataSources" : editor.transformers.simplyPreviewDataSources.render(data.dataSources ?? []),
+              "transformers" : editor.transformers.simplyPreviewTransformers.render(data.transformers ?? []),
+              "sorters" : editor.transformers.simplyPreviewSorters.render(data.sorters ?? []),
+              "pageTemplates" :editor.transformers.simplyPreviewPageTemplates.render(data.pageTemplates ?? []),
+              "pageCss" : editor.transformers.simplyPreviewPageCss.render(data.pageCss ?? []),
+              "componentCss" : editor.transformers.simplyPreviewComponentCss.render(data.componentCss ?? []),
+              "componentTemplates" : editor.transformers.simplyPreviewComponentTemplates.render(data.componentTemplates ?? []),
+              "headHtml": editor.transformers.simplyPreviewHeadHtml.render(data.headHtml ?? []),
+              "footHtml": editor.transformers.simplyPreviewFootHtml.render(data.footHtml ?? []),
+              "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(data.bodyHtml ?? [])
+            };
+          
+            Object.keys(replacements).forEach(function(replacement) {
+              matches = fullApp.match("(\\s+){{" + replacement + "}}");
+              fullApp = fullApp.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
+            });
+          
+            // escape html
+            var dataDiv = document.createElement("div");
+            dataDiv.appendChild(document.createTextNode(fullApp));
+            return dataDiv.innerHTML;
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewHeadHtml" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('<!-- ' + method.name + ' -->');
+              methods.push(method.code);
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewPage" : {
+          render : function(data) {
+            this.originalData = data;
+            
+            var pagePreview = editor.pageData.app.pageFrame.pagePreview;
+            let replacements = {
+              "pagePreview" : data,
+              "actions" : editor.transformers.simplyPreviewActions.render(editor.pageData.app.actions ?? []),
+              "commands" : editor.transformers.simplyPreviewCommands.render(editor.pageData.app.commands ?? []),
+              "dataApi" : editor.transformers.simplyPreviewDataApi.render(editor.pageData.app.dataApi ?? []),
+              "rawApi" : editor.transformers.simplyPreviewRawApi.render(editor.pageData.app.rawApi ?? []),
+              "routes" : editor.transformers.simplyPreviewRoutes.render(editor.pageData.app.routes ?? []),
+              "dataSources" : editor.transformers.simplyPreviewDataSources.render(editor.pageData.app.dataSources ?? []),
+              "transformers" : editor.transformers.simplyPreviewTransformers.render(editor.pageData.app.transformers ?? []),
+              "sorters" : editor.transformers.simplyPreviewSorters.render(editor.pageData.app.sorters ?? []),
+              "pageTemplates" :editor.transformers.simplyPreviewPageTemplates.render(editor.pageData.app.pageTemplates ?? []),
+              "pageCss" : editor.transformers.simplyPreviewPageCss.render(editor.pageData.app.pageCss ?? []),
+              "componentCss" : editor.transformers.simplyPreviewComponentCss.render(editor.pageData.app.componentCss ?? []),
+              "componentTemplates" : editor.transformers.simplyPreviewComponentTemplates.render(editor.pageData.app.componentTemplates ?? []),
+              "headHtml": editor.transformers.simplyPreviewHeadHtml.render(editor.pageData.app.headHtml ?? []),
+              "footHtml": editor.transformers.simplyPreviewFootHtml.render(editor.pageData.app.footHtml ?? []),
+              "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(editor.pageData.app.bodyHtml ?? [])
+            };
+          
+            // replace keys with the indentation as given
+            Object.keys(replacements).forEach(function(replacement) {
+              matches = pagePreview.match("(\\s+){{" + replacement + "}}");
+              if (matches) {
+                pagePreview = pagePreview.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
+              }
+            });
+          
+            // escape html
+            var dataDiv = document.createElement("div");
+            dataDiv.appendChild(document.createTextNode(pagePreview));
+            return dataDiv.innerHTML;
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewPageCss" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('/* ' + method.name + ' */');
+              methods.push(method.code);
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewPageTemplates" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('<template data-simply-template="' + method.page + '">');
+              methods.push('  ' + method.code);
+              methods.push('</template>');
+            });
+            return methods.join("\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewRawApi" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.method + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewRoutes" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.route + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewSorters" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.sorter + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "simplyPreviewTransformers" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              lines = [];
+              lines.push('"' + method.transformer + '" : {');
+              lines.push('  render : ' + method['render-code'].replace(/\n/g, "\n  ") + ',');
+              lines.push('  extract : ' + method['extract-code'].replace(/\n/g, "\n  "));
+              lines.push('}');
+              methods.push(lines.join("\n"));
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
+        "baseComponentLink" : {
+          render : function(data) {
+            this.simplyData = data;
+            return {
+              href : "#base/" + data,
+              innerHTML: data
+            };
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
+        "componentLink" : {
+          render : function(data) {
+              this.simplyData = data;
+              return {
+                href : "#components/" + data,
+                innerHTML: data
+              };
+          },
+          extract : function(data) {
+              return this.simplyData;
+          }
+        },
+        "pageLink" : {
+          render : function(data) {
+            this.simplyData = data;
+            return {
+              href : "#pages/" + data,
+              innerHTML: data
+            };
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
+        "htmlEscape" : {
+          render : function(data) {
+            this.simplyData = data;
+            if (this.hasAttribute("data-indent")) {
+              var indent = " ".repeat(this.getAttribute("data-indent"));
+              data = indent + data.replace(/\n/g, "\n" + indent);
+            }
+            var dataDiv = document.createElement("div");
+            dataDiv.appendChild(document.createTextNode(data));
+            return dataDiv.innerHTML;
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
+        "indentCode" : {
+          render : function(data) {
+            this.simplyData = data;
+            if (this.hasAttribute("data-indent")) {
+              var indent = " ".repeat(this.getAttribute("data-indent"));
+              data = data.replace(/\n/g, "\n" + indent);
+            }
+            data = data.replace(/\t/g, "  ");
+            var dataDiv = document.createElement("div");
+            dataDiv.appendChild(document.createTextNode(data));
+            return dataDiv.innerHTML;
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        }
+      };
+      /* /Transformers */
+    </script>
+    <script>
+      /* Sorters */
+      editor.sorters = {
+        
+      };
+      /* /Sorters */
+    </script>
+    <script>
+      window.addEventListener("simply-content-loaded", function() {
+        /* Data sources */
+        
+        /* /Data sources */
+      });
+    </script>
+    <!-- Foot HTML -->
+    <!-- Auto run preview -->
+    <script>
+      document.addEventListener("simply-data-changed", function(event) {
+        if (
+          (event.data.dataBinding.parentKey == "/component/parts/") ||
+          (event.data.dataBinding.parentKey.indexOf("/component/parts/") == 0)
+        ) {
+          // Handle changes of the part name
+          var component = event.data.dataBinding.parentKey.split("/")[3];
+          var componentNameField = simplyApp.actions.getComponentNameField(component);
+          
+          if (event.data.arguments[0] == componentNameField) {
+            var newname = event.data.arguments[1];
+            var oldname = event.data.arguments[2];
+    
+            editor.pageData.app[component].forEach(function(appPart) {
+              if (appPart[componentNameField] == oldname) {
+                appPart[componentNameField] = newname;
+              }
+            });
+          }
+    
+          if (typeof autoRunPreviewTimeout !== "undefined") {
+            window.clearTimeout(autoRunPreviewTimeout);
+          }
+          autoRunPreviewTimeout = window.setTimeout(function() {
+            // Update the app data for the preview
+            for (component in editor.pageData.component.parts) {
+              if (!editor.pageData.app[component]) {
+                editor.pageData.app[component] = [];
+              }
+              var componentNameField = simplyApp.actions.getComponentNameField(component);
+              editor.pageData.component.parts[component].forEach(function(part) {
+                var found = false;
+                editor.pageData.app[component].forEach(function(appPart, appIndex) {
+                  if (part[componentNameField] && (appPart[componentNameField] == part[componentNameField])) {
+                    for (i in part) {
+                      editor.pageData.app[component][appIndex][i] = part[i];
+                    }
+                    found = true;
+                  }
+                });
+                if (!found) {
+                  editor.pageData.app[component].push(JSON.parse(JSON.stringify(part)));
+                }
+              });
+            }
+    
+            document.querySelectorAll("[data-simply-transformer=simplyPreviewComponent]").forEach(function(element) {
+              element.innerHTML = editor.transformers.simplyPreviewComponent.render.call(element, element.dataBinding.get());
+            });
+    
+            simplyApp.commands.autoRunPreviews()
+          }, 500);
+        }
+      });
+    </script>
+    <!-- Auto run tests -->
+    <script>
+      document.addEventListener("simply-data-changed", function(event) {
+        if (
+          (event.data.dataBinding.parentKey == "/component/parts/") ||
+          (event.data.dataBinding.parentKey.indexOf("/component/parts/") == 0)
+        ) {
+          if (typeof autoRunTestsTimeout !== "undefined") {
+            window.clearTimeout(autoRunTestsTimeout);
+          }
+          autoRunTestsTimeout = window.setTimeout(
+            simplyApp.commands.autoRunTests,
+            500
+          );
+        }
+      });
+    </script>
+    <!-- Codemirror base -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js" integrity="sha512-xwrAU5yhWwdTvvmMNheFn9IyuDbl/Kyghz2J3wQRDR8tyNmT8ZIYOd0V3iPYY/g4XdNPy0n/g0NvqGu9f0fPJQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Codemirror modes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js" integrity="sha512-2gAMyrBfWPuTJDA2ZNIWVrBBe9eN6/hOjyvewDd0bsk2Zg06sUla/nPPlqQs75MQMvJ+S5AmfKmq9q3+W2qeKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js" integrity="sha512-0IM15+FEzmvrcePHk/gDCLbZnmja9DhCDUrESXPYLM4r+eDtNadxDUa5Fd/tNQGCbCoxu75TaVuvJkdmq0uh/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js" integrity="sha512-IS1FyxQkiJHT1SAvLXBaJu1UTFSIw0GT/DuzxHl69djqyLoEwGmR2davcZUnB8M7ppi9nfTGZR/vdfqmWt+i6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js" integrity="sha512-UWfBe6aiZInvbBlm91IURVHHTwigTPtM3M4B73a8AykmxhDWq4EC/V2rgUNiLgmd/i0y0KWHolqmVQyJ35JsNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Codemirror styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/base16-dark.min.css" integrity="sha512-CNZkbIVu/G4dB3YpFIZgMtE45vHp/QocgMbf6jg+DFFPLN3emncIob8ubKANmsGQ8JsnzzSVTj7WrFrnx6EgXQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Data change codeMirror -->
+    <script>
+      document.addEventListener("simply-data-changed", function(event) {
+        if (
+          (event.data.dataBinding.parentKey == "/component/parts/") ||
+          (event.data.dataBinding.parentKey.indexOf("/component/parts/") == 0)
+        ) {
+          simplyApp.commands.codeMirrorInit();
+          if (typeof codeMirrorInitTimeout !== "undefined") {
+            window.clearTimeout(codeMirrorInitTimeout);
+          }
+          codeMirrorInitTimeout = window.setTimeout(
+            simplyApp.commands.codeMirrorInit,
+            250
+          );
+        }
+      });
+    </script>
+    <!-- HTML5 drag drop for lists -->
+    <script>
+      simply.dragdrop = {
+        getDataBinding : function(el) {
+          if (el.dataBinding) {
+            return el.dataBinding;
+          } else {
+            return el.querySelector("[data-simply-field]").dataBinding; // FIXME: nested fields will go wrong this way;
+          }
+        },
+        getData : function(el) {
+          var dataBinding = simply.dragdrop.getDataBinding(el);
+          return dataBinding.config.data;
+        },
+        getListParent : function(el) {
+          while (el && !el.hasAttribute("data-simply-list")) {
+            if (el.parentNode && (el.parentNode.nodeType == document.ELEMENT_NODE)) {
+              el = el.parentNode;
+            } else {
+              el = false;
+            }
+          }
+          return el;
+        },
+        getListItemParent : function(el) {
+          while (el && !el.hasAttribute("data-simply-list-item")) {
+            if (el.parentNode && (el.parentNode.nodeType == document.ELEMENT_NODE)) {
+              el = el.parentNode;
+            } else {
+              el = false;
+            }
+          }
+          return el;
+        },
+        dragStart : function(event) {
+          var target = simply.dragdrop.getListItemParent(event.target);
+          var dataBinding = simply.dragdrop.getDataBinding(target);
+          localStorage.currentDragItem = dataBinding.config.parentKey;
+          localStorage.dragdrop = "dragStart";
+          document.currentDragItem = target;
+          // event.dataTransfer.effectAllowed = 'move';
+    
+          event.dataTransfer.setData("application/json", JSON.stringify(simply.dragdrop.getData(target), true));
+          var simplyType = "simply/" + target.parentNode.dataBinding.config.key.toLowerCase();
+          event.dataTransfer.setData(simplyType, "1");
+          event.dataTransfer.setDragImage(event.target, 0, 0);
+    
+          return true;
+        },
+        dragEnter : function(event) {
+          var listParent = simply.dragdrop.getListParent(event.target);
+          if (listParent) {
+            listParent.classList.add("simply-dragdrop-receiving");
+            event.preventDefault();
+            return true;
+          }
+        },
+        dragLeave : function(event) {
+          var listParent = simply.dragdrop.getListParent(event.target);
+          if (listParent) {
+            listParent.classList.remove("simply-dragdrop-receiving");
+          }
+          event.preventDefault();
+          return true;
+        },
+        dragOver : function(event) {
+          var listParent = simply.dragdrop.getListParent(event.target);
+          if (listParent) {
+            const isJson = event.dataTransfer.types.includes("application/json");
+            const expectedType = "simply/" + listParent.dataBinding.config.key.toLowerCase();
+            const isTypeAccepted = event.dataTransfer.types.includes(expectedType);
+            if (isJson && isTypeAccepted) {
+              event.preventDefault();
+            }
+          }
+        },
+        drop : function(event) {
+          var listParent = simply.dragdrop.getListParent(event.target);
+          var data = JSON.parse(event.dataTransfer.getData("application/json"));
+    
+          listParent.classList.remove("simply-dragdrop-receiving");
+    
+          const expectedType = "simply/" + listParent.dataBinding.config.key.toLowerCase();
+          const isTypeAccepted = event.dataTransfer.types.includes(expectedType);
+    
+          if (listParent && isTypeAccepted) {
+            var data = JSON.parse(event.dataTransfer.getData("application/json"));
+            event.preventDefault();
+            let dropEffect = event.dataTransfer.dropEffect;
+    
+            switch (dropEffect) {
+              case "move":
+                localStorage.dragdrop = "move";
+                let sourceElement = document.currentDragItem;
+                if (sourceElement) {
+                  sourceElement.remove();
+                }
+                break;
+              case "copy":
+              default:
+                // do nothing, leave the original item;
+                break;
+            }
+            listParent.dataBinding.get().push(data);
+            window.setTimeout(function() {
+              localStorage.currentDragItem = '';
+            }, 250);
+          }
+        }
+      };
+      window.addEventListener("storage", function(event) {
+        if((event.key == "dragdrop") && (event.newValue == "move")) {
+          var currentDragItem = localStorage.currentDragItem;
+          var dataBinding = simply.dragdrop.getDataBinding(document.currentDragItem);
+          if (dataBinding && dataBinding.config.parentKey == localStorage.currentDragItem) {
+            document.currentDragItem.remove();
+          }
+          document.currentDragItem = false;
+        }
+      });
+      document.addEventListener("dragstart", simply.dragdrop.dragStart);
+      document.addEventListener("dragenter", simply.dragdrop.dragEnter);
+      document.addEventListener("dragleave", simply.dragdrop.dragLeave);
+      document.addEventListener("dragover", simply.dragdrop.dragOver);
+      document.addEventListener("drop", simply.dragdrop.drop);
+    </script>
+    <!-- component-parts-count -->
+    <script>
+      document.addEventListener("simply-data-changed", function(event) {
+        if (event.data.dataBinding.parentKey == "/component/parts/") {
+          var list = event.data.arguments[0];
+          var length;
+          if (typeof(event.data.arguments[1]) === "undefined") {
+            length = 0;
+          } else {
+            length = event.data.arguments[1].length;
+          }
+          editor.pageData.count[list] = length;
+        }
+      });
+    </script>
+    <!-- toastAnimation -->
+    <script>
+      var purgeTimer;
+      function purgeToasts() {
+        editor.pageData.alerts = [];
+      }
+      document.addEventListener("animationend", function(evt) {
+        if (evt.animationName == "simply-toast-show") {
+          evt.target.setAttribute("data-state", "shown");
+          evt.target.classList.add("simply-toast-animated");
+        }
+        if (evt.animationName == "simply-toast-hide") {
+          if (purgeTimer) {
+            window.clearTimeout(purgeTimer);
+          }
+          purgeTimer = window.setTimeout(purgeToasts, 200);
+        }
+      });
+    </script>
+    <!-- /Foot HTML -->
+  </body>
+</html>

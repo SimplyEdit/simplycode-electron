@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
+
+:root {
+    --highlight-dark: #f16623;
+    --highlight-light: #ff8003;
+    --highlight-color: #fff;
+    --highlight-background: linear-gradient( to left, var(--highlight-light), var(--highlight-dark) );
+
+    --support-dark: #444;
+    --support-light: #484848;
+    --support-color: #eee;
+    --support-background: linear-gradient( to left, var(--support-light), var(--support-dark) );
+
+    --grey-dark: #38393c;
+    --grey-medium: #7f8185;
+    --grey-light: #e9ebec;
+    --grey-dark: #38393c;
+    --black: #000;
+    --white: #fff;
+    --grey-background: var(--grey-dark);
+
+    --font-family: 'Alegreya Sans', sans-serif;
+    --font-size: 14px;
+    --line-height: 1.5em;
+    --color: #7f8185;
+    --background: #333;
+}
+
+/* general styling on default elements */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    color: var(--color); 
+    background-color: var(--background);
+}
+body {
+    overflow-y: scroll;
+}
+body:last-child {
+    margin-bottom: 1.5em;
+}
+h1 {
+    font-size: 2em;
+    font-weight: 300;
+    line-height: 1.1em;
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.6em;
+    font-weight: 400;
+    line-height: 1.1em;
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: var(--highlight-dark);
+}
+a:visited {
+    color: var(--highlight-dark);
+}
+
+/* custom styling for custom elements */
+
+.sb-button,
+a.sb-button {
+    background: var(--support-background);
+    color: var(--support-color);
+    padding: 0.3em 0.5em;
+    margin: 0 0.3em;
+    border: 1px solid #ccc;
+    text-decoration: none;
+}
+
+.sb-button:first-child {
+    margin-left: 0;
+}
+.sb-button:last-child {
+    margin-right: 0;
+}
+.sb-button.highlight {
+    background: var(--highlight-background);
+    color: var(--highlight-color);
+}
+
+.text-content {
+    padding: 2.2375em;
+    max-width: 50em;
+}
+.text-content *:first-child {
+    margin-top: 0;
+}
+
+body {
+  display: grid; 
+  grid-template-columns: 210px 2fr 2fr; 
+  grid-template-rows: 60px 2fr 2fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "header header header"
+    "nav pane pane"
+    "nav pane pane"
+}
+body > header {
+    grid-area: header;
+}
+body > nav {
+    grid-area: nav;
+}
+body > div.main {
+    grid-area: pane;
+}
+nav ul ul .sb-expand {
+    display: none;
+    padding: 0 1.7em;
+}
+nav ul {
+    list-style: none;
+    margin: 0 0.5em;
+    padding: 0;
+}
+nav ul ul {
+    padding: 0 1.7em;
+}
+
+nav > ul > li[data-simply-command=expandMenu][open]::before {
+    content: "[-] ";
+    font-family: monospace;
+}
+nav > ul > li[data-simply-command=expandMenu]::before {
+    content: "[+] ";
+    font-family: monospace;
+}
+.sb-part {
+    margin-top: 1em;
+}
+
+.sb-part-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.sb-part-header .sb-options {
+    text-align: right;
+}
+.sb-part .sb-tab {
+    padding: 10px 5px;
+    margin: 0;
+    background-color: #151515;
+    color: #ddd;
+    border: 0;
+    text-align: center;
+    margin-right: 5px;
+}
+.sb-part .sb-tab input[type=radio] {
+    display: none;
+}
+.sb-part .sb-tab input[type=radio]:checked ~ span {
+    font-weight: bold;
+    border-bottom: 2px solid var(--support-background);
+}
+.sb-part .sb-editor-code {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+.sb-part .sb-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.sb-part .sb-dual-preview {
+    display: grid;
+    grid-template-columns: auto 480px;
+}
+.sb-test-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.sb-test-header .sb-options {
+    text-align: right;
+}
+.sb-component summary {
+    font-size: 1.2em;
+}
+.sb-component {
+    margin: 10px 0px;
+}
+.sb-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    vertical-align: middle;
+}
+.sb-header .sb-controls {
+    text-align: right;
+}
+.sb-header h1 span {
+    white-space: nowrap;
+}
+.sb-component summary .sb-controls {
+    display: none;
+    margin-left: 1em;
+}
+.sb-component[open] summary .sb-controls {
+    display: inline-block;
+}
+header {
+    position: fixed;
+    padding: 8px 10px 6px 10px;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    background-color: #404040;
+    border-bottom: 2px solid #2222;
+    vertical-align: middle;
+    z-index: 1;
+}
+header h1 {
+    margin: 0;
+}
+header .sb-controls {
+    padding-top: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
+.sb-editor-code textarea {
+    margin-top: -1px;
+}
+
+ul.sb-components-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1em;
+}
+ul.sb-components-list li {
+    border: 1px solid #555;
+    background-color: #2a2a2a;
+    padding: 10px;
+    border-radius: 2px;
+}
+
+/* Components: Toast */
+
+:root {
+    --simply-toast-height: 60px;
+    --simply-toast-hide-delay: 3s;
+    --simply-toast-show-duration: 0.3s;
+    --simply-toast-hide-duration: 0.5s;
+    --simply-toast-margin: 20px;
+    --simply-error-color: rgb(253, 143, 143);
+    --simply-warning-color: #FFFFCC;
+    --simply-info-color: rgb(140, 180, 250);
+    --simply-white: #FFF;
+    --simply-grey-50: #a8b4c0;
+    --simply-grey-80: #4d565c;
+    --simply-font-size: calc(1.1 * 1rem);
+    --simply-font-weight: 300;
+    --simply-line-height: calc(1.5 * var(--simply-font-size));
+    --simply-color: var(--grey-medium);
+    --simply-contrast: var(--grey-medium);
+    --simply-background:var(--white);
+    --simply-heading-weight: 900;
+    --simply-heading-multiplier: 1.1;
+}
+
+ul.simply-toasts,
+ol.simply-toasts,
+.simply-toasts {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 101;
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 50%;
+    min-width: 300px;
+}
+.simply-toast,
+li.simply-toast {
+    min-width: 300px;
+    float: right;
+    clear: both;
+    margin-right: 0;
+    margin-top: 60px;
+    background-color: var(--simply-grey-80);
+    color: var(--simply-white);
+    display: block;
+    border-left: 10px solid var(--simply-grey-50);
+    padding: 20px;
+    border-radius: 2px;
+}
+.simply-toast-error,
+li.simply-toast-error {
+    border-color: var(--simply-error-color);
+}
+.simply-toast-info,
+li.simply-toast-info {
+    border-color: var(--simply-info-color);
+}
+.simply-toast-warning,
+li.simply-toast-warning {
+    border-color: var(--simply-warning-color);
+}
+
+@keyframes simply-toast-show {
+    0% {
+        transform: scaleX(0);
+        transform-origin: right;
+        opacity: 0;
+    }
+    50% {
+        transform: scaleX(0);
+        transform-origin: right;
+        opacity: 0;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(1);
+        transform-origin: right;
+        opacity: 1;
+    }
+}
+@keyframes simply-toast-hide {
+    0% {
+        transform: scaleX(1);
+        transform-origin: right;
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(0);
+        transform-origin: right;
+        opacity: 0;
+    }
+}
+@keyframes simply-toast-move {
+    0% {
+        transform: translateY(-80px); /* toast-height + toast-margin */
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+.simply-toast[data-state="new"] {
+    animation: simply-toast-show var(--simply-toast-show-duration) forwards;
+}
+.simply-toast-autohide[data-state="new"] {
+    animation: simply-toast-show var(--simply-toast-show-duration);
+    animation-delay: 0s;
+}
+.simply-toast-autohide.simply-toast-animated[data-state="shown"] {
+    animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
+    animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
+}
+.simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
+    animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
+    animation-delay: 0s, var(--simply-toast-hide-delay);
+}
