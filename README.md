@@ -1,1 +1,8 @@
-Electron build for Simplycode
+#  Electron build for Simplycode
+
+To build: 
+
+```
+npm install
+npm run make
+```
