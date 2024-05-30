@@ -151,10 +151,8 @@ app.whenReady().then(() => {
                 case 'GET':
                 default:
                     if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                        if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                            const filestuff = readRecursive(componentDirectory + "/" + componentName)
-                            return new Response(JSON.stringify(filestuff), {})
-                        }
+                        const filestuff = readRecursive(componentDirectory + "/" + componentName)
+                        return new Response(JSON.stringify(filestuff), {})
                     } else {
                         return new Response('"Not found"', { status: 404})
                     }
@@ -188,8 +186,8 @@ app.whenReady().then(() => {
         }
     })
 
-//    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']}) + "/";
-    dataDir = process.cwd();
+    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+    console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
     }
@@ -197,7 +195,10 @@ app.whenReady().then(() => {
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-//            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']}) + "/";
+            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+            if (!dataDir.match(/\/$/)) {
+                dataDir += "/";
+            }
             createWindow()
         }
     })
