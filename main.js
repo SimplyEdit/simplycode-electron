@@ -157,16 +157,16 @@ app.whenReady().then(() => {
                     }
 
                     if (!componentPath || componentPath === "/") {
-                        const filestuff = fs.readFileSync(__dirname + '/www/index.html')
+                        const filestuff = fs.readFileSync(__dirname + '/simplycode/index.html')
                         return new Response(filestuff, {
                             // headers: { 'content-type': 'text/html' }
                         })
                     } else {
-                        var target = __dirname + '/www' + componentDirectory + '\/' + componentName;
+                        var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
                         if (fs.lstatSync(target).isDirectory()) {
                             // Do the recursive read thing;
                         } else {
-                            const filestuff = fs.readFileSync(__dirname + '/www' + componentDirectory + '\/' + componentName)
+                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
                             return new Response(filestuff, {
                                 // headers: { 'content-type': 'text/html' }
                             })
