@@ -106,7 +106,6 @@ async function createComponentFile(componentPath, filecontent){
 }
 
 app.whenReady().then(() => {
-
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
         console.log(componentPath)   
@@ -125,28 +124,40 @@ app.whenReady().then(() => {
 
             switch (request.method){
                 case 'OPTIONS':
-                    return new Response('"ok"', { status: 200})
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        return new Response('"ok"', { status: 200})
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
                 break
                 case 'DELETE':
                     if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
                         fs.rmSync((dataDir + componentDirectory + "/" + componentName), { recursive: true, force: true })
                         return new Response('"deleted"', { status: 200})
                     } else {
-                        console.log("delete failed: file or folder not found")
+                        return new Response('"Not found"', { status: 404})
                     }         
                 break        
                 case 'PUT':
-                    return createComponentDirectory(componentDirectory)
-                        .then(createComponentFile(componentDirectory + "/" + componentName, request))
-                        .then(function() { return new Response('"ok"', { status: 200})})
-                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        return createComponentDirectory(componentDirectory)
+                            .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                            .then(function() { return new Response('"ok"', { status: 200})})
+                            .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
                 break
                 case 'GET':
                 default:
-                    const filestuff = readRecursive(componentDirectory + "/" + componentName)
-                    console.log('asking if api folder')
-                    console.log(filestuff)
-                    return new Response(JSON.stringify(filestuff), {})
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                            const filestuff = readRecursive(componentDirectory + "/" + componentName)
+                            return new Response(JSON.stringify(filestuff), {})
+                        }
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
                 break
             }
         } else {
