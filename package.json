@@ -28,6 +28,7 @@
     "electron": "^30.0.2"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "simplycode": "github:simplyedit/simplycode"
   }
 }
