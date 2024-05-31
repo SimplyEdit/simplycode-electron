@@ -139,14 +139,10 @@ app.whenReady().then(() => {
                     }         
                 break        
                 case 'PUT':
-                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                        return createComponentDirectory(componentDirectory)
-                            .then(createComponentFile(componentDirectory + "/" + componentName, request))
-                            .then(function() { return new Response('"ok"', { status: 200})})
-                            .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
-                    } else {
-                        return new Response('"Not found"', { status: 404})
-                    }
+                    return createComponentDirectory(componentDirectory)
+                        .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                        .then(function() { return new Response('"ok"', { status: 200})})
+                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
                 break
                 case 'GET':
                 default:
