@@ -17,7 +17,9 @@ const createWindow = () => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname, '/simplycode/camil_512x512.png')
+
     })
   
     win.loadURL('simplycode://index.html')
@@ -32,7 +34,8 @@ const createSecondWindow = (dataDir) => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname,'/simplycode/camil_512x512.png')
     })
   
     win2.loadURL('simplyapp://generated.html')
@@ -133,6 +136,8 @@ async function createComponentFile(componentPath, filecontent){
 }
 
 app.whenReady().then(() => {
+    if (require('electron-squirrel-startup') === true) app.quit(); // prevents Squirrel.Windows from launching your app multiple times during the installation/updating/uninstallation.
+
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
         console.log(componentPath)   
@@ -261,7 +266,7 @@ app.whenReady().then(() => {
     createWindow()
     createSecondWindow(dataDir)
 
-    app.on('activate', () => {
+    app.on('activate', () => {  // needed for macos
         if (BrowserWindow.getAllWindows().length === 0) {
             dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
             if (!dataDir.match(/\/$/)) {
