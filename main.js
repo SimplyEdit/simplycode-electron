@@ -12,6 +12,7 @@ const createWindow = () => {
     const win = new BrowserWindow({
       width: 1024,
       height: 786,
+      title: "Simply Code",
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
@@ -20,6 +21,21 @@ const createWindow = () => {
     })
   
     win.loadURL('simplycode://index.html')
+}
+
+const createSecondWindow = (dataDir) => {
+    const win2 = new BrowserWindow({
+      width: 1024,
+      height: 786,
+      title: "My App",
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: false,
+        allowRunningInsecureContent : true
+      }
+    })
+  
+    win2.loadURL('simplyapp://generated.html')
 }
 
 function readRecursive(componentPath) { 
@@ -79,6 +95,17 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 protocol.registerSchemesAsPrivileged([
     {
       scheme: 'simplycode',
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchAPI: true
+      }
+    }
+])
+
+protocol.registerSchemesAsPrivileged([
+    {
+      scheme: 'simplyapp',
       privileges: {
         standard: true,
         secure: true,
@@ -180,6 +207,46 @@ app.whenReady().then(() => {
                 break    
             }
         }
+
+        
+    })
+
+    protocol.handle('simplyapp', (request) => {
+        let componentPath = new URL(request.url).pathname
+        console.log('simplyapp:' + componentPath)
+        if(componentPath.endsWith('\/')){
+            componentPath = componentPath.substring(0, (componentPath.length - 1))
+        }
+        
+        let pathicles = componentPath.split('\/');
+        let componentName = pathicles.pop();
+        let componentDirectory = pathicles.join('/');
+        pathicles.shift();
+
+     
+        switch (request.method){
+            default:
+                if(componentPath.endsWith('\/')){
+                    componentPath = componentPath.substring(0, (componentPath.length - 1))
+                }
+
+                if (!componentPath || componentPath === "/") {
+                    const filestuff = fs.readFileSync(dataDir + '/generated.html')
+                    return new Response(filestuff, {
+                        // headers: { 'content-type': 'text/html' }
+                    })
+                } else {
+                    const filestuff = fs.readFileSync(dataDir + componentDirectory + '\/' + componentName)
+                    return new Response(filestuff, {
+                        // headers: { 'content-type': 'text/html' }
+                    })
+                }    
+            break    
+        }
+        
+        
+
+        
     })
 
     if (process.argv[1]) {
@@ -192,6 +259,7 @@ app.whenReady().then(() => {
         dataDir += "/";
     }
     createWindow()
+    createSecondWindow(dataDir)
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -204,6 +272,7 @@ app.whenReady().then(() => {
                 dataDir += "/";
             }
             createWindow()
+            createSecondWindow(dataDir)
         }
     })
     
