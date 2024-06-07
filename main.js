@@ -7,10 +7,14 @@ const fs = require('fs')
 // https://github.com/sindresorhus/electron-main-fetch
 
 var dataDir;
-
+var codeWindow, appWindow;
 
 const createWindow = () => {
-    const win = new BrowserWindow({
+    if (codeWindow) {
+        codeWindow.focus();
+        return;
+    }
+    codeWindow = new BrowserWindow({
       width: 1024,
       height: 786,
       title: "Simply Code",
@@ -24,19 +28,28 @@ const createWindow = () => {
     let defaultMenu = Menu.getApplicationMenu();
     defaultMenu.items.forEach(function(menuItem) {
       if (menuItem.role == "filemenu") {
-        menuItem.submenu.insert(0, new MenuItem({
+        if(menuItem.submenu.items[0].label !== "View app") {
+          menuItem.submenu.insert(0, new MenuItem({
             label: 'View app',
             click: function() {createSecondWindow(dataDir)}
-        }));
+          }));
+        }
       }
     });
-    win.setMenu(defaultMenu);
-  
-    win.loadURL('simplycode://index.html')
+    codeWindow.setMenu(defaultMenu);
+    codeWindow.loadURL('simplycode://index.html')
+    codeWindow.on('close', function() {
+      codeWindow = false;
+    });
 }
 
 const createSecondWindow = (dataDir) => {
-    const win2 = new BrowserWindow({
+    if (appWindow) {
+      appWindow.focus();
+      appWindow.loadURL('simplyapp://generated.html')
+      return;
+    }
+    appWindow = new BrowserWindow({
       width: 1024,
       height: 786,
       title: "My App",
@@ -50,7 +63,7 @@ const createSecondWindow = (dataDir) => {
         {
             label: "File",
             submenu: [
-                { label: "Close", click: function() { win2.close() } }
+                { label: "Close", click: function() { appWindow.close() } }
             ]
         },
         {
@@ -61,8 +74,11 @@ const createSecondWindow = (dataDir) => {
         }
     ];
     let menu = Menu.buildFromTemplate(menuTemplate);
-    win2.setMenu(menu);
-    win2.loadURL('simplyapp://generated.html')
+    appWindow.setMenu(menu);
+    appWindow.loadURL('simplyapp://generated.html')
+    appWindow.on('close', function() {
+      appWindow = false;
+    });
 }
 
 function readRecursive(componentPath) { 
