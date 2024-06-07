@@ -197,7 +197,8 @@ app.whenReady().then(() => {
                         })
                     } else {
                         var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
-                        if (fs.existsSync(target)){
+                        if(fs.existsSync(target)) {
+
                             if (fs.lstatSync(target).isDirectory()) {
                                 // Do the recursive read thing;
                             } else {
@@ -207,7 +208,7 @@ app.whenReady().then(() => {
                                 })
                             }
                         } else {
-                            return new Response('"Not found"', { status: 404})
+                            return new Response("Not found", {"status" : 404})
                         }
                     }
                 break    
@@ -243,14 +244,26 @@ app.whenReady().then(() => {
                     return new Response(filestuff, {
                         // headers: { 'content-type': 'text/html' }
                     })
-                } else {{
-                    if (fs.existsSync(dataDir + componentDirectory + '\/' + componentName)){
-                        const filestuff = fs.readFileSync(dataDir + componentDirectory + '\/' + componentName)
+
+                } else {
+                    var target = dataDir + componentDirectory + '\/' + componentName;
+                    if(fs.existsSync(target)) {
+                        const filestuff = fs.readFileSync(target)
+
                         return new Response(filestuff, {
                             // headers: { 'content-type': 'text/html' }
                         })
                     } else {
-                        return new Response('"Not found"', { status: 404})
+                        if (
+                            (componentPath === "/js/simply-edit.js") ||
+                            (componentPath === "/js/simply.everything.js")
+                        ) {
+                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                            return new Response(filestuff, {
+                                // headers: { 'content-type': 'text/html' }
+                            })
+                        }
+                        return new Response("Not found", {"status" : 404})
                     }
                 }    
             break    
