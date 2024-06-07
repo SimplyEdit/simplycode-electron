@@ -17,7 +17,9 @@ const createWindow = () => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname, '/simplycode/camil_512x512.png')
+
     })
   
     win.loadURL('simplycode://index.html')
@@ -32,7 +34,8 @@ const createSecondWindow = (dataDir) => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname,'/simplycode/camil_512x512.png')
     })
   
     win2.loadURL('simplyapp://generated.html')
@@ -100,10 +103,7 @@ protocol.registerSchemesAsPrivileged([
         secure: true,
         supportFetchAPI: true
       }
-    }
-])
-
-protocol.registerSchemesAsPrivileged([
+    },
     {
       scheme: 'simplyapp',
       privileges: {
@@ -133,6 +133,8 @@ async function createComponentFile(componentPath, filecontent){
 }
 
 app.whenReady().then(() => {
+    if (require('electron-squirrel-startup') === true) app.quit(); // prevents Squirrel.Windows from launching your app multiple times during the installation/updating/uninstallation.
+
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
         console.log(componentPath)   
@@ -195,20 +197,22 @@ app.whenReady().then(() => {
                         })
                     } else {
                         var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
-                        if (fs.lstatSync(target).isDirectory()) {
-                            // Do the recursive read thing;
+                        if (fs.existsSync(target)){
+                            if (fs.lstatSync(target).isDirectory()) {
+                                // Do the recursive read thing;
+                            } else {
+                                const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                                return new Response(filestuff, {
+                                    // headers: { 'content-type': 'text/html' }
+                                })
+                            }
                         } else {
-                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
-                            return new Response(filestuff, {
-                                // headers: { 'content-type': 'text/html' }
-                            })
+                            return new Response('"Not found"', { status: 404})
                         }
                     }
                 break    
             }
         }
-
-        
     })
 
     protocol.handle('simplyapp', (request) => {
@@ -218,35 +222,40 @@ app.whenReady().then(() => {
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
         
-        let pathicles = componentPath.split('\/');
+        let pathicles = componentPath.split('\/'); // also splits on an empty string
+        
         let componentName = pathicles.pop();
-        let componentDirectory = pathicles.join('/');
-        pathicles.shift();
 
+        if (pathicles[0] == ''){
+            pathicles.shift()
+        }
+
+        let componentDirectory = pathicles.join('/');
      
         switch (request.method){
             default:
                 if(componentPath.endsWith('\/')){
                     componentPath = componentPath.substring(0, (componentPath.length - 1))
-                }
+                } 
 
                 if (!componentPath || componentPath === "/") {
                     const filestuff = fs.readFileSync(dataDir + '/generated.html')
                     return new Response(filestuff, {
                         // headers: { 'content-type': 'text/html' }
                     })
-                } else {
-                    const filestuff = fs.readFileSync(dataDir + componentDirectory + '\/' + componentName)
-                    return new Response(filestuff, {
-                        // headers: { 'content-type': 'text/html' }
-                    })
+                } else {{
+                    if (fs.existsSync(dataDir + componentDirectory + '\/' + componentName)){
+                        const filestuff = fs.readFileSync(dataDir + componentDirectory + '\/' + componentName)
+                        return new Response(filestuff, {
+                            // headers: { 'content-type': 'text/html' }
+                        })
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
                 }    
             break    
-        }
-        
-        
-
-        
+            }     
+        }    
     })
 
     if (process.argv[1]) {
@@ -257,11 +266,12 @@ app.whenReady().then(() => {
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
+        console.log(dataDir);
     }
     createWindow()
     createSecondWindow(dataDir)
 
-    app.on('activate', () => {
+    app.on('activate', () => {  // needed for macos
         if (BrowserWindow.getAllWindows().length === 0) {
             if (process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
@@ -275,8 +285,6 @@ app.whenReady().then(() => {
             createSecondWindow(dataDir)
         }
     })
-    
-
 })
 
 app.on('window-all-closed', () => {
