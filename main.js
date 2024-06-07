@@ -168,14 +168,10 @@ app.whenReady().then(() => {
                     }         
                 break        
                 case 'PUT':
-                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                        return createComponentDirectory(componentDirectory)
-                            .then(createComponentFile(componentDirectory + "/" + componentName, request))
-                            .then(function() { return new Response('"ok"', { status: 200})})
-                            .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
-                    } else {
-                        return new Response('"Not found"', { status: 404})
-                    }
+                    return createComponentDirectory(componentDirectory)
+                        .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                        .then(function() { return new Response('"ok"', { status: 200})})
+                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
                 break
                 case 'GET':
                 default:
@@ -262,7 +258,11 @@ app.whenReady().then(() => {
         }    
     })
 
-    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+    if (process.argv[1]) {
+        dataDir = path.resolve(process.argv[1]);
+    } else {
+        dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+    }
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
@@ -273,9 +273,11 @@ app.whenReady().then(() => {
 
     app.on('activate', () => {  // needed for macos
         if (BrowserWindow.getAllWindows().length === 0) {
-            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
-            console.log('were here')
-            console.log(dataDir)
+            if (process.argv[1]) {
+                dataDir = path.resolve(process.argv[1]);
+            } else {
+                dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+            }
             if (!dataDir.match(/\/$/)) {
                 dataDir += "/";
             }

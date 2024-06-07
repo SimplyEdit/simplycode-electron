@@ -4626,12 +4626,6 @@
 	  }
 	}());
 
-	editor.init({
-		endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
-		toolbars : defaultToolbars,
-		profile : 'live'
-	});
-
 	class SimplyComponent extends HTMLDivElement {
 		constructor() {
 			console.warn('simply-component is deprecated, use simply-render instead');
@@ -4679,5 +4673,12 @@
 
 	// Define the new element
 	customElements.define('simply-render', SimplyRender);
+
+	editor.init({
+		endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
+		toolbars : defaultToolbars,
+		profile : 'live'
+	});
+
 
 }());
