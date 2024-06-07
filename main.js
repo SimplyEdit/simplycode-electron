@@ -100,10 +100,7 @@ protocol.registerSchemesAsPrivileged([
         secure: true,
         supportFetchAPI: true
       }
-    }
-])
-
-protocol.registerSchemesAsPrivileged([
+    },
     {
       scheme: 'simplyapp',
       privileges: {
@@ -249,7 +246,7 @@ app.whenReady().then(() => {
         
     })
 
-    if (process.argv[1]) {
+    if (!process.argv[0].match(/electron$/) && process.argv[1]) {
         dataDir = path.resolve(process.argv[1]);
     } else {
         dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
@@ -259,11 +256,10 @@ app.whenReady().then(() => {
         dataDir += "/";
     }
     createWindow()
-    createSecondWindow(dataDir)
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            if (process.argv[1]) {
+            if (!process.argv[0].match(/electron$/) && process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
             } else {
                 dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
