@@ -1,4 +1,4 @@
-const { dialog, app, BrowserWindow, net, protocol, session } = require('electron')
+const { dialog, app, BrowserWindow, Menu, MenuItem, net, protocol, session } = require('electron')
 const path = require('node:path')
 const url = require('url')
 const data = []
@@ -6,7 +6,8 @@ const fs = require('fs')
 
 // https://github.com/sindresorhus/electron-main-fetch
 
-let dataDir;
+var dataDir;
+
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -19,6 +20,17 @@ const createWindow = () => {
         allowRunningInsecureContent : true
       }
     })
+
+    let defaultMenu = Menu.getApplicationMenu();
+    defaultMenu.items.forEach(function(menuItem) {
+      if (menuItem.role == "filemenu") {
+        menuItem.submenu.insert(0, new MenuItem({
+            label: 'View app',
+            click: function() {createSecondWindow(dataDir)}
+        }));
+      }
+    });
+    win.setMenu(defaultMenu);
   
     win.loadURL('simplycode://index.html')
 }
@@ -34,7 +46,22 @@ const createSecondWindow = (dataDir) => {
         allowRunningInsecureContent : true
       }
     })
-  
+    let menuTemplate = [
+        {
+            label: "File",
+            submenu: [
+                { label: "Close", click: function() { win2.close() } }
+            ]
+        },
+        {
+            label: "Edit",
+            submenu: [
+                { label: "SimplyCode", click: function() { createWindow() } }
+            ]
+        }
+    ];
+    let menu = Menu.buildFromTemplate(menuTemplate);
+    win2.setMenu(menu);
     win2.loadURL('simplyapp://generated.html')
 }
 
@@ -268,11 +295,8 @@ app.whenReady().then(() => {
                 dataDir += "/";
             }
             createWindow()
-            createSecondWindow(dataDir)
         }
     })
-    
-
 })
 
 app.on('window-all-closed', () => {
