@@ -310,7 +310,12 @@ app.whenReady().then(() => {
     if (!process.argv[0].match(/electron$/) && process.argv[1]) {
         dataDir = path.resolve(process.argv[1]);
     } else {
-        dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+        try {
+            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+        } catch(e) {
+            app.quit();
+            return;
+        }
     }
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
@@ -323,7 +328,12 @@ app.whenReady().then(() => {
             if (!process.argv[0].match(/electron$/) && process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
             } else {
-                dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+                try {
+                    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+                } catch(e) {
+                    app.quit();
+                    return;
+                }
             }
             if (!dataDir.match(/\/$/)) {
                 dataDir += "/";
