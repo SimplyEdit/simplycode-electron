@@ -175,7 +175,7 @@ async function createComponentFile(componentPath, filecontent){
 app.whenReady().then(() => {
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log(componentPath)   
+        console.log('[simplycode://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
@@ -257,7 +257,7 @@ app.whenReady().then(() => {
 
     protocol.handle('simplyapp', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log('simplyapp:' + componentPath)
+        console.log('[simplyapp://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
