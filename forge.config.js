@@ -4,38 +4,33 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: '/simplycode/camil_512x512.png',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       }
     },
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       },
     },
     {
       name: '@electron-forge/maker-deb',
       config: {
-        bin: 'simply-code',
+        bin: 'simplycode',
         options: {
-          icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
         },
       }
     },
     {
       name: '@electron-forge/maker-rpm',
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       }
     }
   ],
@@ -55,19 +50,14 @@ module.exports = {
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
-  ], 
-  "config": {
-    "forge": {
-      "path": "./forge.config.js"
-    }
-  },
+  ],
   publishers: [
     {
-      name: 'simply-code',
+      name: 'simplycode',
       config: {
         repository: {
           owner: 'Govert Combée',
-          name: 'simply-code'
+          name: 'simplycode'
         },
         prerelease: true
       }
