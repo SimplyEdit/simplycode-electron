@@ -34,5 +34,10 @@
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
     "simplycode": "github:simplyedit/simplycode"
+  },
+  "config": {
+    "forge": {
+      "path": "./forge.config.js"
+    }
   }
 }
