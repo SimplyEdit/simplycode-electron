@@ -9,18 +9,21 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
+      platforms: ['darwin', 'linux', 'windows'],
       config: {
         bin: 'simplycode',
       }
     },
     {
       name: '@electron-forge/maker-dmg',
+      platforms: ['darwin', 'linux'],
       config: {
         bin: 'simplycode',
       },
     },
     {
       name: '@electron-forge/maker-deb',
+      platforms: ['darwin', 'linux'],
       config: {
         bin: 'simplycode',
         options: {
@@ -29,6 +32,7 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-rpm',
+      platforms: ['darwin', 'linux'],
       config: {
         bin: 'simplycode',
       }
