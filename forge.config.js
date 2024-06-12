@@ -1,6 +1,5 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
-const path = require('path')
 
 module.exports = {
   packagerConfig: {
@@ -56,7 +55,12 @@ module.exports = {
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
-  ],
+  ], 
+  "config": {
+    "forge": {
+      "path": "./forge.config.js"
+    }
+  },
   publishers: [
     {
       name: 'simply-code',
