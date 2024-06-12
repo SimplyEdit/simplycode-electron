@@ -12,14 +12,33 @@ const createWindow = () => {
     const win = new BrowserWindow({
       width: 1024,
       height: 786,
+      title: "Simply Code",
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname, '/simplycode/camil_512x512.png')
+
     })
   
     win.loadURL('simplycode://index.html')
+}
+
+const createSecondWindow = (dataDir) => {
+    const win2 = new BrowserWindow({
+      width: 1024,
+      height: 786,
+      title: "My App",
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: false,
+        allowRunningInsecureContent : true
+      },
+      icon: path.join(__dirname,'/simplycode/camil_512x512.png')
+    })
+  
+    win2.loadURL('simplyapp://generated.html')
 }
 
 function readRecursive(componentPath) { 
@@ -84,6 +103,14 @@ protocol.registerSchemesAsPrivileged([
         secure: true,
         supportFetchAPI: true
       }
+    },
+    {
+      scheme: 'simplyapp',
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchAPI: true
+      }
     }
 ])
 
@@ -106,9 +133,11 @@ async function createComponentFile(componentPath, filecontent){
 }
 
 app.whenReady().then(() => {
+    if (require('electron-squirrel-startup') === true) app.quit(); // prevents Squirrel.Windows from launching your app multiple times during the installation/updating/uninstallation.
+
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log(componentPath)   
+        console.log('[simplycode://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
@@ -168,13 +197,18 @@ app.whenReady().then(() => {
                         })
                     } else {
                         var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
-                        if (fs.lstatSync(target).isDirectory()) {
-                            // Do the recursive read thing;
+                        if(fs.existsSync(target)) {
+
+                            if (fs.lstatSync(target).isDirectory()) {
+                                // Do the recursive read thing;
+                            } else {
+                                const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                                return new Response(filestuff, {
+                                    // headers: { 'content-type': 'text/html' }
+                                })
+                            }
                         } else {
-                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
-                            return new Response(filestuff, {
-                                // headers: { 'content-type': 'text/html' }
-                            })
+                            return new Response("Not found", {"status" : 404})
                         }
                     }
                 break    
@@ -182,7 +216,62 @@ app.whenReady().then(() => {
         }
     })
 
-    if (process.argv[1]) {
+    protocol.handle('simplyapp', (request) => {
+        let componentPath = new URL(request.url).pathname
+        console.log('[simplyapp://]' + componentPath)
+        if(componentPath.endsWith('\/')){
+            componentPath = componentPath.substring(0, (componentPath.length - 1))
+        }
+        
+        let pathicles = componentPath.split('\/'); // also splits on an empty string
+        
+        let componentName = pathicles.pop();
+
+        if (pathicles[0] == ''){
+            pathicles.shift()
+        }
+
+        let componentDirectory = pathicles.join('/');
+     
+        switch (request.method){
+            default:
+                if(componentPath.endsWith('\/')){
+                    componentPath = componentPath.substring(0, (componentPath.length - 1))
+                } 
+
+                if (!componentPath || componentPath === "/") {
+                    const filestuff = fs.readFileSync(dataDir + '/generated.html')
+                    return new Response(filestuff, {
+                        // headers: { 'content-type': 'text/html' }
+                    })
+
+                } else {
+                    var target = dataDir + componentDirectory + '\/' + componentName;
+                    if(fs.existsSync(target)) {
+                        const filestuff = fs.readFileSync(target)
+
+                        return new Response(filestuff, {
+                            // headers: { 'content-type': 'text/html' }
+                        })
+                    } else {
+                        if (
+                            (componentPath === "/js/simply-edit.js") ||
+                            (componentPath === "/js/simply.everything.js")
+                        ) {
+                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                            return new Response(filestuff, {
+                                // headers: { 'content-type': 'text/html' }
+                            })
+                        }
+                        return new Response("Not found", {"status" : 404})
+                    }
+                }    
+            break    
+            }     
+        }    
+    })
+
+    if (!process.argv[0].match(/electron$/) && process.argv[1]) {
         dataDir = path.resolve(process.argv[1]);
     } else {
         dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
@@ -190,12 +279,13 @@ app.whenReady().then(() => {
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
+        console.log(dataDir);
     }
     createWindow()
 
-    app.on('activate', () => {
+    app.on('activate', () => {  // needed for macos
         if (BrowserWindow.getAllWindows().length === 0) {
-            if (process.argv[1]) {
+            if (!process.argv[0].match(/electron$/) && process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
             } else {
                 dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
@@ -204,10 +294,9 @@ app.whenReady().then(() => {
                 dataDir += "/";
             }
             createWindow()
+            createSecondWindow(dataDir)
         }
     })
-    
-
 })
 
 app.on('window-all-closed', () => {

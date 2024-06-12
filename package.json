@@ -7,8 +7,11 @@
     "test": "echo \"test not implemented yet\" && exit 1",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "postinstall": "scripts/post-install.sh",
+    "publish": "electron-forge publish"
   },
+  "productName": "simply-code",
   "keywords": [
     "javascript",
     "html",
@@ -24,10 +27,12 @@
     "@electron-forge/maker-zip": "^7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^30.0.2"
+    "electron": "^30.0.9"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "simplycode": "github:simplyedit/simplycode"
   }
 }
