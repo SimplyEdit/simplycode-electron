@@ -268,7 +268,6 @@ app.whenReady().then(() => {
                 }    
             break    
             }     
-        }    
     })
 
     if (process.argv[1]) {
