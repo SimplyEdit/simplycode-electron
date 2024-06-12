@@ -1,6 +1,8 @@
 name: Release app
 on:
   workflow_dispatch:
+  push:
+    branches: [ GovertDev ]
 jobs:
   build:
     strategy:
