@@ -29,7 +29,9 @@
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^30.0.9"
+    "electron": "^30.0.9",
+    "electron-installer-debian": "^3.0.0",
+    "electron-installer-redhat": "^3.2.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
@@ -37,7 +39,8 @@
   },
   "config": {
     "forge": {
-      "path": "./forge.config.js"
+      "makers": [],
+      "publishers": []
     }
   }
 }
