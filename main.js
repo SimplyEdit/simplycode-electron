@@ -137,7 +137,7 @@ app.whenReady().then(() => {
 
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log(componentPath)   
+        console.log('[simplycode://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
@@ -218,7 +218,7 @@ app.whenReady().then(() => {
 
     protocol.handle('simplyapp', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log('simplyapp:' + componentPath)
+        console.log('[simplyapp://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
@@ -270,7 +270,7 @@ app.whenReady().then(() => {
             }     
     })
 
-    if (process.argv[1]) {
+    if (!process.argv[0].match(/electron$/) && process.argv[1]) {
         dataDir = path.resolve(process.argv[1]);
     } else {
         dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
@@ -281,11 +281,10 @@ app.whenReady().then(() => {
         console.log(dataDir);
     }
     createWindow()
-    createSecondWindow(dataDir)
 
     app.on('activate', () => {  // needed for macos
         if (BrowserWindow.getAllWindows().length === 0) {
-            if (process.argv[1]) {
+            if (!process.argv[0].match(/electron$/) && process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
             } else {
                 dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
