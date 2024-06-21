@@ -1,4 +1,4 @@
-const { dialog, app, BrowserWindow, net, protocol, session } = require('electron')
+const { dialog, app, BrowserWindow, Menu, MenuItem, net, protocol, session } = require('electron')
 const path = require('node:path')
 const url = require('url')
 const data = []
@@ -6,10 +6,15 @@ const fs = require('fs')
 
 // https://github.com/sindresorhus/electron-main-fetch
 
-let dataDir;
+var dataDir;
+var codeWindow, appWindow;
 
 const createWindow = () => {
-    const win = new BrowserWindow({
+    if (codeWindow) {
+        codeWindow.focus();
+        return;
+    }
+    codeWindow = new BrowserWindow({
       width: 1024,
       height: 786,
       title: "Simply Code",
@@ -21,12 +26,32 @@ const createWindow = () => {
       icon: path.join(__dirname, '/simplycode/camil_512x512.png')
 
     })
-  
-    win.loadURL('simplycode://index.html')
+
+    let defaultMenu = Menu.getApplicationMenu();
+    defaultMenu.items.forEach(function(menuItem) {
+      if (menuItem.role == "filemenu") {
+        if(menuItem.submenu.items[0].label !== "View app") {
+          menuItem.submenu.insert(0, new MenuItem({
+            label: 'View app',
+            click: function() {createSecondWindow(dataDir)}
+          }));
+        }
+      }
+    });
+    codeWindow.setMenu(defaultMenu);
+    codeWindow.loadURL('simplycode://index.html')
+    codeWindow.on('close', function() {
+      codeWindow = false;
+    });
 }
 
 const createSecondWindow = (dataDir) => {
-    const win2 = new BrowserWindow({
+    if (appWindow) {
+      appWindow.focus();
+      appWindow.loadURL('simplyapp://generated.html')
+      return;
+    }
+    appWindow = new BrowserWindow({
       width: 1024,
       height: 786,
       title: "My App",
@@ -37,8 +62,26 @@ const createSecondWindow = (dataDir) => {
       },
       icon: path.join(__dirname,'/simplycode/camil_512x512.png')
     })
-  
-    win2.loadURL('simplyapp://generated.html')
+    let menuTemplate = [
+        {
+            label: "File",
+            submenu: [
+                { label: "Close", click: function() { appWindow.close() } }
+            ]
+        },
+        {
+            label: "Edit",
+            submenu: [
+                { label: "SimplyCode", click: function() { createWindow() } }
+            ]
+        }
+    ];
+    let menu = Menu.buildFromTemplate(menuTemplate);
+    appWindow.setMenu(menu);
+    appWindow.loadURL('simplyapp://generated.html')
+    appWindow.on('close', function() {
+      appWindow = false;
+    });
 }
 
 function readRecursive(componentPath) { 
@@ -198,7 +241,6 @@ app.whenReady().then(() => {
                     } else {
                         var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
                         if(fs.existsSync(target)) {
-
                             if (fs.lstatSync(target).isDirectory()) {
                                 // Do the recursive read thing;
                             } else {
@@ -249,7 +291,6 @@ app.whenReady().then(() => {
                     var target = dataDir + componentDirectory + '\/' + componentName;
                     if(fs.existsSync(target)) {
                         const filestuff = fs.readFileSync(target)
-
                         return new Response(filestuff, {
                             // headers: { 'content-type': 'text/html' }
                         })
@@ -273,7 +314,12 @@ app.whenReady().then(() => {
     if (!process.argv[0].match(/electron$/) && process.argv[1]) {
         dataDir = path.resolve(process.argv[1]);
     } else {
-        dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+        try {
+            dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+        } catch(e) {
+            app.quit();
+            return;
+        }
     }
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
@@ -287,13 +333,17 @@ app.whenReady().then(() => {
             if (!process.argv[0].match(/electron$/) && process.argv[1]) {
                 dataDir = path.resolve(process.argv[1]);
             } else {
-                dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+                try {
+                    dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
+                } catch(e) {
+                    app.quit();
+                    return;
+                }
             }
             if (!dataDir.match(/\/$/)) {
                 dataDir += "/";
             }
             createWindow()
-            createSecondWindow(dataDir)
         }
     })
 })
