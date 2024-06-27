@@ -704,6 +704,9 @@
 				if (list.getAttribute("data-simply-data")) {
 					useDataBinding = false; // this list uses a datasource, skip databinding
 				}
+//				if (list.getAttribute("data-simply-transformer")) {
+//					useDataBinding = false; // this list uses a transformer, skip databinding
+//				}
 
 				if (dataParent && dataParent[dataName]) {
 					if (useDataBinding) {
@@ -796,6 +799,11 @@
 			clear : function(list) {
 				if (list.dataBinding) {
 					list.dataBinding.pauseListeners(list);
+					list.querySelectorAll("[data-simply-list],[data-simply-field]").forEach(function(child) {
+						if (child.dataBinding) {
+							list.dataBinding.pauseListeners(child);
+						}
+					});
 				}
 				// Remove the current list items to replace them with the new data;
 				var children = list.querySelectorAll("[data-simply-list-item]");
@@ -917,9 +925,9 @@
 				if (!listData) {
 					listData = [];
 				}
-				if (list.dataBinding) {
+				if (list.elementBinding) {
 				//	list.dataBinding.pauseListeners(list);
-					list.dataBinding.removeListeners(list);
+					list.elementBinding.removeListeners(list);
 					listenersRemoved = true;
 				}
 
@@ -1136,10 +1144,10 @@
 					list.dataBinding.resolve(true);
 				}
 				list.reattach();
-				if (list.dataBinding) {
+				if (list.elementBinding) {
 					if (listenersRemoved) {
 						var pauseCount = list.dataBindingPaused;
-						list.dataBinding.addListeners(list);
+						list.elementBinding.addListeners(list);
 						list.dataBindingPaused = pauseCount;
 					}
 					// list.dataBinding.resumeListeners(list);
@@ -3761,6 +3769,569 @@
 			console.log(data.title); // "Bar"
 	*/
 
+	elementBinding = function(element, config, dataBinding) {
+		var self = this;
+		this.element = element;
+		this.dataBinding = dataBinding;
+		this.element.dataBinding = dataBinding;
+		this.element.elementBinding = this;
+
+		this.dataBindingConfig = config;
+		this.unbind = function() {
+			if (this.dataBinding) {
+				this.dataBinding.unbind(this);
+			}
+		};
+		element.dataBindingPaused = 0;
+		this.elementGetter = (config && typeof config.getter === "function") ? config.getter : this.dataBinding.getter;
+		this.elementSetter = (config && typeof config.setter === "function") ? config.setter : this.dataBinding.setter;
+		element.getter = this.elementGetter;
+		element.setter = this.elementSetter;
+		
+		this.getter = function() {
+			return this.elementGetter.call(element);
+		};
+		this.setter = function(data) {
+			return this.elementSetter.call(element, data);
+		};
+		
+		this.addListeners = function() {
+			this.removeListeners();
+			if (typeof this.element.mutationObserver === "undefined") {
+				if (typeof MutationObserver === "function") {
+					this.element.mutationObserver = new MutationObserver(this.handleMutation);
+				}
+			}
+			if (this.dataBinding.mode == "field") {
+				if (this.element.mutationObserver) {
+					this.element.mutationObserver.observe(this.element, {attributes: true});
+				}
+				this.element.addEventListener("DOMSubtreeModified", this.handleEvent);
+				this.element.addEventListener("DOMNodeRemoved", this.fieldNodeRemovedHandler);
+				this.element.addEventListener("change", this.handleEvent);
+			}
+			if (this.dataBinding.mode == "list") {
+				if (this.element.mutationObserver) {
+					this.element.mutationObserver.observe(this.element, {attributes: true});
+				}
+				this.element.addEventListener("DOMNodeRemoved", this.handleEvent);
+				this.element.addEventListener("DOMNodeInserted", this.handleEvent);
+			}
+			this.element.addEventListener("databinding:valuechanged", this.handleEvent);
+			this.element.addEventListener("databinding:pause", function() {
+				this.elementBinding.pauseListeners();
+			});
+			this.element.addEventListener("databinding:resume", function() {
+				this.elementBinding.resumeListeners();
+			});
+		};
+
+		this.removeListeners = function() {
+			if (this.dataBinding.mode == "field") {
+				if (this.element.mutationObserver) {
+					this.element.mutationObserver.disconnect();
+				}
+				this.element.removeEventListener("DOMSubtreeModified", this.handleEvent);
+				this.element.removeEventListener("DOMNodeRemoved", this.fieldNodeRemovedHandler);
+				this.element.removeEventListener("change", this.handleEvent);
+			}
+			if (this.dataBinding.mode == "list") {
+				if (this.element.mutationObserver) {
+					this.element.mutationObserver.disconnect();
+				}
+				this.element.removeEventListener("DOMNodeRemoved", this.handleEvent);
+				this.element.removeEventListener("DOMNodeInserted", this.handleEvent);
+			}
+			this.element.removeEventListener("databinding:valuechanged", this.handleEvent);
+		};
+
+		this.fieldNodeRemovedHandler = function(evt) {
+			if (!this.parentNode && this.dataBinding) {
+				self.unbind();
+			}
+		};
+
+		this.resumeListeners = function() {
+			this.element.dataBindingPaused--;
+			if (this.element.dataBindingPaused < 0) {
+				console.log("Warning: resume called of non-paused databinding");
+				this.element.dataBindingPaused = 0;
+			}
+		};
+		this.pauseListeners = function() {
+			this.element.dataBindingPaused++;
+		};
+
+		this.handleMutation = function(event) {
+			// FIXME: assuming that one set of mutation events always have the same target; this might not be the case;
+			var target = event[0].target;
+			if (!target.dataBinding) {
+				return;
+			}
+			if (target.dataBindingPaused) {
+				return;
+			}
+
+			if (target.dataBinding.paused) {
+				return;
+			}
+			var handleMe = false;
+			for (var i=0; i<event.length; i++) {
+				if (target.dataBinding.attributeFilter.indexOf(event[i].attributeName) == -1) {
+					handleMe = true; // only handle the event 
+				}
+			}
+
+			if (handleMe) {
+				var elementBinding = target.elementBinding;
+				window.setTimeout(function() {
+					elementBinding.pauseListeners();	// prevent possible looping, getter sometimes also triggers an attribute change;
+					elementBinding.dataBinding.set(elementBinding.getter());
+					elementBinding.resumeListeners();
+				}, 0); // allow the rest of the mutation event to occur;
+			}
+		};
+
+		this.handleEvent = function (event) {
+			var target = event.currentTarget;
+			var dataBinding = target.dataBinding;
+			var elementBinding = target.elementBinding;
+
+			if (typeof dataBinding === 'undefined') {
+				return;
+			}
+			if (dataBinding.paused) {
+				return;
+			}
+			if (target.dataBindingPaused) {
+				event.stopPropagation();
+				return;
+			}
+			if (dataBinding.mode === "list") {
+				if (event.relatedNode && (target != event.relatedNode)) {
+					return;
+				}
+			}
+
+			var i, data, items;
+			if (dataBinding.mode === "list" && event.type == "DOMNodeRemoved") {
+				if (event.target.nodeType != document.ELEMENT_NODE) {
+					return;
+				}
+				// find the index of the removed target node;
+				items = this.querySelectorAll(":scope > [data-simply-list-item]");
+				for (i=0; i<items.length; i++) {
+					if (items[i] == event.target) {
+						data = target.dataBinding.get();
+						items[i].simplyData = data.splice(i, 1)[0];
+						return;
+					}
+				}
+			}
+
+			if (dataBinding.mode === "list" && event.type == "DOMNodeInserted") {
+				// find the index of the inserted target node;
+				items = this.querySelectorAll(":scope > [data-simply-list-item]");
+				for (i=0; i<items.length; i++) {
+					if (items[i] == event.target) {
+						if (items[i].simplyData) {
+							data = target.dataBinding.get();
+							data.splice(i, 0, items[i].simplyData);
+							return;
+						}
+					}
+				}
+			}
+
+			switch (event.type) {
+				case "DOMCharacterDataModified":
+				case "databinding:valuechanged":
+				case "change":
+				case "DOMAttrModified":
+				case "DOMNodeInserted":
+				case "DOMSubtreeModified":
+				case "DOMNodeRemoved":
+					// Allow the browser to fix what it thinks needs to be fixed (node to be removed, cleaned etc) before setting the new data;
+
+					// there are needed to keep the focus in an element while typing;
+					elementBinding.pauseListeners();
+					dataBinding.set(elementBinding.getter());
+					elementBinding.resumeListeners();
+
+					// these are needed to update after the browser is done doing its thing;
+					window.setTimeout(function() {
+						elementBinding.pauseListeners();
+						dataBinding.set(elementBinding.getter());
+						elementBinding.resumeListeners();
+					}, 1); // allow the rest of the mutation event to occur;
+				break;
+			}
+			elementBinding.fireEvent("domchanged");
+		};
+		this.fireEvent = function(event) {
+			self.dataBinding.fireEvent(self.element, event);
+		};
+		this.isInDocument = function() {
+			if (document.contains && document.contains(this.element)) {
+				return true;
+			}
+			var parent = element.parentNode;
+			while (parent) {
+				if (parent === document) {
+					return true;
+				}
+				if (parent.nodeType === document.DOCUMENT_FRAGMENT_NODE) {
+					if (parent.host && inDocument(parent.host)) {
+						return true;
+					}
+				}
+				parent = parent.parentNode;
+			}
+			return false;
+		};
+	};
+
+	tripleBinding = function(triple, dataBinding) {
+		/* 
+			Triple is an object:
+			{
+				store : rdfStore,
+				subject : rdfSubject,
+				predicate : rdfPredicate
+			}
+		*/
+			
+		var self = this;
+		this.triple = triple;
+		this.dataBinding = dataBinding;
+		this.triple.dataBinding = dataBinding;
+		this.triple.tripleBinding = this;
+
+		if (typeof this.triple.store.simplyDataBindings === "undefined") {
+			this.triple.store.simplyDataBindings = {};
+		}
+		if (typeof this.triple.store.simplyDataBindings[this.triple.subject] === "undefined") {
+			this.triple.store.simplyDataBindings[this.triple.subject] = {};
+		}
+		if (typeof this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate] === "undefined") {
+			this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate] = this;
+		} else {
+			console.log("Warning: binding to the same subject/predicate twice");
+		}
+		this.unbind = function() {
+			if (this.dataBinding) {
+				this.dataBinding.unbind(this);
+			}
+		};
+		this.dataBindingPaused = 0;
+
+		this.getBlankNode = function(self, subject) {
+			var result = {};
+			if (!self.triple.store.subjectIndex[subject]) {
+				subject = "_:" + subject;
+			}
+			if (!self.triple.store.subjectIndex[subject]) {
+				return;
+			}
+			self.triple.store.subjectIndex[subject].forEach(function(triple) {
+				if (typeof result[triple.predicate.value] === "undefined") {
+					result[triple.predicate.value] = [];
+				}
+				result[triple.predicate.value].push(triple.object);
+			});
+			return result;
+		};
+		
+		this.getObjects = function() {
+			var objects = [];
+			var subject = this.triple.subject;
+			var predicate = this.triple.predicate;
+			var store = this.triple.store;
+			var self = this;
+
+			if (!this.triple.store.subjectIndex[subject]) {
+				if (this.triple.store.subjectIndex["<" + subject + ">"]) {
+					subject = "<" + subject + ">";
+				} else if (this.triple.store.subjectIndex["_:" + subject]) {
+					subject = "_:" + subject;
+				}
+			}
+			if (!this.triple.store.subjectIndex[subject]) {
+				return;
+			}
+			this.triple.store.subjectIndex[subject].forEach(function(triple) {
+				if (triple.predicate.value != predicate) {
+					return;
+				}
+				if ((triple.object.termType == "Collection") && (triple.object.elements.length == 0)) {
+					return; // empty collection, no need to add
+				}
+				objects.push(triple.object);
+			});
+			return objects;
+		}
+
+		this.getter = function() {
+			var self = this;
+			var objects = this.getObjects();
+			if (!objects) {
+				return;
+			}
+			if (this.dataBinding.mode == "field") {
+				if (objects.length) {
+					return objects[0].value;
+				}
+				return;
+			} else {
+				console.log(objects);
+				var result = objects.map(function(object) {
+					if (object.termType == "Collection") {
+						return;
+					}
+					if (object.isBlank) {
+						object.contents = self.getBlankNode(self, object.value);
+					}
+					return {
+						value : object.value,
+						contents: object.contents
+					};
+				});
+				console.log(result);
+				return result;
+			}
+		};
+
+		this.getFirstElementBinding = function(dataBinding) {
+			for (var i=0; i<dataBinding.elements.length; i++) {
+				if (dataBinding.elements[i] instanceof elementBinding) {
+					return dataBinding.elements[i];
+				}
+			}
+		};
+
+		this.setter = function(data) {
+			console.log(triple);
+			console.log(JSON.stringify(data));
+			
+			var objects = this.getObjects();
+			if (!objects.length) {
+			//	return;
+			}
+			if (this.dataBinding.mode == "field") {
+				if (objects.length) {
+					objects[0].value = data;
+				} else {
+					console.log("should create a new triple for value");
+					console.log(data);
+					console.log(this.triple);
+				}
+			} else {
+				var self = this;
+				var subject = this.triple.subject;
+				if (!this.triple.store.subjectIndex[subject]) {
+					if (this.triple.store.subjectIndex["<" + subject + ">"]) {
+						subject = "<" + subject + ">";
+					} else if (this.triple.store.subjectIndex["_:" + subject]) {
+						subject = "_:" + subject;
+					}
+				}
+				if (!this.triple.store.subjectIndex[subject]) {
+					return;
+				}
+				data.forEach(function(item) {
+					if (typeof item === "undefined") {
+						return;
+					}
+					if (
+						(typeof item.value === "undefined") ||
+						((typeof item.value.about === "object") && (!item.value.about))
+					) {
+						var keys = Object.keys(item);
+						setTimeout(function() { // let the HTML elements render first so we know what properties we are;
+							var newItem = new $rdf.BlankNode();
+							item['value'] = newItem.value;
+							var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
+							if (!predicate) {
+								predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
+							}
+							if (!predicate) {
+								return;
+							}
+							console.log("Adding parent to the store");
+							console.log(newItem.value);
+							console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+							console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+							
+							console.log(self.triple.store.subjectIndex[subject][0].subject.value);
+							console.log($rdf.sym(predicate).value);
+							console.log(newItem.value);
+							
+							self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
+							self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
+							Object.keys(item).forEach(function(key) {
+								if (!item._bindings_ || !item._bindings_[key]) {
+									return;
+								}
+								if (
+									item._bindings_[key].elements.length &&
+									self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof") 
+								) {
+									if (key !== "value") {
+										var subItem = new $rdf.BlankNode();
+										item[key].about = newItem.value;
+										console.log("Adding child to the store");
+										console.log(subItem.value);
+										console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+										console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+										
+										console.log(newItem.value);
+										console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
+										console.log(subItem.value);
+
+										self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
+										self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
+									}
+								}
+							});
+							setTimeout(function() {
+								keys.forEach(function(key) {
+									if (!item._bindings_ || !item._bindings_[key]) {
+										return;
+									}
+									if (!item._bindings_[key].elements.length) {
+										return;
+									}
+									var subject = self.getFirstElementBinding(item._bindings_[key]).element.closest("[about]").getAttribute("about");
+									if (!self.triple.store.subjectIndex[subject]) {
+										if (self.triple.store.subjectIndex["<" + subject + ">"]) {
+											subject = "<" + subject + ">";
+										} else if (self.triple.store.subjectIndex["_:" + subject]) {
+											subject = "_:" + subject;
+										}
+									}
+									if (!self.triple.store.subjectIndex[subject]) {
+										return;
+									}
+									subject = self.triple.store.subjectIndex[subject][0].subject;
+									var predicate = self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property");
+									if (!predicate) {
+										predicate = self.getFirstElementBinding(item._bindings_[key]).element.parentNode.getAttribute("property");
+									}
+									if (!predicate) {
+										return;
+									}
+									var value = item[key];
+									if (subject.value === value) {
+										return;
+									}
+									console.log("Adding to the store to bind");
+									console.log(subject.value)
+									console.log(predicate);
+									console.log(value);
+
+									if (value && value.length && typeof value !== "object") {
+										self.triple.store.add(subject, $rdf.sym(predicate), value);
+									} else {
+// ---- testing to see if this should be recursive -------- //
+										value.forEach(function(item) {
+											if (typeof item === "undefined") {
+												return;
+											}
+											if (
+												(typeof item.value === "undefined") ||
+												((typeof item.value.about === "object") && (!item.value.about))
+											) {
+												var newItem = new $rdf.BlankNode();
+												item['value'] = newItem.value;
+												var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
+												if (!predicate) {
+													predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
+												}
+												if (!predicate) {
+													return;
+												}
+												console.log("Adding parent to the store");
+												console.log(newItem.value);
+												console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+												console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+													
+												console.log(self.triple.store.subjectIndex[subject][0].subject.value);
+												console.log($rdf.sym(predicate).value);
+												console.log(newItem.value);
+													
+												self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
+												self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
+//												var triple = {
+//													store : self.triple.store,
+//													subject : subject.value,
+//													predicate: predicate,
+//													initFromStore : false
+//												};
+//												item._bindings_[key].bind(triple);
+											}
+										});
+
+// ------ end of recurse check -------- // 
+
+
+
+
+
+
+									}
+									
+									var triple = {
+										store : self.triple.store,
+										subject : subject.value,
+										predicate: predicate,
+										initFromStore : true
+									};
+									item._bindings_[key].bind(triple);
+								});
+							}, 100); // needs a bit to let the 'about' property get set;
+						});
+					}
+				});
+
+				// FIXME: Create a setter for lists:
+				// - either remove the list and all the children, and re-populate. but what types will it be?
+				// can we read the types from the HTML? should we?
+				// - if we have no 'value' or 'contents', we are a new node; (maybe have a better way of marking it as such?)
+				// for each element with no value or contents, create a new blank node;
+				// from the triples in the HTML siblings, add triples to the blank node;
+			}
+			return data;
+		};
+		
+		this.addListeners = function() {
+		};
+
+		this.removeListeners = function() {
+		};
+
+		this.resumeListeners = function() {
+			this.triple.dataBindingPaused--;
+			if (this.triple.dataBindingPaused < 0) {
+				console.log("Warning: resume called of non-paused databinding");
+				this.triple.dataBindingPaused = 0;
+			}
+		};
+		this.pauseListeners = function() {
+			this.triple.dataBindingPaused++;
+		};
+
+		this.fireEvent = function(event) {
+		};
+		this.isInDocument = function() {
+			return true;
+		};
+
+		// Init triples from the rdfStore to start with;
+		if (this.triple.initFromStore) {
+			this.dataBinding.set(this.getter());
+		}	
+	};
+
 	dataBinding = function(config) {
 		var data = config.data;
 		var key = config.key;
@@ -3996,7 +4567,7 @@
 								newparent = parentBinding.parentKey + parentBinding.key + "/" + key + "/";
 								// console.log(oldparent + " => " + newparent);
 								value._bindings_[subbinding].parentKey = newparent;
-								if (value[subbinding] && value[subbinding].length) {
+								if (value[subbinding] && value[subbinding].length && (typeof value[subbinding] !== "string")) {
 									for (var i=0; i<value[subbinding].length; i++) {
 										renumber(i, value[subbinding][i], value._bindings_[subbinding]);
 									}
@@ -4102,11 +4673,11 @@
 					// FIXME: Always setting a list element will make a loop - find a better way to setup the bindings;
 					(!isEqual(binding.elements[i].getter(), shadowValue))
 				) {
-					binding.pauseListeners(binding.elements[i]);
+					binding.elements[i].pauseListeners();
 					binding.elements[i].setter(shadowValue);
-					binding.resumeListeners(binding.elements[i]);
+					binding.elements[i].resumeListeners();
 				}
-				fireEvent(binding.elements[i], "elementresolved");
+				binding.elements[i].fireEvent("elementresolved");
 			}
 			if (data._parentBindings_ && data._parentBindings_[key] && data._parentBindings_[key] !== binding) {
 				data[key] = shadowValue; 
@@ -4232,28 +4803,33 @@
 		};
 
 		this.bind = function(element, config) {
-			if (element.dataBinding) {
-				element.dataBinding.unbind(element);
+			if (element.elementBinding) {
+				element.elementBinding.unbind();
+			}
+			if (element.nodeType && (element.nodeType == document.ELEMENT_NODE)) {
+				element = new elementBinding(element, config, binding);
+			} else if (element.store && element.subject && element.predicate) {
+				element = new tripleBinding(element, binding);
+			} else {
+				throw new Error("Not an element node");
 			}
 
 			binding.elements.push(element);
-			element.getter 		= (config && typeof config.getter === "function") ? config.getter : binding.getter;
-			element.setter 		= (config && typeof config.setter === "function") ? config.setter : binding.setter;
-			element.dataBinding 	= binding;
-			element.dataBindingPaused = 0;
 
-			element.setter(shadowValue);
-			var elementValue = element.getter();
-			window.setTimeout(function() { // defer adding listeners until the run is done, this is a big performance improvement;
-				binding.addListeners(element);
-				// find out if our value / element changed since we bound, if so, update;
-				if (!isEqual(element.getter(), shadowValue)) {
-					changeStack.push(shadowValue);
-				}
-				if (!isEqual(element.getter(), elementValue)) {
-					changeStack.push(element.getter());
-				}
-			}, 0);
+			if (typeof shadowValue !== "undefined") {
+				element.setter(shadowValue);
+				var elementValue = element.getter();
+				window.setTimeout(function() { // defer adding listeners until the run is done, this is a big performance improvement;
+					element.addListeners();
+					// find out if our value / element changed since we bound, if so, update;
+					if (!isEqual(element.getter(), shadowValue)) {
+						changeStack.push(shadowValue);
+					}
+					if (!isEqual(element.getter(), elementValue)) {
+						changeStack.push(element.getter());
+					}
+				}, 0);
+			}
 			if (!binding.resolveTimer) {
 				binding.resolveTimer = window.setTimeout(this.resolve, 100);
 			}
@@ -4261,19 +4837,22 @@
 		};
 
 		this.rebind = function(element, config) {
-			// Use this when a DOM node is cloned and the clone needs to be registered with the databinding, without setting its data.
-			if (element.dataBinding) {
-				element.dataBinding.unbind(element);
+			if (element.nodeType && (element.nodeType == document.ELEMENT_NODE)) {
+				if (element.elementBinding) {
+					element.elementBinding.unbind();
+				}
+				element = new elementBinding(element, config, binding);
+			} else if (element.graph && element.subject && element.predicate && element.object) {
+				// FIXME: not sure how to rebind triples yet; should remove the original binding on the triple store?
+				element = new tripleBinding(element, binding);
+			} else {
+				throw new Error("Not an element node");
 			}
+			// Use this when a DOM node is cloned and the clone needs to be registered with the databinding, without setting its data.
 			binding.elements.push(element);
-			element.getter 		= (config && typeof config.getter === "function") ? config.getter : binding.getter;
-			element.setter 		= (config && typeof config.setter === "function") ? config.setter : binding.setter;
-			element.dataBinding 	= binding;
-			element.dataBindingPaused = 0;
-
 			var elementValue = element.getter();
 			window.setTimeout(function() { // defer adding listeners until the run is done, this is a big performance improvement;
-				binding.addListeners(element);
+				element.addListeners();
 				// find out if our value / element changed since we bound, if so, update;
 				if (!isEqual(element.getter(), shadowValue)) {
 					changeStack.push(shadowValue);
@@ -4291,37 +4870,18 @@
 
 		this.unbind = function(element) {
 			if (binding.elements.indexOf(element) > -1) {
-				binding.removeListeners(element);
+				element.removeListeners();
 				binding.elements.splice(binding.elements.indexOf(element), 1);
 			}
 		};
-
+		
 		this.cleanupBindings = function() {
 			if (binding.elements.length < 2) {
 				return;
 			}
 
-			var inDocument = function(element) {
-				if (document.contains && document.contains(element)) {
-					return true;
-				}
-				var parent = element.parentNode;
-				while (parent) {
-					if (parent === document) {
-						return true;
-					}
-					if (parent.nodeType === document.DOCUMENT_FRAGMENT_NODE) {
-						if (parent.host && inDocument(parent.host)) {
-							return true;
-						}
-					}
-					parent = parent.parentNode;
-				}
-				return false;
-			};
-
 			binding.elements.forEach(function(element) {
-				if (!inDocument(element)) {
+				if (!element.isInDocument()) {
 					element.markedForRemoval = true;
 				} else {
 					element.markedForRemoval = false;
@@ -4334,7 +4894,7 @@
 
 			binding.cleanupTimer = window.setTimeout(function() {
 				binding.elements.filter(function(element) {
-					if (element.markedForRemoval && !inDocument(element)) {
+					if (element.markedForRemoval && !element.isInDocument()) {
 						element.dataBinding.unbind(element);
 						return false;
 					}
@@ -4359,45 +4919,7 @@
 		}
 	};
 
-	var fieldNodeRemovedHandler = function(evt) {
-		if (!this.parentNode && this.dataBinding) {
-			this.dataBinding.unbind(this);
-		}
-	};
 
-	dataBinding.prototype.addListeners = function(element) {
-		if (element.dataBinding) {
-			element.dataBinding.removeListeners(element);
-		}
-		if (typeof element.mutationObserver === "undefined") {
-			if (typeof MutationObserver === "function") {
-				element.mutationObserver = new MutationObserver(this.handleMutation);
-			}
-		}
-		if (this.mode == "field") {
-			if (element.mutationObserver) {
-				element.mutationObserver.observe(element, {attributes: true});
-			}
-			element.addEventListener("DOMSubtreeModified", this.handleEvent);
-			element.addEventListener("DOMNodeRemoved", fieldNodeRemovedHandler);
-			element.addEventListener("change", this.handleEvent);
-		}
-		if (this.mode == "list") {
-			if (element.mutationObserver) {
-				element.mutationObserver.observe(element, {attributes: true});
-			}
-			element.addEventListener("DOMNodeRemoved", this.handleEvent);
-			element.addEventListener("DOMNodeInserted", this.handleEvent);
-		}
-		element.addEventListener("databinding:valuechanged", this.handleEvent);
-
-		element.addEventListener("databinding:pause", function() {
-			this.dataBinding.pauseListeners(this);
-		});
-		element.addEventListener("databinding:resume", function() {
-			this.dataBinding.resumeListeners(this);
-		});
-	};
 	dataBinding.prototype.resumeListeners = function(element) {
 		element.dataBindingPaused--;
 		if (element.dataBindingPaused < 0) {
@@ -4408,130 +4930,7 @@
 	dataBinding.prototype.pauseListeners = function(element) {
 		element.dataBindingPaused++;
 	};
-	dataBinding.prototype.removeListeners = function(element) {
-		if (this.mode == "field") {
-			if (element.mutationObserver) {
-				element.mutationObserver.disconnect();
-			}
-			element.removeEventListener("DOMSubtreeModified", this.handleEvent);
-			element.removeEventListener("DOMNodeRemoved", fieldNodeRemovedHandler);
-			element.removeEventListener("change", this.handleEvent);
-		}
-		if (this.mode == "list") {
-			if (element.mutationObserver) {
-				element.mutationObserver.disconnect();
-			}
-			element.removeEventListener("DOMNodeRemoved", this.handleEvent);
-			element.removeEventListener("DOMNodeInserted", this.handleEvent);
-		}
-		element.removeEventListener("databinding:valuechanged", this.handleEvent);
-	};
 
-	dataBinding.prototype.handleMutation = function(event) {
-		// FIXME: assuming that one set of mutation events always have the same target; this might not be the case;
-		var target = event[0].target;
-		if (!target.dataBinding) {
-			return;
-		}
-		if (target.dataBindingPaused) {
-			return;
-		}
-
-		if (target.dataBinding.paused) {
-			return;
-		}
-		var handleMe = false;
-		for (var i=0; i<event.length; i++) {
-			if (target.dataBinding.attributeFilter.indexOf(event[i].attributeName) == -1) {
-				handleMe = true; // only handle the event 
-			}
-		}
-
-		if (handleMe) {
-			var self = target.dataBinding;
-			window.setTimeout(function() {
-				self.pauseListeners(target);	// prevent possible looping, getter sometimes also triggers an attribute change;
-				self.set(target.getter());
-				self.resumeListeners(target);
-			}, 0); // allow the rest of the mutation event to occur;
-		}
-	};
-
-	dataBinding.prototype.handleEvent = function (event) {
-		var target = event.currentTarget;
-		var self = target.dataBinding;
-
-		if (typeof self === 'undefined') {
-			return;
-		}
-		if (self.paused) {
-			return;
-		}
-		if (target.dataBindingPaused) {
-			event.stopPropagation();
-			return;
-		}
-		if (self.mode === "list") {
-			if (event.relatedNode && (target != event.relatedNode)) {
-				return;
-			}
-		}
-
-		var i, data, items;
-		if (self.mode === "list" && event.type == "DOMNodeRemoved") {
-			if (event.target.nodeType != document.ELEMENT_NODE) {
-				return;
-			}
-			// find the index of the removed target node;
-			items = this.querySelectorAll(":scope > [data-simply-list-item]");
-			for (i=0; i<items.length; i++) {
-				if (items[i] == event.target) {
-					data = target.dataBinding.get();
-					items[i].simplyData = data.splice(i, 1)[0];
-					return;
-				}
-			}
-		}
-
-		if (self.mode === "list" && event.type == "DOMNodeInserted") {
-			// find the index of the inserted target node;
-			items = this.querySelectorAll(":scope > [data-simply-list-item]");
-			for (i=0; i<items.length; i++) {
-				if (items[i] == event.target) {
-					if (items[i].simplyData) {
-						data = target.dataBinding.get();
-						data.splice(i, 0, items[i].simplyData);
-						return;
-					}
-				}
-			}
-		}
-
-		switch (event.type) {
-			case "DOMCharacterDataModified":
-			case "databinding:valuechanged":
-			case "change":
-			case "DOMAttrModified":
-			case "DOMNodeInserted":
-			case "DOMSubtreeModified":
-			case "DOMNodeRemoved":
-				// Allow the browser to fix what it thinks needs to be fixed (node to be removed, cleaned etc) before setting the new data;
-
-				// there are needed to keep the focus in an element while typing;
-				self.pauseListeners(target);
-				self.set(target.getter());
-				self.resumeListeners(target);
-
-				// these are needed to update after the browser is done doing its thing;
-				window.setTimeout(function() {
-					self.pauseListeners(target);
-					self.set(target.getter());
-					self.resumeListeners(target);
-				}, 1); // allow the rest of the mutation event to occur;
-			break;
-		}
-		self.fireEvent(target, "domchanged");
-	};
 
 	// Housekeeping, remove references to deleted nodes
 	document.addEventListener("DOMNodeRemoved", function(evt) {
@@ -4674,11 +5073,17 @@
 	// Define the new element
 	customElements.define('simply-render', SimplyRender);
 
-	editor.init({
-		endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
-		toolbars : defaultToolbars,
-		profile : 'live'
-	});
+	var initSimply = function() {
+		editor.init({
+			endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
+			toolbars : defaultToolbars,
+			profile : 'live'
+		});
+	}
 
-
+	if (scriptEl.hasAttribute("data-simply-initOnEvent")) {
+		document.addEventListener("simply-init", initSimply);
+	} else {
+		initSimply();
+	}
 }());
