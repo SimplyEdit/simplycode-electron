@@ -4110,6 +4110,138 @@
 			}
 		};
 
+		function bindChildren(item, newItem) {
+			Object.keys(item).forEach(function(key) {
+				var subItem;
+				if (!item._bindings_ || !item._bindings_[key]) {
+					return;
+				}
+				if (
+					item._bindings_[key].elements.length &&
+					self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof") 
+				) {
+					if (key !== "value") {
+						subItem = new $rdf.BlankNode();
+						item[key].about = newItem.value;
+						console.log("Adding child to the store");
+						console.log(subItem.value);
+						console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+						
+						console.log(newItem.value);
+						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
+						console.log(subItem.value);
+
+						self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
+						self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
+						bindChildren(item[key], subItem);
+					}
+				} else if (
+					item._bindings_[key].elements.length &&
+					self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property") &&
+					self.getFirstElementBinding(item._bindings_[key]).dataBinding.mode == "field"
+				) {
+					if (key !== "value") {
+						console.log("Adding child to the store");
+						console.log(newItem.value);
+						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
+						console.log(item[key]);
+					//	self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), item[key]);
+					}
+				}
+			});
+		}
+
+		function bindParents(value, subject) {
+			value.forEach(function(item) {
+				if (typeof item === "undefined") {
+					return;
+				}
+				if (
+					(typeof item.value === "undefined") ||
+					((typeof item.value.about === "object") && (!item.value.about))
+				) {
+					var keys = Object.keys(item);
+					var blankNode = new $rdf.BlankNode();
+					item['value'] = blankNode.value;
+					var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
+					if (!predicate) {
+						predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
+					}
+					if (!predicate) {
+						return;
+					}
+					console.log("Adding parent to the store");
+					console.log(blankNode.value);
+					console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+					console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+						
+					console.log(self.triple.store.subjectIndex[subject][0].subject.value);
+					console.log($rdf.sym(predicate).value);
+					console.log(blankNode.value);
+						
+					self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
+					self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), blankNode);
+					
+					bindChildren(item, blankNode);
+					setTimeout(function() {
+						keys.forEach(function(key) {
+							if (!item._bindings_ || !item._bindings_[key]) {
+								return;
+							}
+							if (!item._bindings_[key].elements.length) {
+								return;
+							}
+							var subject = self.getFirstElementBinding(item._bindings_[key]).element.closest("[about]").getAttribute("about");
+							if (!self.triple.store.subjectIndex[subject]) {
+								if (self.triple.store.subjectIndex["<" + subject + ">"]) {
+									subject = "<" + subject + ">";
+								} else if (self.triple.store.subjectIndex["_:" + subject]) {
+									subject = "_:" + subject;
+								}
+							}
+							if (!self.triple.store.subjectIndex[subject]) {
+								return;
+							}
+							subject = self.triple.store.subjectIndex[subject][0].subject;
+							var predicate = self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property");
+							if (!predicate) {
+								predicate = self.getFirstElementBinding(item._bindings_[key]).element.parentNode.getAttribute("property");
+							}
+							if (!predicate) {
+								return;
+							}
+							var value = item[key];
+							if (subject.value === value) {
+								return;
+							}
+							console.log("Adding to the store to bind");
+							console.log(subject.value)
+							console.log(predicate);
+							console.log(value);
+
+							if (value && value.length && typeof value !== "object") {
+								self.triple.store.add(subject, $rdf.sym(predicate), value);
+							} else {
+								if (typeof value.forEach !== "function") {
+									return;
+								}
+								bindParents(value, subject);
+							}
+								
+							var triple = {
+								store : self.triple.store,
+								subject : subject.value,
+								predicate: predicate,
+								initFromStore : false
+							};
+							item._bindings_[key].bind(triple);
+						});
+					}, 100); // needs a bit to let the 'about' property get set;
+				}
+			});
+		}				
+
 		this.setter = function(data) {
 			console.log(triple);
 			console.log(JSON.stringify(data));
@@ -4137,187 +4269,10 @@
 					return;
 				}
 				
-				function bindChildren(item, newItem) {
-					Object.keys(item).forEach(function(key) {
-						var subItem;
-						if (!item._bindings_ || !item._bindings_[key]) {
-							return;
-						}
-						if (
-							item._bindings_[key].elements.length &&
-							self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof") 
-						) {
-							if (key !== "value") {
-								subItem = new $rdf.BlankNode();
-								item[key].about = newItem.value;
-								console.log("Adding child to the store");
-								console.log(subItem.value);
-								console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-								
-								console.log(newItem.value);
-								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
-								console.log(subItem.value);
 
-								self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
-								self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
-
-							}
-						} else if (
-							item._bindings_[key].elements.length &&
-							self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property") &&
-							self.getFirstElementBinding(item._bindings_[key]).dataBinding.mode == "field"
-						) {
-							if (key !== "value") {
-								console.log("Adding child to the store");
-								console.log(newItem.value);
-								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
-								console.log(item[key]);
-								self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), item[key]);
-							}
-						}
-					});
-				}
-				
-				data.forEach(function(item) {
-					if (typeof item === "undefined") {
-						return;
-					}
-					if (
-						(typeof item.value === "undefined") ||
-						((typeof item.value.about === "object") && (!item.value.about))
-					) {
-						var keys = Object.keys(item);
-						setTimeout(function() { // let the HTML elements render first so we know what properties we are;
-							var newItem = new $rdf.BlankNode();
-							item['value'] = newItem.value;
-							var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
-							if (!predicate) {
-								predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
-							}
-							if (!predicate) {
-								return;
-							}
-							console.log("Adding parent to the store");
-							console.log(newItem.value);
-							console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-							console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-							
-							console.log(self.triple.store.subjectIndex[subject][0].subject.value);
-							console.log($rdf.sym(predicate).value);
-							console.log(newItem.value);
-							
-							self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
-							self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
-							
-							bindChildren(item, newItem);
-
-							setTimeout(function() {
-								keys.forEach(function(key) {
-									if (!item._bindings_ || !item._bindings_[key]) {
-										return;
-									}
-									if (!item._bindings_[key].elements.length) {
-										return;
-									}
-									var subject = self.getFirstElementBinding(item._bindings_[key]).element.closest("[about]").getAttribute("about");
-									if (!self.triple.store.subjectIndex[subject]) {
-										if (self.triple.store.subjectIndex["<" + subject + ">"]) {
-											subject = "<" + subject + ">";
-										} else if (self.triple.store.subjectIndex["_:" + subject]) {
-											subject = "_:" + subject;
-										}
-									}
-									if (!self.triple.store.subjectIndex[subject]) {
-										return;
-									}
-									subject = self.triple.store.subjectIndex[subject][0].subject;
-									var predicate = self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property");
-									if (!predicate) {
-										predicate = self.getFirstElementBinding(item._bindings_[key]).element.parentNode.getAttribute("property");
-									}
-									if (!predicate) {
-										return;
-									}
-									var value = item[key];
-									if (subject.value === value) {
-										return;
-									}
-									console.log("Adding to the store to bind");
-									console.log(subject.value)
-									console.log(predicate);
-									console.log(value);
-
-									if (value && value.length && typeof value !== "object") {
-										self.triple.store.add(subject, $rdf.sym(predicate), value);
-									} else {
-// ---- testing to see if this should be recursive -------- //
-										if (typeof value.forEach !== "function") {
-											return;
-										}
-										
-										// This is where the recurse should start;
-										value.forEach(function(item) {
-											if (typeof item === "undefined") {
-												return;
-											}
-											if (
-												(typeof item.value === "undefined") ||
-												((typeof item.value.about === "object") && (!item.value.about))
-											) {
-												var newItem = new $rdf.BlankNode();
-												item['value'] = newItem.value;
-												var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
-												if (!predicate) {
-													predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
-												}
-												if (!predicate) {
-													return;
-												}
-												console.log("Adding parent to the store");
-												console.log(newItem.value);
-												console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-												console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-													
-												console.log(self.triple.store.subjectIndex[subject][0].subject.value);
-												console.log($rdf.sym(predicate).value);
-												console.log(newItem.value);
-													
-												self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
-												self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
-												
-												bindChildren(item, newItem);
-											}
-										});
-
-// ------ end of recurse check -------- // 
-
-
-
-
-
-
-									}
-									
-									var triple = {
-										store : self.triple.store,
-										subject : subject.value,
-										predicate: predicate,
-										initFromStore : false
-									};
-									item._bindings_[key].bind(triple);
-								});
-							}, 100); // needs a bit to let the 'about' property get set;
-						});
-					}
+				setTimeout(function() {
+					bindParents(data, subject);
 				});
-
-				// FIXME: Create a setter for lists:
-				// - either remove the list and all the children, and re-populate. but what types will it be?
-				// can we read the types from the HTML? should we?
-				// - if we have no 'value' or 'contents', we are a new node; (maybe have a better way of marking it as such?)
-				// for each element with no value or contents, create a new blank node;
-				// from the triples in the HTML siblings, add triples to the blank node;
 			}
 			return data;
 		};
