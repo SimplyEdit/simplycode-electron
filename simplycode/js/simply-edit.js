@@ -4007,6 +4007,7 @@
 		this.triple.dataBinding = dataBinding;
 		this.triple.tripleBinding = this;
 
+		console.log("create tripleBinding for " + triple.subject + "::" + triple.predicate);
 		if (typeof this.triple.store.simplyDataBindings === "undefined") {
 			this.triple.store.simplyDataBindings = {};
 		}
@@ -4114,9 +4115,6 @@
 			console.log(JSON.stringify(data));
 			
 			var objects = this.getObjects();
-			if (!objects.length) {
-			//	return;
-			}
 			if (this.dataBinding.mode == "field") {
 				if (objects.length) {
 					objects[0].value = data;
@@ -4138,6 +4136,49 @@
 				if (!this.triple.store.subjectIndex[subject]) {
 					return;
 				}
+				
+				function bindChildren(item, newItem) {
+					Object.keys(item).forEach(function(key) {
+						var subItem;
+						if (!item._bindings_ || !item._bindings_[key]) {
+							return;
+						}
+						if (
+							item._bindings_[key].elements.length &&
+							self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof") 
+						) {
+							if (key !== "value") {
+								subItem = new $rdf.BlankNode();
+								item[key].about = newItem.value;
+								console.log("Adding child to the store");
+								console.log(subItem.value);
+								console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
+								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
+								
+								console.log(newItem.value);
+								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
+								console.log(subItem.value);
+
+								self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
+								self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
+
+							}
+						} else if (
+							item._bindings_[key].elements.length &&
+							self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property") &&
+							self.getFirstElementBinding(item._bindings_[key]).dataBinding.mode == "field"
+						) {
+							if (key !== "value") {
+								console.log("Adding child to the store");
+								console.log(newItem.value);
+								console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
+								console.log(item[key]);
+								self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), item[key]);
+							}
+						}
+					});
+				}
+				
 				data.forEach(function(item) {
 					if (typeof item === "undefined") {
 						return;
@@ -4168,31 +4209,9 @@
 							
 							self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
 							self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
-							Object.keys(item).forEach(function(key) {
-								if (!item._bindings_ || !item._bindings_[key]) {
-									return;
-								}
-								if (
-									item._bindings_[key].elements.length &&
-									self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof") 
-								) {
-									if (key !== "value") {
-										var subItem = new $rdf.BlankNode();
-										item[key].about = newItem.value;
-										console.log("Adding child to the store");
-										console.log(subItem.value);
-										console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-										console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-										
-										console.log(newItem.value);
-										console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
-										console.log(subItem.value);
+							
+							bindChildren(item, newItem);
 
-										self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
-										self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
-									}
-								}
-							});
 							setTimeout(function() {
 								keys.forEach(function(key) {
 									if (!item._bindings_ || !item._bindings_[key]) {
@@ -4233,6 +4252,11 @@
 										self.triple.store.add(subject, $rdf.sym(predicate), value);
 									} else {
 // ---- testing to see if this should be recursive -------- //
+										if (typeof value.forEach !== "function") {
+											return;
+										}
+										
+										// This is where the recurse should start;
 										value.forEach(function(item) {
 											if (typeof item === "undefined") {
 												return;
@@ -4261,13 +4285,8 @@
 													
 												self.triple.store.add(newItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
 												self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), newItem);
-//												var triple = {
-//													store : self.triple.store,
-//													subject : subject.value,
-//													predicate: predicate,
-//													initFromStore : false
-//												};
-//												item._bindings_[key].bind(triple);
+												
+												bindChildren(item, newItem);
 											}
 										});
 
@@ -4284,7 +4303,7 @@
 										store : self.triple.store,
 										subject : subject.value,
 										predicate: predicate,
-										initFromStore : true
+										initFromStore : false
 									};
 									item._bindings_[key].bind(triple);
 								});
