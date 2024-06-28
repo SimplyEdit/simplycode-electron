@@ -4007,7 +4007,6 @@
 		this.triple.dataBinding = dataBinding;
 		this.triple.tripleBinding = this;
 
-		console.log("create tripleBinding for " + triple.subject + "::" + triple.predicate);
 		if (typeof this.triple.store.simplyDataBindings === "undefined") {
 			this.triple.store.simplyDataBindings = {};
 		}
@@ -4044,7 +4043,16 @@
 		};
 		
 		this.getObjects = function() {
+			var triples = this.getTriples();
 			var objects = [];
+			triples.forEach(function(triple) {
+				objects.push(triple.object);
+			});
+			return objects;
+		};
+
+		this.getTriples = function() {
+			var triples = [];
 			var subject = this.triple.subject;
 			var predicate = this.triple.predicate;
 			var store = this.triple.store;
@@ -4067,9 +4075,9 @@
 				if ((triple.object.termType == "Collection") && (triple.object.elements.length == 0)) {
 					return; // empty collection, no need to add
 				}
-				objects.push(triple.object);
+				triples.push(triple);
 			});
-			return objects;
+			return triples;
 		}
 
 		this.getter = function() {
@@ -4084,7 +4092,6 @@
 				}
 				return;
 			} else {
-				console.log(objects);
 				var result = objects.map(function(object) {
 					if (object.termType == "Collection") {
 						return;
@@ -4097,7 +4104,6 @@
 						contents: object.contents
 					};
 				});
-				console.log(result);
 				return result;
 			}
 		};
@@ -4123,30 +4129,9 @@
 					if (key !== "value") {
 						subItem = new $rdf.BlankNode();
 						item[key].about = newItem.value;
-						console.log("Adding child to the store");
-						console.log(subItem.value);
-						console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-						
-						console.log(newItem.value);
-						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
-						console.log(subItem.value);
-
 						self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
 						self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
 						bindChildren(item[key], subItem);
-					}
-				} else if (
-					item._bindings_[key].elements.length &&
-					self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property") &&
-					self.getFirstElementBinding(item._bindings_[key]).dataBinding.mode == "field"
-				) {
-					if (key !== "value") {
-						console.log("Adding child to the store");
-						console.log(newItem.value);
-						console.log($rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")).value);
-						console.log(item[key]);
-					//	self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), item[key]);
 					}
 				}
 			});
@@ -4171,14 +4156,6 @@
 					if (!predicate) {
 						return;
 					}
-					console.log("Adding parent to the store");
-					console.log(blankNode.value);
-					console.log($rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").value);
-					console.log($rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")).value);
-						
-					console.log(self.triple.store.subjectIndex[subject][0].subject.value);
-					console.log($rdf.sym(predicate).value);
-					console.log(blankNode.value);
 						
 					self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
 					self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), blankNode);
@@ -4215,10 +4192,6 @@
 							if (subject.value === value) {
 								return;
 							}
-							console.log("Adding to the store to bind");
-							console.log(subject.value)
-							console.log(predicate);
-							console.log(value);
 
 							if (value && value.length && typeof value !== "object") {
 								self.triple.store.add(subject, $rdf.sym(predicate), value);
@@ -4242,10 +4215,17 @@
 			});
 		}				
 
+		this.deleteBlankNode = function(store, node) {
+			while (store.subjectIndex["_:" + node].length) {
+				subEntry = store.subjectIndex["_:" + node][0];
+				store.remove(subEntry);
+				if (subEntry.object.termType === "BlankNode") {
+					this.deleteBlankNode(store, subEntry.object.value);
+				}
+			}
+		};
+
 		this.setter = function(data) {
-			console.log(triple);
-			console.log(JSON.stringify(data));
-			
 			var objects = this.getObjects();
 			if (this.dataBinding.mode == "field") {
 				if (objects.length) {
@@ -4269,7 +4249,23 @@
 					return;
 				}
 				
-
+				var dataNodes = data.map(function(entry) {
+					return entry.value;
+				});
+				
+				this.getTriples().forEach(function(entry) {
+					if (dataNodes.indexOf(entry.object.value) === -1) {
+						// node was removed;
+						console.log("remove node");
+						console.log(self.triple.subject);
+						console.log(self.triple.predicate);
+						console.log(entry.object.value);
+						self.triple.store.remove(entry);
+						if (entry.object.termType === "BlankNode") {
+							self.deleteBlankNode(self.triple.store, entry.object.value);
+						}
+					}
+				});
 				setTimeout(function() {
 					bindParents(data, subject);
 				});
