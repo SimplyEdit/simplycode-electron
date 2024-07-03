@@ -4129,9 +4129,11 @@
 					if (key !== "value") {
 						subItem = new $rdf.BlankNode();
 						item[key].about = newItem.value;
+						// console.log("created blank node " + subItem.value + " as child of " + newItem.value);
 						self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
 						self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
 						bindChildren(item[key], subItem);
+						item._bindings_[key].resolve(true); // make sure the elements are resolved to have the correct 'about' value;
 					}
 				}
 			});
@@ -4149,6 +4151,7 @@
 					var keys = Object.keys(item);
 					var blankNode = new $rdf.BlankNode();
 					item['value'] = blankNode.value;
+					// console.log("created blank node " + blankNode.value + " as parent");
 					var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
 					if (!predicate) {
 						predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
@@ -4194,6 +4197,7 @@
 							}
 
 							if (value && value.length && typeof value !== "object") {
+								// console.log("adding " + predicate + " to " + subject);
 								self.triple.store.add(subject, $rdf.sym(predicate), value);
 							} else {
 								if (typeof value.forEach !== "function") {
@@ -4210,7 +4214,7 @@
 							};
 							item._bindings_[key].bind(triple);
 						});
-					}, 100); // needs a bit to let the 'about' property get set;
+					}, 10); // needs a bit to let the 'about' property get set;
 				}
 			});
 		}				
@@ -4256,10 +4260,10 @@
 				this.getTriples().forEach(function(entry) {
 					if (dataNodes.indexOf(entry.object.value) === -1) {
 						// node was removed;
-						console.log("remove node");
-						console.log(self.triple.subject);
-						console.log(self.triple.predicate);
-						console.log(entry.object.value);
+						// console.log("remove node");
+						// console.log(self.triple.subject);
+						// console.log(self.triple.predicate);
+						// console.log(entry.object.value);
 						self.triple.store.remove(entry);
 						if (entry.object.termType === "BlankNode") {
 							self.deleteBlankNode(self.triple.store, entry.object.value);
