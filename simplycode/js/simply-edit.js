@@ -4066,7 +4066,7 @@
 				}
 			}
 			if (!this.triple.store.subjectIndex[subject]) {
-				return;
+				return [];
 			}
 			this.triple.store.subjectIndex[subject].forEach(function(triple) {
 				if (triple.predicate.value != predicate) {
@@ -4232,12 +4232,30 @@
 		this.setter = function(data) {
 			var objects = this.getObjects();
 			if (this.dataBinding.mode == "field") {
+			/*
+				if (data.indexOf("http") === 0) { // make it a symbol if it is a url
+					data = $rdf.sym(data);
+				}
+			*/
 				if (objects.length) {
 					objects[0].value = data;
 				} else {
-					console.log("should create a new triple for value");
+					console.log("create a new triple for value");
 					console.log(data);
 					console.log(this.triple);
+					var subject = this.triple.subject;
+					if (!this.triple.store.subjectIndex[subject]) {
+						if (this.triple.store.subjectIndex["<" + subject + ">"]) {
+							subject = "<" + subject + ">";
+						} else if (this.triple.store.subjectIndex["_:" + subject]) {
+							subject = "_:" + subject;
+						}
+					}
+					if (!this.triple.store.subjectIndex[subject]) {
+						return;
+					}
+					subject = this.triple.store.subjectIndex[subject][0].subject;
+					this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
 				}
 			} else {
 				var self = this;
