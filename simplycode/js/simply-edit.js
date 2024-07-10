@@ -4475,11 +4475,14 @@
 
 			binding.elements.push(element);
 
+			window.setTimeout(function() { // defer adding listeners until the run is done, this is a big performance improvement;
+				element.addListeners();
+			}, 1);
 			if (typeof shadowValue !== "undefined") {
 				element.setter(shadowValue);
 				var elementValue = element.getter();
 				window.setTimeout(function() { // defer adding listeners until the run is done, this is a big performance improvement;
-					element.addListeners();
+					// element.addListeners();
 					// find out if our value / element changed since we bound, if so, update;
 					if (!isEqual(element.getter(), shadowValue)) {
 						changeStack.push(shadowValue);
@@ -4600,11 +4603,14 @@
 			return;
 		}
 		window.setTimeout(function() { // chrome sometimes 'helpfully' removes the element and then inserts it back, probably as a rendering optimalization. We're fine cleaning up in a bit, if still needed.
-			if (!target.parentNode && target.dataBinding) {
-				target.dataBinding.unbind(target);
+			if (!target.parentNode && target.dataBinding && target.elementBinding) {
+				target.dataBinding.unbind(target.elementBinding);
+				if (target.dataBinding.mode == "field") {
+					target.dataBinding.set();
+				}
 				delete target.dataBinding;
 			}
-		}, 1000);
+		}, 400);
 	});
 
 	// polyfill to add :scope selector for IE

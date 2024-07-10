@@ -208,7 +208,7 @@ tripleBinding = function(triple, dataBinding) {
 							// console.log("adding " + predicate + " to " + subject);
 							self.triple.store.add(subject, $rdf.sym(predicate), value);
 						} else {
-							if (typeof value.forEach !== "function") {
+							if (!value || typeof value.forEach !== "function") {
 								return;
 							}
 							bindParents(value, subject);
@@ -249,7 +249,11 @@ tripleBinding = function(triple, dataBinding) {
 			}
 		*/
 			if (objects.length) {
-				objects[0].value = data;
+				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
+					objects[0].value = data;
+				} else {
+					this.triple.store.remove(this.getTriples()[0]);
+				}
 			} else {
 				console.log("create a new triple for value");
 				console.log(data);
@@ -334,3 +338,62 @@ tripleBinding = function(triple, dataBinding) {
 		this.dataBinding.set(this.getter());
 	}	
 };
+
+editor.field.storedInit = editor.field.init;
+editor.list.storedInit = editor.list.init;
+
+var initRdflibTriple = function(element) {
+	if (
+		(typeof element.dataBinding.config.data.value !== "undefined") &&
+		((typeof element.dataBinding.config.data.value.about === "object") && (!element.dataBinding.config.data.value.about))
+	) {
+		// wait for the 'about' to be set;
+		setTimeout(function() {
+			initRdflibTriple(element);
+		}, 250);
+		return;
+	}
+
+	var about = element.closest("[about]");
+	if (!about) {
+		return;
+	}
+	if (!element.hasAttribute("property")) {
+		return;
+	}
+
+	var subject = element.closest("[about]").getAttribute("about"); // FIXME: this goes wrong if the 'about' is slow to get set for new elements;
+	var property = element.getAttribute("property");
+	var initFromStore = true;
+	if (element.getAttribute("data-set-to-store")) {
+		initFromStore = false;
+	}
+	if (element.dataBinding) {
+		if (
+			!simplyApp.rdfStore.simplyDataBindings ||
+			!simplyApp.rdfStore.simplyDataBindings[subject] ||
+			!simplyApp.rdfStore.simplyDataBindings[subject][property]
+		) {
+			element.dataBinding.bind(
+				new tripleBinding(
+					{
+						store: simplyApp.rdfStore,
+						subject : subject,
+						predicate : property,
+						initFromStore: initFromStore
+					},
+					element.dataBinding
+				)
+			);
+		}
+	}
+}
+
+editor.field.init = function(field, dataParent, useDataBinding) {
+	editor.field.storedInit(field, dataParent, useDataBinding);
+	initRdflibTriple(field);
+}
+editor.list.init = function(list, dataParent, useDataBinding) {
+	editor.list.storedInit(list, dataParent, useDataBinding);
+	initRdflibTriple(list);
+}
