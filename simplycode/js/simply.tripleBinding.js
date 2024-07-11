@@ -36,6 +36,12 @@ tripleBinding = function(triple, dataBinding) {
 		this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate] = this;
 	} else {
 		console.log("Warning: binding to the same subject/predicate twice");
+		var previousBinding = this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate];
+		previousBinding.isInDocument = function() {
+			return false;
+		};
+		this.dataBinding.unbind(previousBinding);
+		this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate] = this;
 	}
 	this.unbind = function() {
 		if (this.dataBinding) {
@@ -246,7 +252,7 @@ tripleBinding = function(triple, dataBinding) {
 	this.deleteBlankNode = function(store, node) {
 		while (store.subjectIndex["_:" + node].length) {
 			subEntry = store.subjectIndex["_:" + node][0];
-			store.remove(subEntry);
+			store.removeStatement(subEntry);
 			if (subEntry.object.termType === "BlankNode") {
 				this.deleteBlankNode(store, subEntry.object.value);
 			}
@@ -265,7 +271,7 @@ tripleBinding = function(triple, dataBinding) {
 				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
 					objects[0].value = data;
 				} else {
-					this.triple.store.remove(this.getTriples()[0]);
+					this.triple.store.removeStatement(this.getTriples()[0]);
 				}
 			} else {
 				console.log("create a new triple for value");
@@ -312,7 +318,7 @@ tripleBinding = function(triple, dataBinding) {
 					// console.log(self.triple.subject);
 					// console.log(self.triple.predicate);
 					// console.log(entry.object.value);
-					self.triple.store.remove(entry);
+					self.triple.store.removeStatement(entry);
 					if (entry.object.termType === "BlankNode") {
 						self.deleteBlankNode(self.triple.store, entry.object.value);
 					}
