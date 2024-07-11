@@ -7,6 +7,15 @@ tripleBinding = function(triple, dataBinding) {
 			predicate : rdfPredicate
 		}
 	*/
+
+	var resolveNameSpace = function(property) {
+		var namespace = "xmlns:" + property.split(":")[0];
+		var namespaceElement = document.body.closest("[" + CSS.escape(namespace) + "]");
+		if (namespaceElement) {
+			return namespaceElement.getAttribute(namespace) + property.split(":")[1];
+		}
+		return property;
+	};
 		
 	var self = this;
 	this.triple = triple;
@@ -14,6 +23,8 @@ tripleBinding = function(triple, dataBinding) {
 	this.triple.dataBinding = dataBinding;
 	this.triple.tripleBinding = this;
 	this.simplyDataBindingElement = true;
+
+	this.triple.predicate = resolveNameSpace(this.triple.predicate);
 
 	if (typeof this.triple.store.simplyDataBindings === "undefined") {
 		this.triple.store.simplyDataBindings = {};
@@ -138,8 +149,8 @@ tripleBinding = function(triple, dataBinding) {
 					subItem = new $rdf.BlankNode();
 					item[key].about = newItem.value;
 					// console.log("created blank node " + subItem.value + " as child of " + newItem.value);
-					self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof")));
-					self.triple.store.add(newItem, $rdf.sym(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property")), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
+					self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof"))));
+					self.triple.store.add(newItem, $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property"))), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
 					bindChildren(item[key], subItem);
 					item._bindings_[key].resolve(true); // make sure the elements are resolved to have the correct 'about' value;
 				}
@@ -167,8 +178,8 @@ tripleBinding = function(triple, dataBinding) {
 				if (!predicate) {
 					return;
 				}
-					
-				self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof")));
+				predicate = resolveNameSpace(predicate);
+				self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof"))));
 				self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), blankNode);
 				
 				bindChildren(item, blankNode);
@@ -199,6 +210,7 @@ tripleBinding = function(triple, dataBinding) {
 						if (!predicate) {
 							return;
 						}
+						predicate = resolveNameSpace(predicate);
 						var value = item[key];
 						if (subject.value === value) {
 							return;
@@ -270,7 +282,9 @@ tripleBinding = function(triple, dataBinding) {
 					return;
 				}
 				subject = this.triple.store.subjectIndex[subject][0].subject;
-				this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
+				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
+					this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
+				}
 			}
 		} else {
 			var self = this;
@@ -333,6 +347,7 @@ tripleBinding = function(triple, dataBinding) {
 		return true;
 	};
 
+
 	// Init triples from the rdfStore to start with;
 	if (this.triple.initFromStore) {
 		this.dataBinding.set(this.getter());
@@ -341,6 +356,7 @@ tripleBinding = function(triple, dataBinding) {
 
 editor.field.storedInit = editor.field.init;
 editor.list.storedInit = editor.list.init;
+
 
 var initRdflibTriple = function(element) {
 	if (
