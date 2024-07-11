@@ -80,8 +80,8 @@ tripleBinding = function(triple, dataBinding) {
 		if (!this.triple.store.subjectIndex[subject]) {
 			if (this.triple.store.subjectIndex["<" + subject + ">"]) {
 				subject = "<" + subject + ">";
-			} else if (this.triple.store.subjectIndex["_:" + subject]) {
-				subject = "_:" + subject;
+			} else if (this.triple.store.subjectIndex[subject.replace(/^\[(.*)\]$/, "$1")]) {
+				subject = subject.replace(/^\[(.*)\]$/, "$1");
 			}
 		}
 		if (!this.triple.store.subjectIndex[subject]) {
@@ -107,7 +107,8 @@ tripleBinding = function(triple, dataBinding) {
 		}
 		if (this.dataBinding.mode == "field") {
 			if (objects.length) {
-				return objects[0].value;
+				return objects[0].isBlank ? "[_:" + objects[0].value + "]" : objects[0].value;
+				// follows the format as described in https://www.w3.org/TR/2008/REC-rdfa-syntax-20081014/#sec_5.4.5.
 			}
 			return;
 		} else {
@@ -119,7 +120,7 @@ tripleBinding = function(triple, dataBinding) {
 					object.contents = self.getBlankNode(self, object.value);
 				}
 				return {
-					value : object.value,
+					value : (object.isBlank ? "[_:" + object.value + "]" : object.value),
 					contents: object.contents
 				};
 			});
@@ -147,7 +148,7 @@ tripleBinding = function(triple, dataBinding) {
 			) {
 				if (key !== "value") {
 					subItem = new $rdf.BlankNode();
-					item[key].about = newItem.value;
+					item[key].about = "[_:" + newItem.value + "]";
 					// console.log("created blank node " + subItem.value + " as child of " + newItem.value);
 					self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof"))));
 					self.triple.store.add(newItem, $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property"))), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
@@ -169,7 +170,7 @@ tripleBinding = function(triple, dataBinding) {
 			) {
 				var keys = Object.keys(item);
 				var blankNode = new $rdf.BlankNode();
-				item['value'] = blankNode.value;
+				item['value'] = "[_:" + blankNode.value + "]";
 				// console.log("created blank node " + blankNode.value + " as parent");
 				var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
 				if (!predicate) {
@@ -195,8 +196,8 @@ tripleBinding = function(triple, dataBinding) {
 						if (!self.triple.store.subjectIndex[subject]) {
 							if (self.triple.store.subjectIndex["<" + subject + ">"]) {
 								subject = "<" + subject + ">";
-							} else if (self.triple.store.subjectIndex["_:" + subject]) {
-								subject = "_:" + subject;
+							} else if (self.triple.store.subjectIndex[subject.replace(/^\[(.*)\]$/, "$1")]) {
+								subject = subject.replace(/^\[(.*)\]$/, "$1");
 							}
 						}
 						if (!self.triple.store.subjectIndex[subject]) {
@@ -212,7 +213,7 @@ tripleBinding = function(triple, dataBinding) {
 						}
 						predicate = resolveNameSpace(predicate);
 						var value = item[key];
-						if (subject.value === value) {
+						if ((subject.isBlank ? "[_:" + subject.value + "]" : subject.value) === value) {
 							return;
 						}
 
@@ -274,8 +275,8 @@ tripleBinding = function(triple, dataBinding) {
 				if (!this.triple.store.subjectIndex[subject]) {
 					if (this.triple.store.subjectIndex["<" + subject + ">"]) {
 						subject = "<" + subject + ">";
-					} else if (this.triple.store.subjectIndex["_:" + subject]) {
-						subject = "_:" + subject;
+					} else if (this.triple.store.subjectIndex[subject.replace(/^\[(.*)\]$/, "$1")]) {
+						subject = subject.replace(/^\[(.*)\]$/, "$1");
 					}
 				}
 				if (!this.triple.store.subjectIndex[subject]) {
@@ -292,8 +293,8 @@ tripleBinding = function(triple, dataBinding) {
 			if (!this.triple.store.subjectIndex[subject]) {
 				if (this.triple.store.subjectIndex["<" + subject + ">"]) {
 					subject = "<" + subject + ">";
-				} else if (this.triple.store.subjectIndex["_:" + subject]) {
-					subject = "_:" + subject;
+				} else if (this.triple.store.subjectIndex[subject.replace(/^\[(.*)\]$/, "$1")]) {
+					subject = subject.replace(/^\[(.*)\]$/, "$1");
 				}
 			}
 			if (!this.triple.store.subjectIndex[subject]) {
@@ -305,7 +306,7 @@ tripleBinding = function(triple, dataBinding) {
 			});
 			
 			this.getTriples().forEach(function(entry) {
-				if (dataNodes.indexOf(entry.object.value) === -1) {
+				if (dataNodes.indexOf(entry.object.isBlank ? "[_:" + entry.object.value + "]" : entry.object.value) === -1) {
 					// node was removed;
 					// console.log("remove node");
 					// console.log(self.triple.subject);
