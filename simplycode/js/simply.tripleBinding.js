@@ -71,7 +71,13 @@ tripleBinding = function(triple, dataBinding) {
 		var triples = this.getTriples();
 		var objects = [];
 		triples.forEach(function(triple) {
-			objects.push(triple.object);
+			if (triple.object.termType == "Collection") {
+				triple.object.elements.forEach(function(item) {
+					objects.push(item);
+				});
+			} else {
+				objects.push(triple.object);
+			}
 		});
 		return objects;
 	};
@@ -120,7 +126,15 @@ tripleBinding = function(triple, dataBinding) {
 		} else {
 			var result = objects.map(function(object) {
 				if (object.termType == "Collection") {
-					return;
+					return object.elements.map(function(item) {
+						if (item.isBlank) {
+							item.contents = self.getBlankNode(self, item.value);
+						}
+						return {
+							value : (item.isBlank ? "[_:" + item.value + "]" : item.value),
+							contents: item.contents
+						};
+					});
 				}
 				if (object.isBlank) {
 					object.contents = self.getBlankNode(self, object.value);
@@ -186,9 +200,20 @@ tripleBinding = function(triple, dataBinding) {
 					return;
 				}
 				predicate = resolveNameSpace(predicate);
+
 				self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof"))));
-				self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), blankNode);
-				
+				self.triple.store.subjectIndex[subject].every(function(triple) {
+					if (triple.predicate.value != predicate) {
+						return true; // continue
+					}
+					if (triple.object.termType === "Collection") {
+						triple.object.append(blankNode);
+					} else {
+						self.triple.store.add(self.triple.store.subjectIndex[subject][0].subject, $rdf.sym(predicate), blankNode);
+					}
+					return false; // stop loop after first time we added it;
+				});
+
 				bindChildren(item, blankNode);
 				setTimeout(function() {
 					keys.forEach(function(key) {
@@ -312,16 +337,45 @@ tripleBinding = function(triple, dataBinding) {
 			});
 			
 			this.getTriples().forEach(function(entry) {
-				if (dataNodes.indexOf(entry.object.isBlank ? "[_:" + entry.object.value + "]" : entry.object.value) === -1) {
-					// node was removed;
-					// console.log("remove node");
-					// console.log(self.triple.subject);
-					// console.log(self.triple.predicate);
-					// console.log(entry.object.value);
-					self.triple.store.removeStatement(entry);
-					if (entry.object.termType === "BlankNode") {
-						self.deleteBlankNode(self.triple.store, entry.object.value);
-					}
+				switch (entry.object.termType) {
+					case "Collection":
+						entry.object.elements.forEach(function(item, index, elements) {
+							if (dataNodes.indexOf(item.isBlank ? "[_:" + item.value + "]" : item.value) === -1) {
+								// node was removed;
+								// console.log("remove node");
+								// console.log(self.triple.subject);
+								// console.log(self.triple.predicate);
+								// console.log(item.value);
+								// self.triple.store.removeStatement(item);
+								elements.splice(index, 1); // remove it from the collection;
+								if (item.termType === "BlankNode") {
+									self.deleteBlankNode(self.triple.store, item.value);
+								}
+							}
+						});
+						entry.object.elements.sort(function(a, b) {
+							aIndex = dataNodes.indexOf(a.isBlank ? "[_:" + a.value + "]" : a.value);
+							bIndex = dataNodes.indexOf(b.isBlank ? "[_:" + b.value + "]" : b.value);
+							if (aIndex > bIndex) {
+								return 1;
+							} else if (aIndex < bIndex) {
+								return -1;
+							} else {
+								return 0;
+							}
+						});
+					break;
+					case "BlankNode":
+						if (dataNodes.indexOf("[_:" + entry.object.value + "]" ) === -1) {
+							self.triple.store.removeStatement(entry);
+							self.deleteBlankNode(self.triple.store, entry.object.value);
+						}
+					break;
+					default:
+						if (dataNodes.indexOf(entry.object.value) === -1) {
+							self.triple.store.removeStatement(entry);
+						}
+					break;
 				}
 			});
 			setTimeout(function() {
