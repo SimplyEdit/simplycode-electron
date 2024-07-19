@@ -1,3 +1,12 @@
+var resolveNameSpace = function(property) {
+	var namespace = "xmlns:" + property.split(":")[0];
+	var namespaceElement = document.body.closest("[" + CSS.escape(namespace) + "]");
+	if (namespaceElement) {
+		return namespaceElement.getAttribute(namespace) + property.split(":")[1];
+	}
+	return property;
+};
+
 tripleBinding = function(triple, dataBinding) {
 	/* 
 		Triple is an object:
@@ -8,14 +17,6 @@ tripleBinding = function(triple, dataBinding) {
 		}
 	*/
 
-	var resolveNameSpace = function(property) {
-		var namespace = "xmlns:" + property.split(":")[0];
-		var namespaceElement = document.body.closest("[" + CSS.escape(namespace) + "]");
-		if (namespaceElement) {
-			return namespaceElement.getAttribute(namespace) + property.split(":")[1];
-		}
-		return property;
-	};
 		
 	var self = this;
 	this.triple = triple;
@@ -125,24 +126,28 @@ tripleBinding = function(triple, dataBinding) {
 			return;
 		} else {
 			var result = objects.map(function(object) {
-				if (object.termType == "Collection") {
-					return object.elements.map(function(item) {
-						if (item.isBlank) {
-							item.contents = self.getBlankNode(self, item.value);
-						}
+				switch (object.termType) {
+					case "Collection":
+						return object.elements.map(function(item) {
+							if (item.isBlank) {
+								item.contents = self.getBlankNode(self, item.value);
+							}
+							return {
+								value : (item.isBlank ? "[_:" + item.value + "]" : item.value),
+								contents: item.contents
+							};
+						});
+					break;
+					case "Literal":
+						return object;
+					break;
+					case "BlankNode":
 						return {
-							value : (item.isBlank ? "[_:" + item.value + "]" : item.value),
-							contents: item.contents
-						};
-					});
+							value: "[_:" + object.value + "]",
+							contents: self.getBlankNode(self, object.value)
+						}
+					break;
 				}
-				if (object.isBlank) {
-					object.contents = self.getBlankNode(self, object.value);
-				}
-				return {
-					value : (object.isBlank ? "[_:" + object.value + "]" : object.value),
-					contents: object.contents
-				};
 			});
 			return result;
 		}
@@ -294,7 +299,14 @@ tripleBinding = function(triple, dataBinding) {
 		*/
 			if (objects.length) {
 				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
-					objects[0].value = data;
+					switch (data.termType) {
+						case "Literal":
+							objects[0] = data;
+						break;
+						default:
+							objects[0].value = data;
+						break;
+					}
 				} else {
 					this.triple.store.removeStatement(this.getTriples()[0]);
 				}
@@ -311,9 +323,14 @@ tripleBinding = function(triple, dataBinding) {
 					}
 				}
 				if (!this.triple.store.subjectIndex[subject]) {
-					return;
+					try {
+						subject = $rdf.sym(subject);
+					} catch (e) {
+						return;
+					}
+				} else {
+					subject = this.triple.store.subjectIndex[subject][0].subject;
 				}
-				subject = this.triple.store.subjectIndex[subject][0].subject;
 				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
 					this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
 				}
@@ -336,7 +353,12 @@ tripleBinding = function(triple, dataBinding) {
 				return entry.value;
 			});
 			
-			this.getTriples().forEach(function(entry) {
+			var triples = this.getTriples();
+			if (triples.length === 0 && dataNodes.length > 0) {
+				self.triple.store.add($rdf.sym(self.triple.subject), $rdf.sym(self.triple.predicate), new $rdf.Collection);
+			}
+
+			triples.forEach(function(entry) {
 				switch (entry.object.termType) {
 					case "Collection":
 						entry.object.elements.forEach(function(item, index, elements) {
@@ -411,7 +433,10 @@ tripleBinding = function(triple, dataBinding) {
 
 	// Init triples from the rdfStore to start with;
 	if (this.triple.initFromStore) {
-		this.dataBinding.set(this.getter());
+		var storeValue = this.getter();
+		if (storeValue) {
+			this.dataBinding.set(this.getter());
+		}
 	}	
 };
 
@@ -435,11 +460,17 @@ var initRdflibTriple = function(element) {
 	if (!about) {
 		return;
 	}
+	var subject = element.closest("[about]").getAttribute("about"); // FIXME: this goes wrong if the 'about' is slow to get set for new elements;
+
+	if (element.hasAttribute("typeof")) {
+		if (subject.indexOf("[") !== 0) { // skip blank nodes; FIXME: do we need a better way to exclude them?
+			simplyApp.rdfStore.add($rdf.sym(subject), $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(element.getAttribute("typeof"))));
+		}
+	}
 	if (!element.hasAttribute("property")) {
 		return;
 	}
 
-	var subject = element.closest("[about]").getAttribute("about"); // FIXME: this goes wrong if the 'about' is slow to get set for new elements;
 	var property = element.getAttribute("property");
 	var initFromStore = true;
 	if (element.getAttribute("data-set-to-store")) {
