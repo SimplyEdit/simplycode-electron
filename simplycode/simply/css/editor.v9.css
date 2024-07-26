@@ -1,0 +1,2265 @@
+		*[data-simply-hidden] {
+			display: none !important;
+		}
+		*[data-simply-field] {
+			outline: 2px dashed rgba(128,128,128,0.3);
+			transition: 0.6s outline-color ease, 0.6s background-color ease;
+		}
+		*[data-simply-field]:hover {
+			outline: 2px dashed rgba(128, 240, 210, 0.3);
+		}
+		*[data-simply-field]:focus {
+			outline: 2px dashed rgba(240, 210, 128, 0.3);
+			background-color: rgba(128,128,128,0.2);
+		}
+
+		*[data-simply-field][data-simply-content=template] {
+			outline: 0px;
+		}
+		*[data-simply-htmlsource] {
+			outline: 1px dashed rgba(0, 0, 255, 0.3);
+		}
+
+		*[data-simply-list]:not(.simply-empty):before,
+		*[data-simply-list-item]:before,
+		tr[data-simply-list-item] td:first-child:before,
+		*[data-simply-content='fixed']:before {
+			font-weight: normal;
+			font-style: normal;
+			font-family: FontAwesome;
+			border: 1px solid #ccc;
+			border-top: 2px solid #ea5922;
+			background-color: white;
+			color: #666;
+			border-bottom-left-radius: 3px;
+			border-bottom-right-radius: 3px;
+			padding: 5px;
+			position: absolute;
+			margin-top: -24px;
+			margin-left: 5px;
+			opacity: 0.2;
+			transition: 0.3s opacity ease;
+			box-shadow: 0px 0px 2px #ccc;
+			-webkit-box-shadow: 0px 0px 2px #ccc;
+			-moz-box-shadow: 0px 0px 2px #ccc;
+			font-size: 15px;
+			line-height: 15px;
+		}
+		*[data-simply-list]:not(.simply-empty):hover:before,
+		*[data-simply-list-item]:hover:before,
+		tr[data-simply-list-item]:hover td:first-child:before,
+		*[data-simply-content='fixed']:before {
+			opacity: 1;
+		}
+		*[data-simply-list-item]:before {
+			margin-left: 40px;
+		}
+		tr[data-simply-list-item] td:first-child:before {
+			margin-left: -40px;
+			margin-top: 0;
+		}
+
+		*[data-simply-list-item]:not([data-simply-list-icon]):before,
+		tr[data-simply-list-item]:not([data-simply-list-icon]) td:first-child:before,
+		tr[data-simply-list-item] td:first-child:before { /* tr list item does not support icon override */
+			content: "\f1b2"; /* cube */
+		}
+		tr[data-simply-list-item]:before {
+			display: none;
+		}
+		*[data-simply-list-item][data-simply-list-icon]:not([data-simply-list-icon|="fa"]):before {
+			content: attr(data-simply-list-icon);
+		}
+		*[data-simply-list]:not(.simply-empty):before {
+			margin-left: 0px;
+		}
+		*[data-simply-list]:not(.simply-empty):not([data-simply-list-icon]):before {
+			content: "\f1b3"; /* cubes */
+		}
+		*[data-simply-list][data-simply-list-icon]:not(.simply-empty):not([data-simply-list-icon|="fa"]):before {
+			content: attr(data-simply-list-icon);
+		}
+		*[data-simply-content='fixed']:before {
+			margin-left: 0px;
+		}
+		*[data-simply-content='fixed']:not([data-simply-list-icon]):before {
+			content: "\f148"; /* level-up */
+		}
+		a[data-simply-content='fixed']:not([data-simply-list-icon]):before {
+			content: "\f0c1"; /* link */
+		}
+		*[data-simply-content='fixed'][data-simply-list-icon]:not([data-simply-list-icon|="fa"]):before {
+			content: attr(data-simply-list-icon);
+		}
+		#simply-editor {
+			font-family: arial;
+			font-variant-caps: normal;
+			letter-spacing: initial;
+			text-transform: initial;
+		}
+		#simply-logo {
+			width: 60px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ie-user-select: none;
+			user-select: none;
+		}
+		#simply-logo img {
+			display: inline-block;
+			position: absolute;
+			top: 16px;
+			left: 5px;
+			z-index: 10;
+			max-width: 50px; /* IE doesn't seem to like width on svg images */
+		}
+		.simply-toolbar {
+			font-family: arial;
+			font-size: 11px;
+			color: #666;
+			background-color: white;
+			-webkit-border-radius: 0px 0px 3px 3px;
+			-moz-border-radius: 0px 0px 3px 3px;
+			border-radius: 0px 0px 3px 3px;
+			line-height: 0px;
+			position: relative;
+			border: 1px solid #aaa;
+			border-top: 5px solid #ea5922;
+			-webkit-box-shadow: 0px 0px 4px #CCC;
+			-moz-box-shadow: 0px 0px 4px #CCC;
+			box-shadow: 0px 0px 4px #CCC;
+			z-index: 1000;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ie-user-select: none;
+			user-select: none;
+		}
+		.simply-toolbar::after, .simply-toolbar > ul::after, .simply-toolbar-section > ul::after {
+			content: "";
+			clear: both;
+			display: block;
+		}
+		.simply-toolbar .marker {
+			content: "";
+			display: block;
+			position: absolute;
+			margin-top: -12px;
+			left: 50%;
+			margin-left: -12px;
+			width: 0;
+			border-bottom: 12px solid #ea5922;
+			border-top: 0px;
+			border-left: 12px solid transparent;
+			border-right: 12px solid transparent;
+		}
+		.simply-toolbar > ul {
+			background: linear-gradient(to bottom, white 0%, #FFF 95%, #DDD 100%);
+			min-width: 100%;
+			line-height: 0px;
+		}
+		.simply-toolbar > ul,
+		.simply-toolbar > ul > li,
+		.simply-toolbar-section > ul,
+		.simply-toolbar-section > ul > li {
+			margin: 0px;
+			padding: 0px;
+			border: 0px;
+			list-style: none;
+			white-space: nowrap;
+		}
+		.simply-toolbar-section > ul > li.simply-text-format {
+			margin-right: 4px;
+		}
+		.simply-toolbar li {
+			position: relative;
+			float: left;
+		}
+		#simply-main-toolbar .simply-toolbar {
+			min-height: 60px;
+			transform: translate3d(0,0,0);
+		}
+		#simply-main-toolbar .simply-buttons {
+			white-space: nowrap !important;
+			position: absolute;
+		}
+		#simply-main-toolbar .simply-toolbar li {
+			float: none;
+			display: inline-block;
+		}
+
+		#vdTablePopup {
+			left: 40px;
+			top: 0px;
+			padding-bottom: 20px;
+			width: auto;
+			height: auto;
+		}
+		#vdTableText {
+			position: absolute;
+			bottom: 10px;
+			width: 100%;
+		}
+		#vdTablePreview table {
+			border-spacing: 2px;
+			border-collapse: separate;
+			width: 110px;
+			height: 110px;
+		}
+		
+		.simply-toolbar button {
+			border: 0px;
+			margin: 0px;
+			padding: 0px 2px;
+			background: transparent;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+			position: relative;
+			min-width: 50px;
+			text-align: center;
+			height: 60px;
+			font-size: 11px;
+			color: #666 !important;
+			box-sizing: border-box;
+			font-weight: inherit;
+			letter-spacing: 0;
+			line-height: inherit;
+			text-transform: inherit;
+			font-family: inherit;
+			box-shadow: inherit;
+			border-radius: 0;
+			transition: inherit;
+			font-variant-caps: normal;
+		}
+
+		@media (max-width: 480px) {
+			.simply-toolbar button {
+				min-width: 48px;
+			}
+		}
+		@media (max-width: 320px) {
+			.simply-toolbar button {
+				min-width: 40px;
+			}
+		}
+		#simply-main-toolbar button {
+			vertical-align: top;
+		}
+		.simply-toolbar button[disabled] {
+			opacity: 0.3;
+		}
+		.simply-toolbar button > i,
+		.simply-toolbar button > span.fa-stack {
+			line-height: 50px;
+			font-size: 19px;
+			display: inline-block;
+			padding: 0px 4px;
+			line-height: 38px;
+			display: block;
+			margin: -13px auto 0px;
+    			position: relative;
+		}
+		.simply-toolbar button.simply-selected {
+			background-color: #EEE;
+			position: relative;
+			border-left: 1px solid #DDD;
+			border-right: 1px solid white;
+		}
+		.simply-toolbar button.simply-disabled {
+			opacity: 0.3;
+		}
+
+		.simply-toolbar button:focus {
+			border-bottom: 2px solid orange !important;
+		}
+		.simply-toolbar label button:focus {
+			border-bottom: 0px !important;
+		}
+		button.simply-selected::first-child {
+			border-left: 0px;
+		}
+		button.simply-selected::last-child {
+			border-right: 0px;
+		}
+
+		.simply-toolbar-section {
+			background-color: #EEE;
+			display: none;
+			clear: both;
+		}
+		section.simply-section.active {
+			opacity: 1;
+			z-index: 99999;
+		}
+		section.simply-section {
+			position: absolute;
+			opacity: 0;
+			-webkit-transition: opacity 0.2s ease-in-out;
+			-moz-transition: opacity 0.2s ease-in-out;
+			-ms-transition: opacity 0.2s ease-in-out;
+			-o-transition: opacity 0.2s ease-in-out;
+			transition: opacity 0.2s ease-in-out;
+			left: -10000px; /* position off screen initially */
+			height: inherit;
+		}
+		.tagStack li {
+			padding-right: 5px;
+		}
+		.simply-toolbar-section ul {
+			background: linear-gradient(to bottom, #EEE 0%, #DDD 100%);
+			padding: 4px 2px;
+		}
+		.simply-toolbar-section.simply-selected {
+			display: block;
+			white-space: nowrap; 
+		}
+		.simply-toolbar-section button {
+			height: 40px;
+			min-width: 23px;
+			border: 1px solid transparent;
+			line-height: 6px;
+		}
+		.simply-toolbar-section button > i,
+		.simply-toolbar-section button > span.fa-stack {
+			font-size: 14px;
+			line-height: 16px;
+			width: 23px;
+			margin: 0px auto 4px;
+		}
+		.simply-toolbar-section button.simply-selected {
+			background-color: #D7D7D7;
+			border: 1px solid #EEE;
+			border-left: 1px solid #888;
+			border-top: 1px solid #888;
+			border-radius: 2px;
+		}
+		section.simply-section {
+			margin-bottom: 150px;
+		}
+		section.simply-section h1 {
+			font-size: 16px;
+			font-weight: bold;
+			display: none;
+		}
+		button.simply-expands::after {
+			content: "";
+			display: block;
+			position: absolute;
+			bottom: 6px;
+			left: 50%;
+			margin-left: -3px;
+			width: 0;
+			border-top: 3px solid #888;
+			border-bottom: 0px;
+			border-left: 3px solid transparent;
+			border-right: 3px solid transparent;
+			opacity: 1;
+			transform: inherit;
+			-webkit-transform: inherit;
+			top: inherit;
+			height: 0;
+		}
+		button.simply-selected.simply-expands::after {
+			display: none;
+		}
+		.simply-toolbar-section > div {
+			padding-left: 80px;
+		}
+
+		.simply-toolbar-section label {
+			width: 60px;
+			font-size: 12px;
+			display: inline-block;
+			font-weight: normal;
+			padding-left: 10px;
+			margin: inherit;
+			margin-left: -80px;
+			color: inherit;
+		}
+		.simply-toolbar-section input,
+		.simply-toolbar-section select {
+			background-color: white;
+			color: black;
+			margin-top: 3px;
+			margin-bottom: 3px;
+			border: 1px solid #888;
+			border-bottom-color: #EEE;
+			border-right-color: #EEE;
+			border-radius: 2px;
+			line-height: 22px;
+			min-height: 22px;
+			width: 100%;
+			font-family: inherit;
+			font-size: inherit;
+			display: inline-block;
+			box-sizing: border-box !important;
+			padding: 2px 0 !important;
+			margin: 3px 0 !important;
+		}
+		.simply-toolbar-section select {
+			padding: 4px 0px !important;
+		}
+		.simply-toolbar button:focus {
+			outline: none;
+		}
+		.simply-context-html {
+			padding-left: 8px;
+			background-color: #EEE;
+			background: linear-gradient(to bottom, #EEE 0%, #DDD 100%);			
+			overflow: hidden;
+		}
+		.simply-context-html ul,
+		.simply-context-html li {
+			display: block;
+			float: left;
+		}
+		a.simply-context-tag {
+			color: black;
+			font-size: 11px;
+			line-height: 12px;
+			padding: 0px 2px;
+			margin: 2px 0px;
+			display: inline-block;
+			cursor: pointer;
+		}
+		a.simply-context-tag.simply-selected {
+			background-color: #CCC;
+			border: 1px solid #EEE;
+			border-left: 1px solid #888;
+			border-top: 1px solid #888;
+			border-radius: 2px;		
+		}
+		.simply-context-html li:last-child a.simply-context-tag::after {
+			content: "";
+		}
+
+		/* larger style html context */
+		a.simply-context-tag {
+			font-size: 12px;
+			line-height: 14px;
+			display: block;
+			float: left;
+			padding: 2px;
+			margin: 2px;
+			border: 1px solid #666;
+			border-radius: 2px;
+			color: black;
+			background-color: #CCC;
+		}
+		a.simply-context-tag.simply-selected {
+			background-color: #FFFFCC;
+		}
+		.simply-float-right {
+			float: right;
+		}
+		.simply-toolbar button.simply-small > i,
+		.simply-toolbar button.simply-small > span.fa-stack {
+			line-height: 24px;
+			font-size: 14px;
+			margin: 0px;
+		}
+		.simply-toolbar button.simply-small {
+			height: auto;
+			width: auto;
+			min-width: 20px;
+		}
+		/* end */
+
+		li.simply-text-format {
+			line-height: 32px;
+			vertical-align: top;
+			width: 100%;
+		}
+
+		li.simply-seperator label:before {
+			display: block;
+			position: absolute;
+			border-left: 1px solid #DDD;
+			border-right: 1px solid white;
+			height: 40px;
+			content: "";
+			margin-top: -14px;
+			margin-left: -4px;
+		}
+
+		label.simply-subsection {
+			text-align: center;
+			vertical-align: top;
+			line-height: 14px;
+		}
+		.simply-disabled {
+			color: #BBB;
+		}
+		#vdTextStyle {
+			height: auto;
+			width: auto;
+			overflow-x: inherit;
+			margin-left: auto;
+			padding: auto;
+		}
+		.simply-cell-width select,
+		.simply-cell-height select,
+		.simply-table-width select,
+		.simply-table-height select {
+			width: 40px;
+		}
+		button[data-simply-section=simply-clipboard],
+		.simply-clipboard {
+			display: none;
+		}
+		#editorPane, #vdMetaDataSlide {
+			-webkit-overflow-scrolling: touch !important;
+		}
+		/* simply dropdown list */
+		.simply-list {
+			display: inline-block;
+			position: relative;
+			-webkit-user-select: none;
+		}
+		ul.simply-list-items {
+			position: absolute;
+			width: 100%;
+			min-width: 120px;
+			background-color: white;
+			box-sizing: border-box;
+			padding: 2px;
+			display: none;
+			margin: 0;
+			border: 1px solid #ccc;
+		}
+		.simply-list-items li {
+			list-style: none;
+			float: none;
+			padding: 2px 4px;
+		}
+		.simply-list-items input {
+			margin-right: 5px;
+		}
+		.simply-list-items label {
+			font-size: 13px;
+			line-height: 18px;
+			font-weight: normal;
+			display: block;
+		}
+		.simply-list.visible .simply-list-items {
+			display: block;
+		}
+		/* context menu */
+		.simply-context-section {
+			position: absolute;
+			right: 20px;
+			top: 130px;
+			width: 210px;
+			height: 240px;
+			border: 1px solid #ccc;
+			box-shadow: 0px 0px 5px #888;
+			padding: 5px;
+			background: #F4F4F4;
+			display: none;
+		}
+		.simply-context-section.simply-selected {
+			display: block;
+		}
+		.simply-context-section .simply-close {
+			position: absolute;
+			top: -18px;
+			right: -18px;
+			width: 36px;
+			height: 36px;
+			background-image: url('<pinp> make_url(currentsite()); </pinp>graphics/close.png');
+			margin: 0px;
+			padding: 0px;
+			border: 0px;
+			min-width: 36px;
+		}
+		.simply-context-section iframe {
+			border: 0px;
+			margin: 0px;
+			padding: 0px;
+			width: 100%;
+			height: 100%;
+		}
+		.simply-context-section.simply-help {
+			top: 200px;
+			left: 50%;
+			width: 400px;
+			height: 250px;
+			margin-left: -200px;
+		}
+
+#simply-main-toolbar {
+	left: 0px !important;
+	opacity: 1 !important;
+	position: fixed;
+	margin-bottom: auto;
+	top: 0px;
+	right: 0px;
+	z-index: 100000;
+}
+#simply-main-toolbar .simply-toolbar {
+	position: static;
+}
+#simply-main-toolbar .simply-toolbar:before {
+	display: none;
+}
+
+#simply-main-toolbar .simply-selected {
+	border: 0px;
+}
+#vdToolbars {
+	height: auto;
+	border: 0px;
+	margin-right: 0px;
+}
+#vdEditPane {
+	border: 0px;
+}
+#simply-main-toolbar .simply-buttons {
+	white-space: normal;
+}
+#simply-main-toolbar > .simply-toolbar > ul.simply-buttons > li.simply-seperator {
+	border-right: 1px solid #ddd;
+	height: 58px;
+	vertical-align: top;
+}
+#simply-main-toolbar i.simply-logo {
+	margin-bottom: 10px;
+	position: relative;
+	top: 4px;
+	width: 24px;
+	box-sizing: border-box;
+}
+.simply-hidden {
+	display: none !important;
+}
+
+#simply-main-toolbar.simply-collapse .simply-toolbar .marker {
+	margin-top: -5px;
+	margin-left: 0px;
+	left: 0;
+	width: 0;
+	border-bottom: 0;
+	border-top: 25px solid #ea5922;
+	border-left: 0;
+	border-right: 25px solid transparent;
+}
+#simply-main-toolbar.simply-collapse .simply-toolbar {
+	border-top-color: transparent;
+}
+
+#simply-main-toolbar.simply-collapse {
+	right: auto;
+}
+#simply-main-toolbar.simply-collapse li:nth-child(n+2) {
+	display: none;
+}
+
+
+/* Dialogs */
+.simply-dialog {
+	display: none;
+}
+.simply-dialog.active {
+	display: block;
+	border: 1px solid #aaa;
+	border-top: 5px solid #ea5922;
+	background-color: white;
+	font-family: arial, helvetica, sans-serif;
+	color: black;
+	padding: 0px;
+	position: fixed;
+	z-index: 100002;
+	box-shadow: 0px 0px 8px #444;
+}
+
+.simply-dialog.simply-modal {
+	top: 50%;
+	height: 400px;
+	max-height: 80%;
+	margin-top: -200px;
+
+	left: 50%;
+	width: 480px;
+	margin-left: -240px;
+	background-color: #EEE;
+}
+.simply-dialog.simply-modal.fullscreen {
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	max-width: 100%;
+	max-height: 100%;
+	height: auto;
+	width: auto;
+	margin-left: 0px;
+	margin-top: 0px;
+}
+
+
+@media (max-width: 641px) {
+	.simply-dialog, 
+	.simply-dialog.simply-modal {
+		top: 0px;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+		max-width: 100%;
+		max-height: 100%;
+		height: auto;
+		width: auto;
+		margin-left: 0px;
+		margin-top: 0px;
+	}
+	[data-simply-action="simply-dialog-fullscreen"] {
+		display: none;
+	}
+	.simply-dialog-body {
+		max-width: 100%;
+	}
+}
+
+.simply-toolbar .simply-right {
+	float: right;
+}
+.simply-dialog .marker {
+	display: none;
+}
+.simply-dialog .simply-toolbar {
+	border: 0;
+	border-top: 1px solid #eee;
+	box-shadow: none;
+	width: 100%;
+}
+
+.simply-dialog.simply-modal .simply-dialog-body {
+	overflow-y: scroll;
+	position: absolute;
+	top: 60px;
+	bottom: 0px;
+	padding: 11px 5px;
+	width: 100%;
+	box-sizing: border-box;
+}
+.simply-dialog-body:first-child {
+	top: 0px;
+}
+.simply-dialog-body:nth-child(2):last-child {
+	bottom: 0px;
+}
+.simply-dialog-body:nth-child(2):nth-last-child(2) {
+	bottom: 60px;
+}
+
+.simply-dialog .simply-toolbar:first-child {
+	position: absolute;
+	top: 0px;
+}
+.simply-dialog .simply-toolbar:last-child {
+	position: absolute;
+	bottom: 0px;
+}
+.simply-dialog.simply-modal .simply-toolbar-section {
+	padding: 10px 5px;
+}
+.simply-empty[data-simply-list] {
+	min-height: 24px;
+	background-color: rgba(128,128,128,0.1);
+	outline: 2px dashed rgba(128,128,128,0.3);
+	text-align: center;
+}
+[data-simply-field]:not(input):not(textarea):not(img):empty {
+	min-height: 24px;
+	text-align: left;
+}
+.simply-empty[data-simply-list]:before,
+[data-simply-field]:not(input):not(textarea):not(img):not([data-simply-list-item]):empty:before {
+	text-align: center;
+	font-family: FontAwesome;
+	font-size: 20px;
+	color: #888;
+	width: 100%;
+	line-height: 24px;
+	vertical-align: middle;
+	padding-top: 5px;
+	transition: 0.6s opacity ease;
+	opacity: 1;
+}
+.simply-empty[data-simply-list]:not([data-simply-list-icon]):before {
+	content: "\f1b3"; /* cubes */
+}
+.simply-empty[data-simply-list][data-simply-list-icon]:not([data-simply-list-icon|="fa"]):before {
+	content: attr(data-simply-list-icon);
+}
+.simply-empty[data-simply-list]:after {
+	content: "(Empty list)";
+	text-align: center;
+	font-family: arial;
+	font-size: 12px;
+	color: #888;
+	width: 100%;
+	line-height: 24px;
+	vertical-align: middle;
+	padding-bottom: 5px;
+	margin-left: 4px;
+}
+[data-simply-field]:not([data-simply-list-item]):empty:hover:before,
+[data-simply-field]:not([data-simply-list-item]):empty:hover:after {
+	opacity: 0.3;
+}
+
+[data-simply-field]:not(input):not(textarea):empty:not([data-simply-field-icon]):not([data-simply-list-item]):before {
+	content: "\f044"; /* pencil-square-o */
+}
+[data-simply-field][data-simply-field-icon]:not(input):not(textarea):empty:not([data-simply-field-icon|="fa"]):not([data-simply-list-item]):before {
+	content: attr(data-simply-field-icon);
+}
+[data-simply-field]:not(input):not(textarea):empty:after {
+	content: "(Empty)";
+	text-align: center;
+	font-family: arial;
+	font-size: 12px;
+	color: #888;
+	width: 100%;
+	line-height: 24px;
+	vertical-align: middle;
+	padding-bottom: 5px;
+	margin-left: 4px;
+	opacity: 1;
+	transition: 0.6s opacity ease;
+}
+body[data-simply-edit] [data-simply-collapsed] {
+  display: inline-block;
+}
+body[data-simply-edit] [data-simply-hope] {
+  min-height: 1.2em;
+  min-width: 1.2em;
+}
+
+/* plain view */
+body.simply-plain [data-simply-field],
+body.simply-plain [data-simply-list],
+body.simply-plain [data-simply-list-item] {
+	display: block !important;
+	position: static !important;
+	vertical-align: top;
+	margin-left: 20px;
+}
+body.simply-plain [data-simply-field]:before {
+	content: "(Field) " attr(data-simply-field);
+}
+body.simply-plain [data-simply-list]:before {
+	content: "(List) " attr(data-simply-list);
+	position: static;
+	opacity: 1;
+}
+body.simply-plain [data-simply-list-item]:before,
+body.simply-plain tr[data-simply-list-item] td:first-child:before {
+	content: "(List item) " attr(data-simply-template);
+	position: static;
+	opacity: 1;
+}
+
+body.simply-plain [data-simply-list]:before,
+body.simply-plain [data-simply-list-item]:before,
+body.simply-plain tr[data-simply-list-item] td:first-child:before,
+body.simply-plain [data-simply-field]:before {
+	border: 1px solid #999;
+	border-radius: 24px;
+	background-color: #eee;
+	color: #333;
+	display: inline-block;
+	width: auto;
+	margin: 5px;
+	padding: 5px;
+	font-size: 12px;
+	font-family: arial;
+	font-weight: normal;
+	font-style: normal;
+}
+
+.simply-gadget {
+	position: relative;
+}
+.simply-gadget *[data-simply-list]:before {
+	display: none;
+}
+.simply-gadget > *:before,
+.simply-gadget *[data-simply-list]:before {
+	display: block;
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	opacity: 0 !important;
+	border:0;
+	margin: 0;
+}
+
+.simply-gadget *[data-simply-field] {
+	outline: 0;
+}
+.simply-gadget *[data-simply-list-item]:before {
+	display: none;
+}
+.simply-gadget *[data-simply-field]:hover {
+	outline: 0;
+}
+.simply-gadget[data-simply-selectable] {
+	outline: 2px dashed rgba(128,128,128,0.3);
+}
+
+
+/* Font awesome icons mapping */
+[data-simply-list-icon="fa-glass"]:before{content:"\f000"}
+[data-simply-list-icon="fa-music"]:before{content:"\f001"}
+[data-simply-list-icon="fa-search"]:before{content:"\f002"}
+[data-simply-list-icon="fa-envelope-o"]:before{content:"\f003"}
+[data-simply-list-icon="fa-heart"]:before{content:"\f004"}
+[data-simply-list-icon="fa-star"]:before{content:"\f005"}
+[data-simply-list-icon="fa-star-o"]:before{content:"\f006"}
+[data-simply-list-icon="fa-user"]:before{content:"\f007"}
+[data-simply-list-icon="fa-film"]:before{content:"\f008"}
+[data-simply-list-icon="fa-th-large"]:before{content:"\f009"}
+[data-simply-list-icon="fa-th"]:before{content:"\f00a"}
+[data-simply-list-icon="fa-th-list"]:before{content:"\f00b"}
+[data-simply-list-icon="fa-check"]:before{content:"\f00c"}
+[data-simply-list-icon="fa-remove"]:before,
+[data-simply-list-icon="fa-close"]:before,
+[data-simply-list-icon="fa-times"]:before{content:"\f00d"}
+[data-simply-list-icon="fa-search-plus"]:before{content:"\f00e"}
+[data-simply-list-icon="fa-search-minus"]:before{content:"\f010"}
+[data-simply-list-icon="fa-power-off"]:before{content:"\f011"}
+[data-simply-list-icon="fa-signal"]:before{content:"\f012"}
+[data-simply-list-icon="fa-gear"]:before,
+[data-simply-list-icon="fa-cog"]:before{content:"\f013"}
+[data-simply-list-icon="fa-trash-o"]:before{content:"\f014"}
+[data-simply-list-icon="fa-home"]:before{content:"\f015"}
+[data-simply-list-icon="fa-file-o"]:before{content:"\f016"}
+[data-simply-list-icon="fa-clock-o"]:before{content:"\f017"}
+[data-simply-list-icon="fa-road"]:before{content:"\f018"}
+[data-simply-list-icon="fa-download"]:before{content:"\f019"}
+[data-simply-list-icon="fa-arrow-circle-o-down"]:before{content:"\f01a"}
+[data-simply-list-icon="fa-arrow-circle-o-up"]:before{content:"\f01b"}
+[data-simply-list-icon="fa-inbox"]:before{content:"\f01c"}
+[data-simply-list-icon="fa-play-circle-o"]:before{content:"\f01d"}
+[data-simply-list-icon="fa-rotate-right"]:before,
+[data-simply-list-icon="fa-repeat"]:before{content:"\f01e"}
+[data-simply-list-icon="fa-refresh"]:before{content:"\f021"}
+[data-simply-list-icon="fa-list-alt"]:before{content:"\f022"}
+[data-simply-list-icon="fa-lock"]:before{content:"\f023"}
+[data-simply-list-icon="fa-flag"]:before{content:"\f024"}
+[data-simply-list-icon="fa-headphones"]:before{content:"\f025"}
+[data-simply-list-icon="fa-volume-off"]:before{content:"\f026"}
+[data-simply-list-icon="fa-volume-down"]:before{content:"\f027"}
+[data-simply-list-icon="fa-volume-up"]:before{content:"\f028"}
+[data-simply-list-icon="fa-qrcode"]:before{content:"\f029"}
+[data-simply-list-icon="fa-barcode"]:before{content:"\f02a"}
+[data-simply-list-icon="fa-tag"]:before{content:"\f02b"}
+[data-simply-list-icon="fa-tags"]:before{content:"\f02c"}
+[data-simply-list-icon="fa-book"]:before{content:"\f02d"}
+[data-simply-list-icon="fa-bookmark"]:before{content:"\f02e"}
+[data-simply-list-icon="fa-print"]:before{content:"\f02f"}
+[data-simply-list-icon="fa-camera"]:before{content:"\f030"}
+[data-simply-list-icon="fa-font"]:before{content:"\f031"}
+[data-simply-list-icon="fa-bold"]:before{content:"\f032"}
+[data-simply-list-icon="fa-italic"]:before{content:"\f033"}
+[data-simply-list-icon="fa-text-height"]:before{content:"\f034"}
+[data-simply-list-icon="fa-text-width"]:before{content:"\f035"}
+[data-simply-list-icon="fa-align-left"]:before{content:"\f036"}
+[data-simply-list-icon="fa-align-center"]:before{content:"\f037"}
+[data-simply-list-icon="fa-align-right"]:before{content:"\f038"}
+[data-simply-list-icon="fa-align-justify"]:before{content:"\f039"}
+[data-simply-list-icon="fa-list"]:before{content:"\f03a"}
+[data-simply-list-icon="fa-dedent"]:before,
+[data-simply-list-icon="fa-outdent"]:before{content:"\f03b"}
+[data-simply-list-icon="fa-indent"]:before{content:"\f03c"}
+[data-simply-list-icon="fa-video-camera"]:before{content:"\f03d"}
+[data-simply-list-icon="fa-photo"]:before,
+[data-simply-list-icon="fa-image"]:before,
+[data-simply-list-icon="fa-picture-o"]:before{content:"\f03e"}
+[data-simply-list-icon="fa-pencil"]:before{content:"\f040"}
+[data-simply-list-icon="fa-map-marker"]:before{content:"\f041"}
+[data-simply-list-icon="fa-adjust"]:before{content:"\f042"}
+[data-simply-list-icon="fa-tint"]:before{content:"\f043"}
+[data-simply-list-icon="fa-edit"]:before,
+[data-simply-list-icon="fa-pencil-square-o"]:before{content:"\f044"}
+[data-simply-list-icon="fa-share-square-o"]:before{content:"\f045"}
+[data-simply-list-icon="fa-check-square-o"]:before{content:"\f046"}
+[data-simply-list-icon="fa-arrows"]:before{content:"\f047"}
+[data-simply-list-icon="fa-step-backward"]:before{content:"\f048"}
+[data-simply-list-icon="fa-fast-backward"]:before{content:"\f049"}
+[data-simply-list-icon="fa-backward"]:before{content:"\f04a"}
+[data-simply-list-icon="fa-play"]:before{content:"\f04b"}
+[data-simply-list-icon="fa-pause"]:before{content:"\f04c"}
+[data-simply-list-icon="fa-stop"]:before{content:"\f04d"}
+[data-simply-list-icon="fa-forward"]:before{content:"\f04e"}
+[data-simply-list-icon="fa-fast-forward"]:before{content:"\f050"}
+[data-simply-list-icon="fa-step-forward"]:before{content:"\f051"}
+[data-simply-list-icon="fa-eject"]:before{content:"\f052"}
+[data-simply-list-icon="fa-chevron-left"]:before{content:"\f053"}
+[data-simply-list-icon="fa-chevron-right"]:before{content:"\f054"}
+[data-simply-list-icon="fa-plus-circle"]:before{content:"\f055"}
+[data-simply-list-icon="fa-minus-circle"]:before{content:"\f056"}
+[data-simply-list-icon="fa-times-circle"]:before{content:"\f057"}
+[data-simply-list-icon="fa-check-circle"]:before{content:"\f058"}
+[data-simply-list-icon="fa-question-circle"]:before{content:"\f059"}
+[data-simply-list-icon="fa-info-circle"]:before{content:"\f05a"}
+[data-simply-list-icon="fa-crosshairs"]:before{content:"\f05b"}
+[data-simply-list-icon="fa-times-circle-o"]:before{content:"\f05c"}
+[data-simply-list-icon="fa-check-circle-o"]:before{content:"\f05d"}
+[data-simply-list-icon="fa-ban"]:before{content:"\f05e"}
+[data-simply-list-icon="fa-arrow-left"]:before{content:"\f060"}
+[data-simply-list-icon="fa-arrow-right"]:before{content:"\f061"}
+[data-simply-list-icon="fa-arrow-up"]:before{content:"\f062"}
+[data-simply-list-icon="fa-arrow-down"]:before{content:"\f063"}
+[data-simply-list-icon="fa-mail-forward"]:before,
+[data-simply-list-icon="fa-share"]:before{content:"\f064"}
+[data-simply-list-icon="fa-expand"]:before{content:"\f065"}
+[data-simply-list-icon="fa-compress"]:before{content:"\f066"}
+[data-simply-list-icon="fa-plus"]:before{content:"\f067"}
+[data-simply-list-icon="fa-minus"]:before{content:"\f068"}
+[data-simply-list-icon="fa-asterisk"]:before{content:"\f069"}
+[data-simply-list-icon="fa-exclamation-circle"]:before{content:"\f06a"}
+[data-simply-list-icon="fa-gift"]:before{content:"\f06b"}
+[data-simply-list-icon="fa-leaf"]:before{content:"\f06c"}
+[data-simply-list-icon="fa-fire"]:before{content:"\f06d"}
+[data-simply-list-icon="fa-eye"]:before{content:"\f06e"}
+[data-simply-list-icon="fa-eye-slash"]:before{content:"\f070"}
+[data-simply-list-icon="fa-warning"]:before,
+[data-simply-list-icon="fa-exclamation-triangle"]:before{content:"\f071"}
+[data-simply-list-icon="fa-plane"]:before{content:"\f072"}
+[data-simply-list-icon="fa-calendar"]:before{content:"\f073"}
+[data-simply-list-icon="fa-random"]:before{content:"\f074"}
+[data-simply-list-icon="fa-comment"]:before{content:"\f075"}
+[data-simply-list-icon="fa-magnet"]:before{content:"\f076"}
+[data-simply-list-icon="fa-chevron-up"]:before{content:"\f077"}
+[data-simply-list-icon="fa-chevron-down"]:before{content:"\f078"}
+[data-simply-list-icon="fa-retweet"]:before{content:"\f079"}
+[data-simply-list-icon="fa-shopping-cart"]:before{content:"\f07a"}
+[data-simply-list-icon="fa-folder"]:before{content:"\f07b"}
+[data-simply-list-icon="fa-folder-open"]:before{content:"\f07c"}
+[data-simply-list-icon="fa-arrows-v"]:before{content:"\f07d"}
+[data-simply-list-icon="fa-arrows-h"]:before{content:"\f07e"}
+[data-simply-list-icon="fa-bar-chart-o"]:before,
+[data-simply-list-icon="fa-bar-chart"]:before{content:"\f080"}
+[data-simply-list-icon="fa-twitter-square"]:before{content:"\f081"}
+[data-simply-list-icon="fa-facebook-square"]:before{content:"\f082"}
+[data-simply-list-icon="fa-camera-retro"]:before{content:"\f083"}
+[data-simply-list-icon="fa-key"]:before{content:"\f084"}
+[data-simply-list-icon="fa-gears"]:before,
+[data-simply-list-icon="fa-cogs"]:before{content:"\f085"}
+[data-simply-list-icon="fa-comments"]:before{content:"\f086"}
+[data-simply-list-icon="fa-thumbs-o-up"]:before{content:"\f087"}
+[data-simply-list-icon="fa-thumbs-o-down"]:before{content:"\f088"}
+[data-simply-list-icon="fa-star-half"]:before{content:"\f089"}
+[data-simply-list-icon="fa-heart-o"]:before{content:"\f08a"}
+[data-simply-list-icon="fa-sign-out"]:before{content:"\f08b"}
+[data-simply-list-icon="fa-linkedin-square"]:before{content:"\f08c"}
+[data-simply-list-icon="fa-thumb-tack"]:before{content:"\f08d"}
+[data-simply-list-icon="fa-external-link"]:before{content:"\f08e"}
+[data-simply-list-icon="fa-sign-in"]:before{content:"\f090"}
+[data-simply-list-icon="fa-trophy"]:before{content:"\f091"}
+[data-simply-list-icon="fa-github-square"]:before{content:"\f092"}
+[data-simply-list-icon="fa-upload"]:before{content:"\f093"}
+[data-simply-list-icon="fa-lemon-o"]:before{content:"\f094"}
+[data-simply-list-icon="fa-phone"]:before{content:"\f095"}
+[data-simply-list-icon="fa-square-o"]:before{content:"\f096"}
+[data-simply-list-icon="fa-bookmark-o"]:before{content:"\f097"}
+[data-simply-list-icon="fa-phone-square"]:before{content:"\f098"}
+[data-simply-list-icon="fa-twitter"]:before{content:"\f099"}
+[data-simply-list-icon="fa-facebook-f"]:before,
+[data-simply-list-icon="fa-facebook"]:before{content:"\f09a"}
+[data-simply-list-icon="fa-github"]:before{content:"\f09b"}
+[data-simply-list-icon="fa-unlock"]:before{content:"\f09c"}
+[data-simply-list-icon="fa-credit-card"]:before{content:"\f09d"}
+[data-simply-list-icon="fa-feed"]:before,
+[data-simply-list-icon="fa-rss"]:before{content:"\f09e"}
+[data-simply-list-icon="fa-hdd-o"]:before{content:"\f0a0"}
+[data-simply-list-icon="fa-bullhorn"]:before{content:"\f0a1"}
+[data-simply-list-icon="fa-bell"]:before{content:"\f0f3"}
+[data-simply-list-icon="fa-certificate"]:before{content:"\f0a3"}
+[data-simply-list-icon="fa-hand-o-right"]:before{content:"\f0a4"}
+[data-simply-list-icon="fa-hand-o-left"]:before{content:"\f0a5"}
+[data-simply-list-icon="fa-hand-o-up"]:before{content:"\f0a6"}
+[data-simply-list-icon="fa-hand-o-down"]:before{content:"\f0a7"}
+[data-simply-list-icon="fa-arrow-circle-left"]:before{content:"\f0a8"}
+[data-simply-list-icon="fa-arrow-circle-right"]:before{content:"\f0a9"}
+[data-simply-list-icon="fa-arrow-circle-up"]:before{content:"\f0aa"}
+[data-simply-list-icon="fa-arrow-circle-down"]:before{content:"\f0ab"}
+[data-simply-list-icon="fa-globe"]:before{content:"\f0ac"}
+[data-simply-list-icon="fa-wrench"]:before{content:"\f0ad"}
+[data-simply-list-icon="fa-tasks"]:before{content:"\f0ae"}
+[data-simply-list-icon="fa-filter"]:before{content:"\f0b0"}
+[data-simply-list-icon="fa-briefcase"]:before{content:"\f0b1"}
+[data-simply-list-icon="fa-arrows-alt"]:before{content:"\f0b2"}
+[data-simply-list-icon="fa-group"]:before,
+[data-simply-list-icon="fa-users"]:before{content:"\f0c0"}
+[data-simply-list-icon="fa-chain"]:before,
+[data-simply-list-icon="fa-link"]:before{content:"\f0c1"}
+[data-simply-list-icon="fa-cloud"]:before{content:"\f0c2"}
+[data-simply-list-icon="fa-flask"]:before{content:"\f0c3"}
+[data-simply-list-icon="fa-cut"]:before,
+[data-simply-list-icon="fa-scissors"]:before{content:"\f0c4"}
+[data-simply-list-icon="fa-copy"]:before,
+[data-simply-list-icon="fa-files-o"]:before{content:"\f0c5"}
+[data-simply-list-icon="fa-paperclip"]:before{content:"\f0c6"}
+[data-simply-list-icon="fa-save"]:before,
+[data-simply-list-icon="fa-floppy-o"]:before{content:"\f0c7"}
+[data-simply-list-icon="fa-square"]:before{content:"\f0c8"}
+[data-simply-list-icon="fa-navicon"]:before,
+[data-simply-list-icon="fa-reorder"]:before,
+[data-simply-list-icon="fa-bars"]:before{content:"\f0c9"}
+[data-simply-list-icon="fa-list-ul"]:before{content:"\f0ca"}
+[data-simply-list-icon="fa-list-ol"]:before{content:"\f0cb"}
+[data-simply-list-icon="fa-strikethrough"]:before{content:"\f0cc"}
+[data-simply-list-icon="fa-underline"]:before{content:"\f0cd"}
+[data-simply-list-icon="fa-table"]:before{content:"\f0ce"}
+[data-simply-list-icon="fa-magic"]:before{content:"\f0d0"}
+[data-simply-list-icon="fa-truck"]:before{content:"\f0d1"}
+[data-simply-list-icon="fa-pinterest"]:before{content:"\f0d2"}
+[data-simply-list-icon="fa-pinterest-square"]:before{content:"\f0d3"}
+[data-simply-list-icon="fa-google-plus-square"]:before{content:"\f0d4"}
+[data-simply-list-icon="fa-google-plus"]:before{content:"\f0d5"}
+[data-simply-list-icon="fa-money"]:before{content:"\f0d6"}
+[data-simply-list-icon="fa-caret-down"]:before{content:"\f0d7"}
+[data-simply-list-icon="fa-caret-up"]:before{content:"\f0d8"}
+[data-simply-list-icon="fa-caret-left"]:before{content:"\f0d9"}
+[data-simply-list-icon="fa-caret-right"]:before{content:"\f0da"}
+[data-simply-list-icon="fa-columns"]:before{content:"\f0db"}
+[data-simply-list-icon="fa-unsorted"]:before,
+[data-simply-list-icon="fa-sort"]:before{content:"\f0dc"}
+[data-simply-list-icon="fa-sort-down"]:before,
+[data-simply-list-icon="fa-sort-desc"]:before{content:"\f0dd"}
+[data-simply-list-icon="fa-sort-up"]:before,
+[data-simply-list-icon="fa-sort-asc"]:before{content:"\f0de"}
+[data-simply-list-icon="fa-envelope"]:before{content:"\f0e0"}
+[data-simply-list-icon="fa-linkedin"]:before{content:"\f0e1"}
+[data-simply-list-icon="fa-rotate-left"]:before,
+[data-simply-list-icon="fa-undo"]:before{content:"\f0e2"}
+[data-simply-list-icon="fa-legal"]:before,
+[data-simply-list-icon="fa-gavel"]:before{content:"\f0e3"}
+[data-simply-list-icon="fa-dashboard"]:before,
+[data-simply-list-icon="fa-tachometer"]:before{content:"\f0e4"}
+[data-simply-list-icon="fa-comment-o"]:before{content:"\f0e5"}
+[data-simply-list-icon="fa-comments-o"]:before{content:"\f0e6"}
+[data-simply-list-icon="fa-flash"]:before,
+[data-simply-list-icon="fa-bolt"]:before{content:"\f0e7"}
+[data-simply-list-icon="fa-sitemap"]:before{content:"\f0e8"}
+[data-simply-list-icon="fa-umbrella"]:before{content:"\f0e9"}
+[data-simply-list-icon="fa-paste"]:before,
+[data-simply-list-icon="fa-clipboard"]:before{content:"\f0ea"}
+[data-simply-list-icon="fa-lightbulb-o"]:before{content:"\f0eb"}
+[data-simply-list-icon="fa-exchange"]:before{content:"\f0ec"}
+[data-simply-list-icon="fa-cloud-download"]:before{content:"\f0ed"}
+[data-simply-list-icon="fa-cloud-upload"]:before{content:"\f0ee"}
+[data-simply-list-icon="fa-user-md"]:before{content:"\f0f0"}
+[data-simply-list-icon="fa-stethoscope"]:before{content:"\f0f1"}
+[data-simply-list-icon="fa-suitcase"]:before{content:"\f0f2"}
+[data-simply-list-icon="fa-bell-o"]:before{content:"\f0a2"}
+[data-simply-list-icon="fa-coffee"]:before{content:"\f0f4"}
+[data-simply-list-icon="fa-cutlery"]:before{content:"\f0f5"}
+[data-simply-list-icon="fa-file-text-o"]:before{content:"\f0f6"}
+[data-simply-list-icon="fa-building-o"]:before{content:"\f0f7"}
+[data-simply-list-icon="fa-hospital-o"]:before{content:"\f0f8"}
+[data-simply-list-icon="fa-ambulance"]:before{content:"\f0f9"}
+[data-simply-list-icon="fa-medkit"]:before{content:"\f0fa"}
+[data-simply-list-icon="fa-fighter-jet"]:before{content:"\f0fb"}
+[data-simply-list-icon="fa-beer"]:before{content:"\f0fc"}
+[data-simply-list-icon="fa-h-square"]:before{content:"\f0fd"}
+[data-simply-list-icon="fa-plus-square"]:before{content:"\f0fe"}
+[data-simply-list-icon="fa-angle-double-left"]:before{content:"\f100"}
+[data-simply-list-icon="fa-angle-double-right"]:before{content:"\f101"}
+[data-simply-list-icon="fa-angle-double-up"]:before{content:"\f102"}
+[data-simply-list-icon="fa-angle-double-down"]:before{content:"\f103"}
+[data-simply-list-icon="fa-angle-left"]:before{content:"\f104"}
+[data-simply-list-icon="fa-angle-right"]:before{content:"\f105"}
+[data-simply-list-icon="fa-angle-up"]:before{content:"\f106"}
+[data-simply-list-icon="fa-angle-down"]:before{content:"\f107"}
+[data-simply-list-icon="fa-desktop"]:before{content:"\f108"}
+[data-simply-list-icon="fa-laptop"]:before{content:"\f109"}
+[data-simply-list-icon="fa-tablet"]:before{content:"\f10a"}
+[data-simply-list-icon="fa-mobile-phone"]:before,
+[data-simply-list-icon="fa-mobile"]:before{content:"\f10b"}
+[data-simply-list-icon="fa-circle-o"]:before{content:"\f10c"}
+[data-simply-list-icon="fa-quote-left"]:before{content:"\f10d"}
+[data-simply-list-icon="fa-quote-right"]:before{content:"\f10e"}
+[data-simply-list-icon="fa-spinner"]:before{content:"\f110"}
+[data-simply-list-icon="fa-circle"]:before{content:"\f111"}
+[data-simply-list-icon="fa-mail-reply"]:before,
+[data-simply-list-icon="fa-reply"]:before{content:"\f112"}
+[data-simply-list-icon="fa-github-alt"]:before{content:"\f113"}
+[data-simply-list-icon="fa-folder-o"]:before{content:"\f114"}
+[data-simply-list-icon="fa-folder-open-o"]:before{content:"\f115"}
+[data-simply-list-icon="fa-smile-o"]:before{content:"\f118"}
+[data-simply-list-icon="fa-frown-o"]:before{content:"\f119"}
+[data-simply-list-icon="fa-meh-o"]:before{content:"\f11a"}
+[data-simply-list-icon="fa-gamepad"]:before{content:"\f11b"}
+[data-simply-list-icon="fa-keyboard-o"]:before{content:"\f11c"}
+[data-simply-list-icon="fa-flag-o"]:before{content:"\f11d"}
+[data-simply-list-icon="fa-flag-checkered"]:before{content:"\f11e"}
+[data-simply-list-icon="fa-terminal"]:before{content:"\f120"}
+[data-simply-list-icon="fa-code"]:before{content:"\f121"}
+[data-simply-list-icon="fa-mail-reply-all"]:before,
+[data-simply-list-icon="fa-reply-all"]:before{content:"\f122"}
+[data-simply-list-icon="fa-star-half-empty"]:before,
+[data-simply-list-icon="fa-star-half-full"]:before,
+[data-simply-list-icon="fa-star-half-o"]:before{content:"\f123"}
+[data-simply-list-icon="fa-location-arrow"]:before{content:"\f124"}
+[data-simply-list-icon="fa-crop"]:before{content:"\f125"}
+[data-simply-list-icon="fa-code-fork"]:before{content:"\f126"}
+[data-simply-list-icon="fa-unlink"]:before,
+[data-simply-list-icon="fa-chain-broken"]:before{content:"\f127"}
+[data-simply-list-icon="fa-question"]:before{content:"\f128"}
+[data-simply-list-icon="fa-info"]:before{content:"\f129"}
+[data-simply-list-icon="fa-exclamation"]:before{content:"\f12a"}
+[data-simply-list-icon="fa-superscript"]:before{content:"\f12b"}
+[data-simply-list-icon="fa-subscript"]:before{content:"\f12c"}
+[data-simply-list-icon="fa-eraser"]:before{content:"\f12d"}
+[data-simply-list-icon="fa-puzzle-piece"]:before{content:"\f12e"}
+[data-simply-list-icon="fa-microphone"]:before{content:"\f130"}
+[data-simply-list-icon="fa-microphone-slash"]:before{content:"\f131"}
+[data-simply-list-icon="fa-shield"]:before{content:"\f132"}
+[data-simply-list-icon="fa-calendar-o"]:before{content:"\f133"}
+[data-simply-list-icon="fa-fire-extinguisher"]:before{content:"\f134"}
+[data-simply-list-icon="fa-rocket"]:before{content:"\f135"}
+[data-simply-list-icon="fa-maxcdn"]:before{content:"\f136"}
+[data-simply-list-icon="fa-chevron-circle-left"]:before{content:"\f137"}
+[data-simply-list-icon="fa-chevron-circle-right"]:before{content:"\f138"}
+[data-simply-list-icon="fa-chevron-circle-up"]:before{content:"\f139"}
+[data-simply-list-icon="fa-chevron-circle-down"]:before{content:"\f13a"}
+[data-simply-list-icon="fa-html5"]:before{content:"\f13b"}
+[data-simply-list-icon="fa-css3"]:before{content:"\f13c"}
+[data-simply-list-icon="fa-anchor"]:before{content:"\f13d"}
+[data-simply-list-icon="fa-unlock-alt"]:before{content:"\f13e"}
+[data-simply-list-icon="fa-bullseye"]:before{content:"\f140"}
+[data-simply-list-icon="fa-ellipsis-h"]:before{content:"\f141"}
+[data-simply-list-icon="fa-ellipsis-v"]:before{content:"\f142"}
+[data-simply-list-icon="fa-rss-square"]:before{content:"\f143"}
+[data-simply-list-icon="fa-play-circle"]:before{content:"\f144"}
+[data-simply-list-icon="fa-ticket"]:before{content:"\f145"}
+[data-simply-list-icon="fa-minus-square"]:before{content:"\f146"}
+[data-simply-list-icon="fa-minus-square-o"]:before{content:"\f147"}
+[data-simply-list-icon="fa-level-up"]:before{content:"\f148"}
+[data-simply-list-icon="fa-level-down"]:before{content:"\f149"}
+[data-simply-list-icon="fa-check-square"]:before{content:"\f14a"}
+[data-simply-list-icon="fa-pencil-square"]:before{content:"\f14b"}
+[data-simply-list-icon="fa-external-link-square"]:before{content:"\f14c"}
+[data-simply-list-icon="fa-share-square"]:before{content:"\f14d"}
+[data-simply-list-icon="fa-compass"]:before{content:"\f14e"}
+[data-simply-list-icon="fa-toggle-down"]:before,
+[data-simply-list-icon="fa-caret-square-o-down"]:before{content:"\f150"}
+[data-simply-list-icon="fa-toggle-up"]:before,
+[data-simply-list-icon="fa-caret-square-o-up"]:before{content:"\f151"}
+[data-simply-list-icon="fa-toggle-right"]:before,
+[data-simply-list-icon="fa-caret-square-o-right"]:before{content:"\f152"}
+[data-simply-list-icon="fa-euro"]:before,
+[data-simply-list-icon="fa-eur"]:before{content:"\f153"}
+[data-simply-list-icon="fa-gbp"]:before{content:"\f154"}
+[data-simply-list-icon="fa-dollar"]:before,
+[data-simply-list-icon="fa-usd"]:before{content:"\f155"}
+[data-simply-list-icon="fa-rupee"]:before,
+[data-simply-list-icon="fa-inr"]:before{content:"\f156"}
+[data-simply-list-icon="fa-cny"]:before,
+[data-simply-list-icon="fa-rmb"]:before,
+[data-simply-list-icon="fa-yen"]:before,
+[data-simply-list-icon="fa-jpy"]:before{content:"\f157"}
+[data-simply-list-icon="fa-ruble"]:before,
+[data-simply-list-icon="fa-rouble"]:before,
+[data-simply-list-icon="fa-rub"]:before{content:"\f158"}
+[data-simply-list-icon="fa-won"]:before,
+[data-simply-list-icon="fa-krw"]:before{content:"\f159"}
+[data-simply-list-icon="fa-bitcoin"]:before,
+[data-simply-list-icon="fa-btc"]:before{content:"\f15a"}
+[data-simply-list-icon="fa-file"]:before{content:"\f15b"}
+[data-simply-list-icon="fa-file-text"]:before{content:"\f15c"}
+[data-simply-list-icon="fa-sort-alpha-asc"]:before{content:"\f15d"}
+[data-simply-list-icon="fa-sort-alpha-desc"]:before{content:"\f15e"}
+[data-simply-list-icon="fa-sort-amount-asc"]:before{content:"\f160"}
+[data-simply-list-icon="fa-sort-amount-desc"]:before{content:"\f161"}
+[data-simply-list-icon="fa-sort-numeric-asc"]:before{content:"\f162"}
+[data-simply-list-icon="fa-sort-numeric-desc"]:before{content:"\f163"}
+[data-simply-list-icon="fa-thumbs-up"]:before{content:"\f164"}
+[data-simply-list-icon="fa-thumbs-down"]:before{content:"\f165"}
+[data-simply-list-icon="fa-youtube-square"]:before{content:"\f166"}
+[data-simply-list-icon="fa-youtube"]:before{content:"\f167"}
+[data-simply-list-icon="fa-xing"]:before{content:"\f168"}
+[data-simply-list-icon="fa-xing-square"]:before{content:"\f169"}
+[data-simply-list-icon="fa-youtube-play"]:before{content:"\f16a"}
+[data-simply-list-icon="fa-dropbox"]:before{content:"\f16b"}
+[data-simply-list-icon="fa-stack-overflow"]:before{content:"\f16c"}
+[data-simply-list-icon="fa-instagram"]:before{content:"\f16d"}
+[data-simply-list-icon="fa-flickr"]:before{content:"\f16e"}
+[data-simply-list-icon="fa-adn"]:before{content:"\f170"}
+[data-simply-list-icon="fa-bitbucket"]:before{content:"\f171"}
+[data-simply-list-icon="fa-bitbucket-square"]:before{content:"\f172"}
+[data-simply-list-icon="fa-tumblr"]:before{content:"\f173"}
+[data-simply-list-icon="fa-tumblr-square"]:before{content:"\f174"}
+[data-simply-list-icon="fa-long-arrow-down"]:before{content:"\f175"}
+[data-simply-list-icon="fa-long-arrow-up"]:before{content:"\f176"}
+[data-simply-list-icon="fa-long-arrow-left"]:before{content:"\f177"}
+[data-simply-list-icon="fa-long-arrow-right"]:before{content:"\f178"}
+[data-simply-list-icon="fa-apple"]:before{content:"\f179"}
+[data-simply-list-icon="fa-windows"]:before{content:"\f17a"}
+[data-simply-list-icon="fa-android"]:before{content:"\f17b"}
+[data-simply-list-icon="fa-linux"]:before{content:"\f17c"}
+[data-simply-list-icon="fa-dribbble"]:before{content:"\f17d"}
+[data-simply-list-icon="fa-skype"]:before{content:"\f17e"}
+[data-simply-list-icon="fa-foursquare"]:before{content:"\f180"}
+[data-simply-list-icon="fa-trello"]:before{content:"\f181"}
+[data-simply-list-icon="fa-female"]:before{content:"\f182"}
+[data-simply-list-icon="fa-male"]:before{content:"\f183"}
+[data-simply-list-icon="fa-gittip"]:before,
+[data-simply-list-icon="fa-gratipay"]:before{content:"\f184"}
+[data-simply-list-icon="fa-sun-o"]:before{content:"\f185"}
+[data-simply-list-icon="fa-moon-o"]:before{content:"\f186"}
+[data-simply-list-icon="fa-archive"]:before{content:"\f187"}
+[data-simply-list-icon="fa-bug"]:before{content:"\f188"}
+[data-simply-list-icon="fa-vk"]:before{content:"\f189"}
+[data-simply-list-icon="fa-weibo"]:before{content:"\f18a"}
+[data-simply-list-icon="fa-renren"]:before{content:"\f18b"}
+[data-simply-list-icon="fa-pagelines"]:before{content:"\f18c"}
+[data-simply-list-icon="fa-stack-exchange"]:before{content:"\f18d"}
+[data-simply-list-icon="fa-arrow-circle-o-right"]:before{content:"\f18e"}
+[data-simply-list-icon="fa-arrow-circle-o-left"]:before{content:"\f190"}
+[data-simply-list-icon="fa-toggle-left"]:before,
+[data-simply-list-icon="fa-caret-square-o-left"]:before{content:"\f191"}
+[data-simply-list-icon="fa-dot-circle-o"]:before{content:"\f192"}
+[data-simply-list-icon="fa-wheelchair"]:before{content:"\f193"}
+[data-simply-list-icon="fa-vimeo-square"]:before{content:"\f194"}
+[data-simply-list-icon="fa-turkish-lira"]:before,
+[data-simply-list-icon="fa-try"]:before{content:"\f195"}
+[data-simply-list-icon="fa-plus-square-o"]:before{content:"\f196"}
+[data-simply-list-icon="fa-space-shuttle"]:before{content:"\f197"}
+[data-simply-list-icon="fa-slack"]:before{content:"\f198"}
+[data-simply-list-icon="fa-envelope-square"]:before{content:"\f199"}
+[data-simply-list-icon="fa-wordpress"]:before{content:"\f19a"}
+[data-simply-list-icon="fa-openid"]:before{content:"\f19b"}
+[data-simply-list-icon="fa-institution"]:before,
+[data-simply-list-icon="fa-bank"]:before,
+[data-simply-list-icon="fa-university"]:before{content:"\f19c"}
+[data-simply-list-icon="fa-mortar-board"]:before,
+[data-simply-list-icon="fa-graduation-cap"]:before{content:"\f19d"}
+[data-simply-list-icon="fa-yahoo"]:before{content:"\f19e"}
+[data-simply-list-icon="fa-google"]:before{content:"\f1a0"}
+[data-simply-list-icon="fa-reddit"]:before{content:"\f1a1"}
+[data-simply-list-icon="fa-reddit-square"]:before{content:"\f1a2"}
+[data-simply-list-icon="fa-stumbleupon-circle"]:before{content:"\f1a3"}
+[data-simply-list-icon="fa-stumbleupon"]:before{content:"\f1a4"}
+[data-simply-list-icon="fa-delicious"]:before{content:"\f1a5"}
+[data-simply-list-icon="fa-digg"]:before{content:"\f1a6"}
+[data-simply-list-icon="fa-pied-piper"]:before{content:"\f1a7"}
+[data-simply-list-icon="fa-pied-piper-alt"]:before{content:"\f1a8"}
+[data-simply-list-icon="fa-drupal"]:before{content:"\f1a9"}
+[data-simply-list-icon="fa-joomla"]:before{content:"\f1aa"}
+[data-simply-list-icon="fa-language"]:before{content:"\f1ab"}
+[data-simply-list-icon="fa-fax"]:before{content:"\f1ac"}
+[data-simply-list-icon="fa-building"]:before{content:"\f1ad"}
+[data-simply-list-icon="fa-child"]:before{content:"\f1ae"}
+[data-simply-list-icon="fa-paw"]:before{content:"\f1b0"}
+[data-simply-list-icon="fa-spoon"]:before{content:"\f1b1"}
+[data-simply-list-icon="fa-cube"]:before{content:"\f1b2"}
+[data-simply-list-icon="fa-cubes"]:before{content:"\f1b3"}
+[data-simply-list-icon="fa-behance"]:before{content:"\f1b4"}
+[data-simply-list-icon="fa-behance-square"]:before{content:"\f1b5"}
+[data-simply-list-icon="fa-steam"]:before{content:"\f1b6"}
+[data-simply-list-icon="fa-steam-square"]:before{content:"\f1b7"}
+[data-simply-list-icon="fa-recycle"]:before{content:"\f1b8"}
+[data-simply-list-icon="fa-automobile"]:before,
+[data-simply-list-icon="fa-car"]:before{content:"\f1b9"}
+[data-simply-list-icon="fa-cab"]:before,
+[data-simply-list-icon="fa-taxi"]:before{content:"\f1ba"}
+[data-simply-list-icon="fa-tree"]:before{content:"\f1bb"}
+[data-simply-list-icon="fa-spotify"]:before{content:"\f1bc"}
+[data-simply-list-icon="fa-deviantart"]:before{content:"\f1bd"}
+[data-simply-list-icon="fa-soundcloud"]:before{content:"\f1be"}
+[data-simply-list-icon="fa-database"]:before{content:"\f1c0"}
+[data-simply-list-icon="fa-file-pdf-o"]:before{content:"\f1c1"}
+[data-simply-list-icon="fa-file-word-o"]:before{content:"\f1c2"}
+[data-simply-list-icon="fa-file-excel-o"]:before{content:"\f1c3"}
+[data-simply-list-icon="fa-file-powerpoint-o"]:before{content:"\f1c4"}
+[data-simply-list-icon="fa-file-photo-o"]:before,
+[data-simply-list-icon="fa-file-picture-o"]:before,
+[data-simply-list-icon="fa-file-image-o"]:before{content:"\f1c5"}
+[data-simply-list-icon="fa-file-zip-o"]:before,
+[data-simply-list-icon="fa-file-archive-o"]:before{content:"\f1c6"}
+[data-simply-list-icon="fa-file-sound-o"]:before,
+[data-simply-list-icon="fa-file-audio-o"]:before{content:"\f1c7"}
+[data-simply-list-icon="fa-file-movie-o"]:before,
+[data-simply-list-icon="fa-file-video-o"]:before{content:"\f1c8"}
+[data-simply-list-icon="fa-file-code-o"]:before{content:"\f1c9"}
+[data-simply-list-icon="fa-vine"]:before{content:"\f1ca"}
+[data-simply-list-icon="fa-codepen"]:before{content:"\f1cb"}
+[data-simply-list-icon="fa-jsfiddle"]:before{content:"\f1cc"}
+[data-simply-list-icon="fa-life-bouy"]:before,
+[data-simply-list-icon="fa-life-buoy"]:before,
+[data-simply-list-icon="fa-life-saver"]:before,
+[data-simply-list-icon="fa-support"]:before,
+[data-simply-list-icon="fa-life-ring"]:before{content:"\f1cd"}
+[data-simply-list-icon="fa-circle-o-notch"]:before{content:"\f1ce"}
+[data-simply-list-icon="fa-ra"]:before,
+[data-simply-list-icon="fa-rebel"]:before{content:"\f1d0"}
+[data-simply-list-icon="fa-ge"]:before,
+[data-simply-list-icon="fa-empire"]:before{content:"\f1d1"}
+[data-simply-list-icon="fa-git-square"]:before{content:"\f1d2"}
+[data-simply-list-icon="fa-git"]:before{content:"\f1d3"}
+[data-simply-list-icon="fa-y-combinator-square"]:before,
+[data-simply-list-icon="fa-yc-square"]:before,
+[data-simply-list-icon="fa-hacker-news"]:before{content:"\f1d4"}
+[data-simply-list-icon="fa-tencent-weibo"]:before{content:"\f1d5"}
+[data-simply-list-icon="fa-qq"]:before{content:"\f1d6"}
+[data-simply-list-icon="fa-wechat"]:before,
+[data-simply-list-icon="fa-weixin"]:before{content:"\f1d7"}
+[data-simply-list-icon="fa-send"]:before,
+[data-simply-list-icon="fa-paper-plane"]:before{content:"\f1d8"}
+[data-simply-list-icon="fa-send-o"]:before,
+[data-simply-list-icon="fa-paper-plane-o"]:before{content:"\f1d9"}
+[data-simply-list-icon="fa-history"]:before{content:"\f1da"}
+[data-simply-list-icon="fa-circle-thin"]:before{content:"\f1db"}
+[data-simply-list-icon="fa-header"]:before{content:"\f1dc"}
+[data-simply-list-icon="fa-paragraph"]:before{content:"\f1dd"}
+[data-simply-list-icon="fa-sliders"]:before{content:"\f1de"}
+[data-simply-list-icon="fa-share-alt"]:before{content:"\f1e0"}
+[data-simply-list-icon="fa-share-alt-square"]:before{content:"\f1e1"}
+[data-simply-list-icon="fa-bomb"]:before{content:"\f1e2"}
+[data-simply-list-icon="fa-soccer-ball-o"]:before,
+[data-simply-list-icon="fa-futbol-o"]:before{content:"\f1e3"}
+[data-simply-list-icon="fa-tty"]:before{content:"\f1e4"}
+[data-simply-list-icon="fa-binoculars"]:before{content:"\f1e5"}
+[data-simply-list-icon="fa-plug"]:before{content:"\f1e6"}
+[data-simply-list-icon="fa-slideshare"]:before{content:"\f1e7"}
+[data-simply-list-icon="fa-twitch"]:before{content:"\f1e8"}
+[data-simply-list-icon="fa-yelp"]:before{content:"\f1e9"}
+[data-simply-list-icon="fa-newspaper-o"]:before{content:"\f1ea"}
+[data-simply-list-icon="fa-wifi"]:before{content:"\f1eb"}
+[data-simply-list-icon="fa-calculator"]:before{content:"\f1ec"}
+[data-simply-list-icon="fa-paypal"]:before{content:"\f1ed"}
+[data-simply-list-icon="fa-google-wallet"]:before{content:"\f1ee"}
+[data-simply-list-icon="fa-cc-visa"]:before{content:"\f1f0"}
+[data-simply-list-icon="fa-cc-mastercard"]:before{content:"\f1f1"}
+[data-simply-list-icon="fa-cc-discover"]:before{content:"\f1f2"}
+[data-simply-list-icon="fa-cc-amex"]:before{content:"\f1f3"}
+[data-simply-list-icon="fa-cc-paypal"]:before{content:"\f1f4"}
+[data-simply-list-icon="fa-cc-stripe"]:before{content:"\f1f5"}
+[data-simply-list-icon="fa-bell-slash"]:before{content:"\f1f6"}
+[data-simply-list-icon="fa-bell-slash-o"]:before{content:"\f1f7"}
+[data-simply-list-icon="fa-trash"]:before{content:"\f1f8"}
+[data-simply-list-icon="fa-copyright"]:before{content:"\f1f9"}
+[data-simply-list-icon="fa-at"]:before{content:"\f1fa"}
+[data-simply-list-icon="fa-eyedropper"]:before{content:"\f1fb"}
+[data-simply-list-icon="fa-paint-brush"]:before{content:"\f1fc"}
+[data-simply-list-icon="fa-birthday-cake"]:before{content:"\f1fd"}
+[data-simply-list-icon="fa-area-chart"]:before{content:"\f1fe"}
+[data-simply-list-icon="fa-pie-chart"]:before{content:"\f200"}
+[data-simply-list-icon="fa-line-chart"]:before{content:"\f201"}
+[data-simply-list-icon="fa-lastfm"]:before{content:"\f202"}
+[data-simply-list-icon="fa-lastfm-square"]:before{content:"\f203"}
+[data-simply-list-icon="fa-toggle-off"]:before{content:"\f204"}
+[data-simply-list-icon="fa-toggle-on"]:before{content:"\f205"}
+[data-simply-list-icon="fa-bicycle"]:before{content:"\f206"}
+[data-simply-list-icon="fa-bus"]:before{content:"\f207"}
+[data-simply-list-icon="fa-ioxhost"]:before{content:"\f208"}
+[data-simply-list-icon="fa-angellist"]:before{content:"\f209"}
+[data-simply-list-icon="fa-cc"]:before{content:"\f20a"}
+[data-simply-list-icon="fa-shekel"]:before,
+[data-simply-list-icon="fa-sheqel"]:before,
+[data-simply-list-icon="fa-ils"]:before{content:"\f20b"}
+[data-simply-list-icon="fa-meanpath"]:before{content:"\f20c"}
+[data-simply-list-icon="fa-buysellads"]:before{content:"\f20d"}
+[data-simply-list-icon="fa-connectdevelop"]:before{content:"\f20e"}
+[data-simply-list-icon="fa-dashcube"]:before{content:"\f210"}
+[data-simply-list-icon="fa-forumbee"]:before{content:"\f211"}
+[data-simply-list-icon="fa-leanpub"]:before{content:"\f212"}
+[data-simply-list-icon="fa-sellsy"]:before{content:"\f213"}
+[data-simply-list-icon="fa-shirtsinbulk"]:before{content:"\f214"}
+[data-simply-list-icon="fa-simplybuilt"]:before{content:"\f215"}
+[data-simply-list-icon="fa-skyatlas"]:before{content:"\f216"}
+[data-simply-list-icon="fa-cart-plus"]:before{content:"\f217"}
+[data-simply-list-icon="fa-cart-arrow-down"]:before{content:"\f218"}
+[data-simply-list-icon="fa-diamond"]:before{content:"\f219"}
+[data-simply-list-icon="fa-ship"]:before{content:"\f21a"}
+[data-simply-list-icon="fa-user-secret"]:before{content:"\f21b"}
+[data-simply-list-icon="fa-motorcycle"]:before{content:"\f21c"}
+[data-simply-list-icon="fa-street-view"]:before{content:"\f21d"}
+[data-simply-list-icon="fa-heartbeat"]:before{content:"\f21e"}
+[data-simply-list-icon="fa-venus"]:before{content:"\f221"}
+[data-simply-list-icon="fa-mars"]:before{content:"\f222"}
+[data-simply-list-icon="fa-mercury"]:before{content:"\f223"}
+[data-simply-list-icon="fa-intersex"]:before,
+[data-simply-list-icon="fa-transgender"]:before{content:"\f224"}
+[data-simply-list-icon="fa-transgender-alt"]:before{content:"\f225"}
+[data-simply-list-icon="fa-venus-double"]:before{content:"\f226"}
+[data-simply-list-icon="fa-mars-double"]:before{content:"\f227"}
+[data-simply-list-icon="fa-venus-mars"]:before{content:"\f228"}
+[data-simply-list-icon="fa-mars-stroke"]:before{content:"\f229"}
+[data-simply-list-icon="fa-mars-stroke-v"]:before{content:"\f22a"}
+[data-simply-list-icon="fa-mars-stroke-h"]:before{content:"\f22b"}
+[data-simply-list-icon="fa-neuter"]:before{content:"\f22c"}
+[data-simply-list-icon="fa-genderless"]:before{content:"\f22d"}
+[data-simply-list-icon="fa-facebook-official"]:before{content:"\f230"}
+[data-simply-list-icon="fa-pinterest-p"]:before{content:"\f231"}
+[data-simply-list-icon="fa-whatsapp"]:before{content:"\f232"}
+[data-simply-list-icon="fa-server"]:before{content:"\f233"}
+[data-simply-list-icon="fa-user-plus"]:before{content:"\f234"}
+[data-simply-list-icon="fa-user-times"]:before{content:"\f235"}
+[data-simply-list-icon="fa-hotel"]:before,
+[data-simply-list-icon="fa-bed"]:before{content:"\f236"}
+[data-simply-list-icon="fa-viacoin"]:before{content:"\f237"}
+[data-simply-list-icon="fa-train"]:before{content:"\f238"}
+[data-simply-list-icon="fa-subway"]:before{content:"\f239"}
+[data-simply-list-icon="fa-medium"]:before{content:"\f23a"}
+[data-simply-list-icon="fa-yc"]:before,
+[data-simply-list-icon="fa-y-combinator"]:before{content:"\f23b"}
+[data-simply-list-icon="fa-optin-monster"]:before{content:"\f23c"}
+[data-simply-list-icon="fa-opencart"]:before{content:"\f23d"}
+[data-simply-list-icon="fa-expeditedssl"]:before{content:"\f23e"}
+[data-simply-list-icon="fa-battery-4"]:before,
+[data-simply-list-icon="fa-battery-full"]:before{content:"\f240"}
+[data-simply-list-icon="fa-battery-3"]:before,
+[data-simply-list-icon="fa-battery-three-quarters"]:before{content:"\f241"}
+[data-simply-list-icon="fa-battery-2"]:before,
+[data-simply-list-icon="fa-battery-half"]:before{content:"\f242"}
+[data-simply-list-icon="fa-battery-1"]:before,
+[data-simply-list-icon="fa-battery-quarter"]:before{content:"\f243"}
+[data-simply-list-icon="fa-battery-0"]:before,
+[data-simply-list-icon="fa-battery-empty"]:before{content:"\f244"}
+[data-simply-list-icon="fa-mouse-pointer"]:before{content:"\f245"}
+[data-simply-list-icon="fa-i-cursor"]:before{content:"\f246"}
+[data-simply-list-icon="fa-object-group"]:before{content:"\f247"}
+[data-simply-list-icon="fa-object-ungroup"]:before{content:"\f248"}
+[data-simply-list-icon="fa-sticky-note"]:before{content:"\f249"}
+[data-simply-list-icon="fa-sticky-note-o"]:before{content:"\f24a"}
+[data-simply-list-icon="fa-cc-jcb"]:before{content:"\f24b"}
+[data-simply-list-icon="fa-cc-diners-club"]:before{content:"\f24c"}
+[data-simply-list-icon="fa-clone"]:before{content:"\f24d"}
+[data-simply-list-icon="fa-balance-scale"]:before{content:"\f24e"}
+[data-simply-list-icon="fa-hourglass-o"]:before{content:"\f250"}
+[data-simply-list-icon="fa-hourglass-1"]:before,
+[data-simply-list-icon="fa-hourglass-start"]:before{content:"\f251"}
+[data-simply-list-icon="fa-hourglass-2"]:before,
+[data-simply-list-icon="fa-hourglass-half"]:before{content:"\f252"}
+[data-simply-list-icon="fa-hourglass-3"]:before,
+[data-simply-list-icon="fa-hourglass-end"]:before{content:"\f253"}
+[data-simply-list-icon="fa-hourglass"]:before{content:"\f254"}
+[data-simply-list-icon="fa-hand-grab-o"]:before,
+[data-simply-list-icon="fa-hand-rock-o"]:before{content:"\f255"}
+[data-simply-list-icon="fa-hand-stop-o"]:before,
+[data-simply-list-icon="fa-hand-paper-o"]:before{content:"\f256"}
+[data-simply-list-icon="fa-hand-scissors-o"]:before{content:"\f257"}
+[data-simply-list-icon="fa-hand-lizard-o"]:before{content:"\f258"}
+[data-simply-list-icon="fa-hand-spock-o"]:before{content:"\f259"}
+[data-simply-list-icon="fa-hand-pointer-o"]:before{content:"\f25a"}
+[data-simply-list-icon="fa-hand-peace-o"]:before{content:"\f25b"}
+[data-simply-list-icon="fa-trademark"]:before{content:"\f25c"}
+[data-simply-list-icon="fa-registered"]:before{content:"\f25d"}
+[data-simply-list-icon="fa-creative-commons"]:before{content:"\f25e"}
+[data-simply-list-icon="fa-gg"]:before{content:"\f260"}
+[data-simply-list-icon="fa-gg-circle"]:before{content:"\f261"}
+[data-simply-list-icon="fa-tripadvisor"]:before{content:"\f262"}
+[data-simply-list-icon="fa-odnoklassniki"]:before{content:"\f263"}
+[data-simply-list-icon="fa-odnoklassniki-square"]:before{content:"\f264"}
+[data-simply-list-icon="fa-get-pocket"]:before{content:"\f265"}
+[data-simply-list-icon="fa-wikipedia-w"]:before{content:"\f266"}
+[data-simply-list-icon="fa-safari"]:before{content:"\f267"}
+[data-simply-list-icon="fa-chrome"]:before{content:"\f268"}
+[data-simply-list-icon="fa-firefox"]:before{content:"\f269"}
+[data-simply-list-icon="fa-opera"]:before{content:"\f26a"}
+[data-simply-list-icon="fa-internet-explorer"]:before{content:"\f26b"}
+[data-simply-list-icon="fa-tv"]:before,
+[data-simply-list-icon="fa-television"]:before{content:"\f26c"}
+[data-simply-list-icon="fa-contao"]:before{content:"\f26d"}
+[data-simply-list-icon="fa-500px"]:before{content:"\f26e"}
+[data-simply-list-icon="fa-amazon"]:before{content:"\f270"}
+[data-simply-list-icon="fa-calendar-plus-o"]:before{content:"\f271"}
+[data-simply-list-icon="fa-calendar-minus-o"]:before{content:"\f272"}
+[data-simply-list-icon="fa-calendar-times-o"]:before{content:"\f273"}
+[data-simply-list-icon="fa-calendar-check-o"]:before{content:"\f274"}
+[data-simply-list-icon="fa-industry"]:before{content:"\f275"}
+[data-simply-list-icon="fa-map-pin"]:before{content:"\f276"}
+[data-simply-list-icon="fa-map-signs"]:before{content:"\f277"}
+[data-simply-list-icon="fa-map-o"]:before{content:"\f278"}
+[data-simply-list-icon="fa-map"]:before{content:"\f279"}
+[data-simply-list-icon="fa-commenting"]:before{content:"\f27a"}
+[data-simply-list-icon="fa-commenting-o"]:before{content:"\f27b"}
+[data-simply-list-icon="fa-houzz"]:before{content:"\f27c"}
+[data-simply-list-icon="fa-vimeo"]:before{content:"\f27d"}
+[data-simply-list-icon="fa-black-tie"]:before{content:"\f27e"}
+[data-simply-list-icon="fa-fonticons"]:before{content:"\f280"}
+
+tr[data-simply-list-icon]:before{content:''}
+tr[data-simply-list-icon="fa-glass"] td:first-child:before{content:"\f000"}
+tr[data-simply-list-icon="fa-music"] td:first-child:before{content:"\f001"}
+tr[data-simply-list-icon="fa-search"] td:first-child:before{content:"\f002"}
+tr[data-simply-list-icon="fa-envelope-o"] td:first-child:before{content:"\f003"}
+tr[data-simply-list-icon="fa-heart"] td:first-child:before{content:"\f004"}
+tr[data-simply-list-icon="fa-star"] td:first-child:before{content:"\f005"}
+tr[data-simply-list-icon="fa-star-o"] td:first-child:before{content:"\f006"}
+tr[data-simply-list-icon="fa-user"] td:first-child:before{content:"\f007"}
+tr[data-simply-list-icon="fa-film"] td:first-child:before{content:"\f008"}
+tr[data-simply-list-icon="fa-th-large"] td:first-child:before{content:"\f009"}
+tr[data-simply-list-icon="fa-th"] td:first-child:before{content:"\f00a"}
+tr[data-simply-list-icon="fa-th-list"] td:first-child:before{content:"\f00b"}
+tr[data-simply-list-icon="fa-check"] td:first-child:before{content:"\f00c"}
+tr[data-simply-list-icon="fa-remove"] td:first-child:before,
+tr[data-simply-list-icon="fa-close"] td:first-child:before,
+tr[data-simply-list-icon="fa-times"] td:first-child:before{content:"\f00d"}
+tr[data-simply-list-icon="fa-search-plus"] td:first-child:before{content:"\f00e"}
+tr[data-simply-list-icon="fa-search-minus"] td:first-child:before{content:"\f010"}
+tr[data-simply-list-icon="fa-power-off"] td:first-child:before{content:"\f011"}
+tr[data-simply-list-icon="fa-signal"] td:first-child:before{content:"\f012"}
+tr[data-simply-list-icon="fa-gear"] td:first-child:before,
+tr[data-simply-list-icon="fa-cog"] td:first-child:before{content:"\f013"}
+tr[data-simply-list-icon="fa-trash-o"] td:first-child:before{content:"\f014"}
+tr[data-simply-list-icon="fa-home"] td:first-child:before{content:"\f015"}
+tr[data-simply-list-icon="fa-file-o"] td:first-child:before{content:"\f016"}
+tr[data-simply-list-icon="fa-clock-o"] td:first-child:before{content:"\f017"}
+tr[data-simply-list-icon="fa-road"] td:first-child:before{content:"\f018"}
+tr[data-simply-list-icon="fa-download"] td:first-child:before{content:"\f019"}
+tr[data-simply-list-icon="fa-arrow-circle-o-down"] td:first-child:before{content:"\f01a"}
+tr[data-simply-list-icon="fa-arrow-circle-o-up"] td:first-child:before{content:"\f01b"}
+tr[data-simply-list-icon="fa-inbox"] td:first-child:before{content:"\f01c"}
+tr[data-simply-list-icon="fa-play-circle-o"] td:first-child:before{content:"\f01d"}
+tr[data-simply-list-icon="fa-rotate-right"] td:first-child:before,
+tr[data-simply-list-icon="fa-repeat"] td:first-child:before{content:"\f01e"}
+tr[data-simply-list-icon="fa-refresh"] td:first-child:before{content:"\f021"}
+tr[data-simply-list-icon="fa-list-alt"] td:first-child:before{content:"\f022"}
+tr[data-simply-list-icon="fa-lock"] td:first-child:before{content:"\f023"}
+tr[data-simply-list-icon="fa-flag"] td:first-child:before{content:"\f024"}
+tr[data-simply-list-icon="fa-headphones"] td:first-child:before{content:"\f025"}
+tr[data-simply-list-icon="fa-volume-off"] td:first-child:before{content:"\f026"}
+tr[data-simply-list-icon="fa-volume-down"] td:first-child:before{content:"\f027"}
+tr[data-simply-list-icon="fa-volume-up"] td:first-child:before{content:"\f028"}
+tr[data-simply-list-icon="fa-qrcode"] td:first-child:before{content:"\f029"}
+tr[data-simply-list-icon="fa-barcode"] td:first-child:before{content:"\f02a"}
+tr[data-simply-list-icon="fa-tag"] td:first-child:before{content:"\f02b"}
+tr[data-simply-list-icon="fa-tags"] td:first-child:before{content:"\f02c"}
+tr[data-simply-list-icon="fa-book"] td:first-child:before{content:"\f02d"}
+tr[data-simply-list-icon="fa-bookmark"] td:first-child:before{content:"\f02e"}
+tr[data-simply-list-icon="fa-print"] td:first-child:before{content:"\f02f"}
+tr[data-simply-list-icon="fa-camera"] td:first-child:before{content:"\f030"}
+tr[data-simply-list-icon="fa-font"] td:first-child:before{content:"\f031"}
+tr[data-simply-list-icon="fa-bold"] td:first-child:before{content:"\f032"}
+tr[data-simply-list-icon="fa-italic"] td:first-child:before{content:"\f033"}
+tr[data-simply-list-icon="fa-text-height"] td:first-child:before{content:"\f034"}
+tr[data-simply-list-icon="fa-text-width"] td:first-child:before{content:"\f035"}
+tr[data-simply-list-icon="fa-align-left"] td:first-child:before{content:"\f036"}
+tr[data-simply-list-icon="fa-align-center"] td:first-child:before{content:"\f037"}
+tr[data-simply-list-icon="fa-align-right"] td:first-child:before{content:"\f038"}
+tr[data-simply-list-icon="fa-align-justify"] td:first-child:before{content:"\f039"}
+tr[data-simply-list-icon="fa-list"] td:first-child:before{content:"\f03a"}
+tr[data-simply-list-icon="fa-dedent"] td:first-child:before,
+tr[data-simply-list-icon="fa-outdent"] td:first-child:before{content:"\f03b"}
+tr[data-simply-list-icon="fa-indent"] td:first-child:before{content:"\f03c"}
+tr[data-simply-list-icon="fa-video-camera"] td:first-child:before{content:"\f03d"}
+tr[data-simply-list-icon="fa-photo"] td:first-child:before,
+tr[data-simply-list-icon="fa-image"] td:first-child:before,
+tr[data-simply-list-icon="fa-picture-o"] td:first-child:before{content:"\f03e"}
+tr[data-simply-list-icon="fa-pencil"] td:first-child:before{content:"\f040"}
+tr[data-simply-list-icon="fa-map-marker"] td:first-child:before{content:"\f041"}
+tr[data-simply-list-icon="fa-adjust"] td:first-child:before{content:"\f042"}
+tr[data-simply-list-icon="fa-tint"] td:first-child:before{content:"\f043"}
+tr[data-simply-list-icon="fa-edit"] td:first-child:before,
+tr[data-simply-list-icon="fa-pencil-square-o"] td:first-child:before{content:"\f044"}
+tr[data-simply-list-icon="fa-share-square-o"] td:first-child:before{content:"\f045"}
+tr[data-simply-list-icon="fa-check-square-o"] td:first-child:before{content:"\f046"}
+tr[data-simply-list-icon="fa-arrows"] td:first-child:before{content:"\f047"}
+tr[data-simply-list-icon="fa-step-backward"] td:first-child:before{content:"\f048"}
+tr[data-simply-list-icon="fa-fast-backward"] td:first-child:before{content:"\f049"}
+tr[data-simply-list-icon="fa-backward"] td:first-child:before{content:"\f04a"}
+tr[data-simply-list-icon="fa-play"] td:first-child:before{content:"\f04b"}
+tr[data-simply-list-icon="fa-pause"] td:first-child:before{content:"\f04c"}
+tr[data-simply-list-icon="fa-stop"] td:first-child:before{content:"\f04d"}
+tr[data-simply-list-icon="fa-forward"] td:first-child:before{content:"\f04e"}
+tr[data-simply-list-icon="fa-fast-forward"] td:first-child:before{content:"\f050"}
+tr[data-simply-list-icon="fa-step-forward"] td:first-child:before{content:"\f051"}
+tr[data-simply-list-icon="fa-eject"] td:first-child:before{content:"\f052"}
+tr[data-simply-list-icon="fa-chevron-left"] td:first-child:before{content:"\f053"}
+tr[data-simply-list-icon="fa-chevron-right"] td:first-child:before{content:"\f054"}
+tr[data-simply-list-icon="fa-plus-circle"] td:first-child:before{content:"\f055"}
+tr[data-simply-list-icon="fa-minus-circle"] td:first-child:before{content:"\f056"}
+tr[data-simply-list-icon="fa-times-circle"] td:first-child:before{content:"\f057"}
+tr[data-simply-list-icon="fa-check-circle"] td:first-child:before{content:"\f058"}
+tr[data-simply-list-icon="fa-question-circle"] td:first-child:before{content:"\f059"}
+tr[data-simply-list-icon="fa-info-circle"] td:first-child:before{content:"\f05a"}
+tr[data-simply-list-icon="fa-crosshairs"] td:first-child:before{content:"\f05b"}
+tr[data-simply-list-icon="fa-times-circle-o"] td:first-child:before{content:"\f05c"}
+tr[data-simply-list-icon="fa-check-circle-o"] td:first-child:before{content:"\f05d"}
+tr[data-simply-list-icon="fa-ban"] td:first-child:before{content:"\f05e"}
+tr[data-simply-list-icon="fa-arrow-left"] td:first-child:before{content:"\f060"}
+tr[data-simply-list-icon="fa-arrow-right"] td:first-child:before{content:"\f061"}
+tr[data-simply-list-icon="fa-arrow-up"] td:first-child:before{content:"\f062"}
+tr[data-simply-list-icon="fa-arrow-down"] td:first-child:before{content:"\f063"}
+tr[data-simply-list-icon="fa-mail-forward"] td:first-child:before,
+tr[data-simply-list-icon="fa-share"] td:first-child:before{content:"\f064"}
+tr[data-simply-list-icon="fa-expand"] td:first-child:before{content:"\f065"}
+tr[data-simply-list-icon="fa-compress"] td:first-child:before{content:"\f066"}
+tr[data-simply-list-icon="fa-plus"] td:first-child:before{content:"\f067"}
+tr[data-simply-list-icon="fa-minus"] td:first-child:before{content:"\f068"}
+tr[data-simply-list-icon="fa-asterisk"] td:first-child:before{content:"\f069"}
+tr[data-simply-list-icon="fa-exclamation-circle"] td:first-child:before{content:"\f06a"}
+tr[data-simply-list-icon="fa-gift"] td:first-child:before{content:"\f06b"}
+tr[data-simply-list-icon="fa-leaf"] td:first-child:before{content:"\f06c"}
+tr[data-simply-list-icon="fa-fire"] td:first-child:before{content:"\f06d"}
+tr[data-simply-list-icon="fa-eye"] td:first-child:before{content:"\f06e"}
+tr[data-simply-list-icon="fa-eye-slash"] td:first-child:before{content:"\f070"}
+tr[data-simply-list-icon="fa-warning"] td:first-child:before,
+tr[data-simply-list-icon="fa-exclamation-triangle"] td:first-child:before{content:"\f071"}
+tr[data-simply-list-icon="fa-plane"] td:first-child:before{content:"\f072"}
+tr[data-simply-list-icon="fa-calendar"] td:first-child:before{content:"\f073"}
+tr[data-simply-list-icon="fa-random"] td:first-child:before{content:"\f074"}
+tr[data-simply-list-icon="fa-comment"] td:first-child:before{content:"\f075"}
+tr[data-simply-list-icon="fa-magnet"] td:first-child:before{content:"\f076"}
+tr[data-simply-list-icon="fa-chevron-up"] td:first-child:before{content:"\f077"}
+tr[data-simply-list-icon="fa-chevron-down"] td:first-child:before{content:"\f078"}
+tr[data-simply-list-icon="fa-retweet"] td:first-child:before{content:"\f079"}
+tr[data-simply-list-icon="fa-shopping-cart"] td:first-child:before{content:"\f07a"}
+tr[data-simply-list-icon="fa-folder"] td:first-child:before{content:"\f07b"}
+tr[data-simply-list-icon="fa-folder-open"] td:first-child:before{content:"\f07c"}
+tr[data-simply-list-icon="fa-arrows-v"] td:first-child:before{content:"\f07d"}
+tr[data-simply-list-icon="fa-arrows-h"] td:first-child:before{content:"\f07e"}
+tr[data-simply-list-icon="fa-bar-chart-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-bar-chart"] td:first-child:before{content:"\f080"}
+tr[data-simply-list-icon="fa-twitter-square"] td:first-child:before{content:"\f081"}
+tr[data-simply-list-icon="fa-facebook-square"] td:first-child:before{content:"\f082"}
+tr[data-simply-list-icon="fa-camera-retro"] td:first-child:before{content:"\f083"}
+tr[data-simply-list-icon="fa-key"] td:first-child:before{content:"\f084"}
+tr[data-simply-list-icon="fa-gears"] td:first-child:before,
+tr[data-simply-list-icon="fa-cogs"] td:first-child:before{content:"\f085"}
+tr[data-simply-list-icon="fa-comments"] td:first-child:before{content:"\f086"}
+tr[data-simply-list-icon="fa-thumbs-o-up"] td:first-child:before{content:"\f087"}
+tr[data-simply-list-icon="fa-thumbs-o-down"] td:first-child:before{content:"\f088"}
+tr[data-simply-list-icon="fa-star-half"] td:first-child:before{content:"\f089"}
+tr[data-simply-list-icon="fa-heart-o"] td:first-child:before{content:"\f08a"}
+tr[data-simply-list-icon="fa-sign-out"] td:first-child:before{content:"\f08b"}
+tr[data-simply-list-icon="fa-linkedin-square"] td:first-child:before{content:"\f08c"}
+tr[data-simply-list-icon="fa-thumb-tack"] td:first-child:before{content:"\f08d"}
+tr[data-simply-list-icon="fa-external-link"] td:first-child:before{content:"\f08e"}
+tr[data-simply-list-icon="fa-sign-in"] td:first-child:before{content:"\f090"}
+tr[data-simply-list-icon="fa-trophy"] td:first-child:before{content:"\f091"}
+tr[data-simply-list-icon="fa-github-square"] td:first-child:before{content:"\f092"}
+tr[data-simply-list-icon="fa-upload"] td:first-child:before{content:"\f093"}
+tr[data-simply-list-icon="fa-lemon-o"] td:first-child:before{content:"\f094"}
+tr[data-simply-list-icon="fa-phone"] td:first-child:before{content:"\f095"}
+tr[data-simply-list-icon="fa-square-o"] td:first-child:before{content:"\f096"}
+tr[data-simply-list-icon="fa-bookmark-o"] td:first-child:before{content:"\f097"}
+tr[data-simply-list-icon="fa-phone-square"] td:first-child:before{content:"\f098"}
+tr[data-simply-list-icon="fa-twitter"] td:first-child:before{content:"\f099"}
+tr[data-simply-list-icon="fa-facebook-f"] td:first-child:before,
+tr[data-simply-list-icon="fa-facebook"] td:first-child:before{content:"\f09a"}
+tr[data-simply-list-icon="fa-github"] td:first-child:before{content:"\f09b"}
+tr[data-simply-list-icon="fa-unlock"] td:first-child:before{content:"\f09c"}
+tr[data-simply-list-icon="fa-credit-card"] td:first-child:before{content:"\f09d"}
+tr[data-simply-list-icon="fa-feed"] td:first-child:before,
+tr[data-simply-list-icon="fa-rss"] td:first-child:before{content:"\f09e"}
+tr[data-simply-list-icon="fa-hdd-o"] td:first-child:before{content:"\f0a0"}
+tr[data-simply-list-icon="fa-bullhorn"] td:first-child:before{content:"\f0a1"}
+tr[data-simply-list-icon="fa-bell"] td:first-child:before{content:"\f0f3"}
+tr[data-simply-list-icon="fa-certificate"] td:first-child:before{content:"\f0a3"}
+tr[data-simply-list-icon="fa-hand-o-right"] td:first-child:before{content:"\f0a4"}
+tr[data-simply-list-icon="fa-hand-o-left"] td:first-child:before{content:"\f0a5"}
+tr[data-simply-list-icon="fa-hand-o-up"] td:first-child:before{content:"\f0a6"}
+tr[data-simply-list-icon="fa-hand-o-down"] td:first-child:before{content:"\f0a7"}
+tr[data-simply-list-icon="fa-arrow-circle-left"] td:first-child:before{content:"\f0a8"}
+tr[data-simply-list-icon="fa-arrow-circle-right"] td:first-child:before{content:"\f0a9"}
+tr[data-simply-list-icon="fa-arrow-circle-up"] td:first-child:before{content:"\f0aa"}
+tr[data-simply-list-icon="fa-arrow-circle-down"] td:first-child:before{content:"\f0ab"}
+tr[data-simply-list-icon="fa-globe"] td:first-child:before{content:"\f0ac"}
+tr[data-simply-list-icon="fa-wrench"] td:first-child:before{content:"\f0ad"}
+tr[data-simply-list-icon="fa-tasks"] td:first-child:before{content:"\f0ae"}
+tr[data-simply-list-icon="fa-filter"] td:first-child:before{content:"\f0b0"}
+tr[data-simply-list-icon="fa-briefcase"] td:first-child:before{content:"\f0b1"}
+tr[data-simply-list-icon="fa-arrows-alt"] td:first-child:before{content:"\f0b2"}
+tr[data-simply-list-icon="fa-group"] td:first-child:before,
+tr[data-simply-list-icon="fa-users"] td:first-child:before{content:"\f0c0"}
+tr[data-simply-list-icon="fa-chain"] td:first-child:before,
+tr[data-simply-list-icon="fa-link"] td:first-child:before{content:"\f0c1"}
+tr[data-simply-list-icon="fa-cloud"] td:first-child:before{content:"\f0c2"}
+tr[data-simply-list-icon="fa-flask"] td:first-child:before{content:"\f0c3"}
+tr[data-simply-list-icon="fa-cut"] td:first-child:before,
+tr[data-simply-list-icon="fa-scissors"] td:first-child:before{content:"\f0c4"}
+tr[data-simply-list-icon="fa-copy"] td:first-child:before,
+tr[data-simply-list-icon="fa-files-o"] td:first-child:before{content:"\f0c5"}
+tr[data-simply-list-icon="fa-paperclip"] td:first-child:before{content:"\f0c6"}
+tr[data-simply-list-icon="fa-save"] td:first-child:before,
+tr[data-simply-list-icon="fa-floppy-o"] td:first-child:before{content:"\f0c7"}
+tr[data-simply-list-icon="fa-square"] td:first-child:before{content:"\f0c8"}
+tr[data-simply-list-icon="fa-navicon"] td:first-child:before,
+tr[data-simply-list-icon="fa-reorder"] td:first-child:before,
+tr[data-simply-list-icon="fa-bars"] td:first-child:before{content:"\f0c9"}
+tr[data-simply-list-icon="fa-list-ul"] td:first-child:before{content:"\f0ca"}
+tr[data-simply-list-icon="fa-list-ol"] td:first-child:before{content:"\f0cb"}
+tr[data-simply-list-icon="fa-strikethrough"] td:first-child:before{content:"\f0cc"}
+tr[data-simply-list-icon="fa-underline"] td:first-child:before{content:"\f0cd"}
+tr[data-simply-list-icon="fa-table"] td:first-child:before{content:"\f0ce"}
+tr[data-simply-list-icon="fa-magic"] td:first-child:before{content:"\f0d0"}
+tr[data-simply-list-icon="fa-truck"] td:first-child:before{content:"\f0d1"}
+tr[data-simply-list-icon="fa-pinterest"] td:first-child:before{content:"\f0d2"}
+tr[data-simply-list-icon="fa-pinterest-square"] td:first-child:before{content:"\f0d3"}
+tr[data-simply-list-icon="fa-google-plus-square"] td:first-child:before{content:"\f0d4"}
+tr[data-simply-list-icon="fa-google-plus"] td:first-child:before{content:"\f0d5"}
+tr[data-simply-list-icon="fa-money"] td:first-child:before{content:"\f0d6"}
+tr[data-simply-list-icon="fa-caret-down"] td:first-child:before{content:"\f0d7"}
+tr[data-simply-list-icon="fa-caret-up"] td:first-child:before{content:"\f0d8"}
+tr[data-simply-list-icon="fa-caret-left"] td:first-child:before{content:"\f0d9"}
+tr[data-simply-list-icon="fa-caret-right"] td:first-child:before{content:"\f0da"}
+tr[data-simply-list-icon="fa-columns"] td:first-child:before{content:"\f0db"}
+tr[data-simply-list-icon="fa-unsorted"] td:first-child:before,
+tr[data-simply-list-icon="fa-sort"] td:first-child:before{content:"\f0dc"}
+tr[data-simply-list-icon="fa-sort-down"] td:first-child:before,
+tr[data-simply-list-icon="fa-sort-desc"] td:first-child:before{content:"\f0dd"}
+tr[data-simply-list-icon="fa-sort-up"] td:first-child:before,
+tr[data-simply-list-icon="fa-sort-asc"] td:first-child:before{content:"\f0de"}
+tr[data-simply-list-icon="fa-envelope"] td:first-child:before{content:"\f0e0"}
+tr[data-simply-list-icon="fa-linkedin"] td:first-child:before{content:"\f0e1"}
+tr[data-simply-list-icon="fa-rotate-left"] td:first-child:before,
+tr[data-simply-list-icon="fa-undo"] td:first-child:before{content:"\f0e2"}
+tr[data-simply-list-icon="fa-legal"] td:first-child:before,
+tr[data-simply-list-icon="fa-gavel"] td:first-child:before{content:"\f0e3"}
+tr[data-simply-list-icon="fa-dashboard"] td:first-child:before,
+tr[data-simply-list-icon="fa-tachometer"] td:first-child:before{content:"\f0e4"}
+tr[data-simply-list-icon="fa-comment-o"] td:first-child:before{content:"\f0e5"}
+tr[data-simply-list-icon="fa-comments-o"] td:first-child:before{content:"\f0e6"}
+tr[data-simply-list-icon="fa-flash"] td:first-child:before,
+tr[data-simply-list-icon="fa-bolt"] td:first-child:before{content:"\f0e7"}
+tr[data-simply-list-icon="fa-sitemap"] td:first-child:before{content:"\f0e8"}
+tr[data-simply-list-icon="fa-umbrella"] td:first-child:before{content:"\f0e9"}
+tr[data-simply-list-icon="fa-paste"] td:first-child:before,
+tr[data-simply-list-icon="fa-clipboard"] td:first-child:before{content:"\f0ea"}
+tr[data-simply-list-icon="fa-lightbulb-o"] td:first-child:before{content:"\f0eb"}
+tr[data-simply-list-icon="fa-exchange"] td:first-child:before{content:"\f0ec"}
+tr[data-simply-list-icon="fa-cloud-download"] td:first-child:before{content:"\f0ed"}
+tr[data-simply-list-icon="fa-cloud-upload"] td:first-child:before{content:"\f0ee"}
+tr[data-simply-list-icon="fa-user-md"] td:first-child:before{content:"\f0f0"}
+tr[data-simply-list-icon="fa-stethoscope"] td:first-child:before{content:"\f0f1"}
+tr[data-simply-list-icon="fa-suitcase"] td:first-child:before{content:"\f0f2"}
+tr[data-simply-list-icon="fa-bell-o"] td:first-child:before{content:"\f0a2"}
+tr[data-simply-list-icon="fa-coffee"] td:first-child:before{content:"\f0f4"}
+tr[data-simply-list-icon="fa-cutlery"] td:first-child:before{content:"\f0f5"}
+tr[data-simply-list-icon="fa-file-text-o"] td:first-child:before{content:"\f0f6"}
+tr[data-simply-list-icon="fa-building-o"] td:first-child:before{content:"\f0f7"}
+tr[data-simply-list-icon="fa-hospital-o"] td:first-child:before{content:"\f0f8"}
+tr[data-simply-list-icon="fa-ambulance"] td:first-child:before{content:"\f0f9"}
+tr[data-simply-list-icon="fa-medkit"] td:first-child:before{content:"\f0fa"}
+tr[data-simply-list-icon="fa-fighter-jet"] td:first-child:before{content:"\f0fb"}
+tr[data-simply-list-icon="fa-beer"] td:first-child:before{content:"\f0fc"}
+tr[data-simply-list-icon="fa-h-square"] td:first-child:before{content:"\f0fd"}
+tr[data-simply-list-icon="fa-plus-square"] td:first-child:before{content:"\f0fe"}
+tr[data-simply-list-icon="fa-angle-double-left"] td:first-child:before{content:"\f100"}
+tr[data-simply-list-icon="fa-angle-double-right"] td:first-child:before{content:"\f101"}
+tr[data-simply-list-icon="fa-angle-double-up"] td:first-child:before{content:"\f102"}
+tr[data-simply-list-icon="fa-angle-double-down"] td:first-child:before{content:"\f103"}
+tr[data-simply-list-icon="fa-angle-left"] td:first-child:before{content:"\f104"}
+tr[data-simply-list-icon="fa-angle-right"] td:first-child:before{content:"\f105"}
+tr[data-simply-list-icon="fa-angle-up"] td:first-child:before{content:"\f106"}
+tr[data-simply-list-icon="fa-angle-down"] td:first-child:before{content:"\f107"}
+tr[data-simply-list-icon="fa-desktop"] td:first-child:before{content:"\f108"}
+tr[data-simply-list-icon="fa-laptop"] td:first-child:before{content:"\f109"}
+tr[data-simply-list-icon="fa-tablet"] td:first-child:before{content:"\f10a"}
+tr[data-simply-list-icon="fa-mobile-phone"] td:first-child:before,
+tr[data-simply-list-icon="fa-mobile"] td:first-child:before{content:"\f10b"}
+tr[data-simply-list-icon="fa-circle-o"] td:first-child:before{content:"\f10c"}
+tr[data-simply-list-icon="fa-quote-left"] td:first-child:before{content:"\f10d"}
+tr[data-simply-list-icon="fa-quote-right"] td:first-child:before{content:"\f10e"}
+tr[data-simply-list-icon="fa-spinner"] td:first-child:before{content:"\f110"}
+tr[data-simply-list-icon="fa-circle"] td:first-child:before{content:"\f111"}
+tr[data-simply-list-icon="fa-mail-reply"] td:first-child:before,
+tr[data-simply-list-icon="fa-reply"] td:first-child:before{content:"\f112"}
+tr[data-simply-list-icon="fa-github-alt"] td:first-child:before{content:"\f113"}
+tr[data-simply-list-icon="fa-folder-o"] td:first-child:before{content:"\f114"}
+tr[data-simply-list-icon="fa-folder-open-o"] td:first-child:before{content:"\f115"}
+tr[data-simply-list-icon="fa-smile-o"] td:first-child:before{content:"\f118"}
+tr[data-simply-list-icon="fa-frown-o"] td:first-child:before{content:"\f119"}
+tr[data-simply-list-icon="fa-meh-o"] td:first-child:before{content:"\f11a"}
+tr[data-simply-list-icon="fa-gamepad"] td:first-child:before{content:"\f11b"}
+tr[data-simply-list-icon="fa-keyboard-o"] td:first-child:before{content:"\f11c"}
+tr[data-simply-list-icon="fa-flag-o"] td:first-child:before{content:"\f11d"}
+tr[data-simply-list-icon="fa-flag-checkered"] td:first-child:before{content:"\f11e"}
+tr[data-simply-list-icon="fa-terminal"] td:first-child:before{content:"\f120"}
+tr[data-simply-list-icon="fa-code"] td:first-child:before{content:"\f121"}
+tr[data-simply-list-icon="fa-mail-reply-all"] td:first-child:before,
+tr[data-simply-list-icon="fa-reply-all"] td:first-child:before{content:"\f122"}
+tr[data-simply-list-icon="fa-star-half-empty"] td:first-child:before,
+tr[data-simply-list-icon="fa-star-half-full"] td:first-child:before,
+tr[data-simply-list-icon="fa-star-half-o"] td:first-child:before{content:"\f123"}
+tr[data-simply-list-icon="fa-location-arrow"] td:first-child:before{content:"\f124"}
+tr[data-simply-list-icon="fa-crop"] td:first-child:before{content:"\f125"}
+tr[data-simply-list-icon="fa-code-fork"] td:first-child:before{content:"\f126"}
+tr[data-simply-list-icon="fa-unlink"] td:first-child:before,
+tr[data-simply-list-icon="fa-chain-broken"] td:first-child:before{content:"\f127"}
+tr[data-simply-list-icon="fa-question"] td:first-child:before{content:"\f128"}
+tr[data-simply-list-icon="fa-info"] td:first-child:before{content:"\f129"}
+tr[data-simply-list-icon="fa-exclamation"] td:first-child:before{content:"\f12a"}
+tr[data-simply-list-icon="fa-superscript"] td:first-child:before{content:"\f12b"}
+tr[data-simply-list-icon="fa-subscript"] td:first-child:before{content:"\f12c"}
+tr[data-simply-list-icon="fa-eraser"] td:first-child:before{content:"\f12d"}
+tr[data-simply-list-icon="fa-puzzle-piece"] td:first-child:before{content:"\f12e"}
+tr[data-simply-list-icon="fa-microphone"] td:first-child:before{content:"\f130"}
+tr[data-simply-list-icon="fa-microphone-slash"] td:first-child:before{content:"\f131"}
+tr[data-simply-list-icon="fa-shield"] td:first-child:before{content:"\f132"}
+tr[data-simply-list-icon="fa-calendar-o"] td:first-child:before{content:"\f133"}
+tr[data-simply-list-icon="fa-fire-extinguisher"] td:first-child:before{content:"\f134"}
+tr[data-simply-list-icon="fa-rocket"] td:first-child:before{content:"\f135"}
+tr[data-simply-list-icon="fa-maxcdn"] td:first-child:before{content:"\f136"}
+tr[data-simply-list-icon="fa-chevron-circle-left"] td:first-child:before{content:"\f137"}
+tr[data-simply-list-icon="fa-chevron-circle-right"] td:first-child:before{content:"\f138"}
+tr[data-simply-list-icon="fa-chevron-circle-up"] td:first-child:before{content:"\f139"}
+tr[data-simply-list-icon="fa-chevron-circle-down"] td:first-child:before{content:"\f13a"}
+tr[data-simply-list-icon="fa-html5"] td:first-child:before{content:"\f13b"}
+tr[data-simply-list-icon="fa-css3"] td:first-child:before{content:"\f13c"}
+tr[data-simply-list-icon="fa-anchor"] td:first-child:before{content:"\f13d"}
+tr[data-simply-list-icon="fa-unlock-alt"] td:first-child:before{content:"\f13e"}
+tr[data-simply-list-icon="fa-bullseye"] td:first-child:before{content:"\f140"}
+tr[data-simply-list-icon="fa-ellipsis-h"] td:first-child:before{content:"\f141"}
+tr[data-simply-list-icon="fa-ellipsis-v"] td:first-child:before{content:"\f142"}
+tr[data-simply-list-icon="fa-rss-square"] td:first-child:before{content:"\f143"}
+tr[data-simply-list-icon="fa-play-circle"] td:first-child:before{content:"\f144"}
+tr[data-simply-list-icon="fa-ticket"] td:first-child:before{content:"\f145"}
+tr[data-simply-list-icon="fa-minus-square"] td:first-child:before{content:"\f146"}
+tr[data-simply-list-icon="fa-minus-square-o"] td:first-child:before{content:"\f147"}
+tr[data-simply-list-icon="fa-level-up"] td:first-child:before{content:"\f148"}
+tr[data-simply-list-icon="fa-level-down"] td:first-child:before{content:"\f149"}
+tr[data-simply-list-icon="fa-check-square"] td:first-child:before{content:"\f14a"}
+tr[data-simply-list-icon="fa-pencil-square"] td:first-child:before{content:"\f14b"}
+tr[data-simply-list-icon="fa-external-link-square"] td:first-child:before{content:"\f14c"}
+tr[data-simply-list-icon="fa-share-square"] td:first-child:before{content:"\f14d"}
+tr[data-simply-list-icon="fa-compass"] td:first-child:before{content:"\f14e"}
+tr[data-simply-list-icon="fa-toggle-down"] td:first-child:before,
+tr[data-simply-list-icon="fa-caret-square-o-down"] td:first-child:before{content:"\f150"}
+tr[data-simply-list-icon="fa-toggle-up"] td:first-child:before,
+tr[data-simply-list-icon="fa-caret-square-o-up"] td:first-child:before{content:"\f151"}
+tr[data-simply-list-icon="fa-toggle-right"] td:first-child:before,
+tr[data-simply-list-icon="fa-caret-square-o-right"] td:first-child:before{content:"\f152"}
+tr[data-simply-list-icon="fa-euro"] td:first-child:before,
+tr[data-simply-list-icon="fa-eur"] td:first-child:before{content:"\f153"}
+tr[data-simply-list-icon="fa-gbp"] td:first-child:before{content:"\f154"}
+tr[data-simply-list-icon="fa-dollar"] td:first-child:before,
+tr[data-simply-list-icon="fa-usd"] td:first-child:before{content:"\f155"}
+tr[data-simply-list-icon="fa-rupee"] td:first-child:before,
+tr[data-simply-list-icon="fa-inr"] td:first-child:before{content:"\f156"}
+tr[data-simply-list-icon="fa-cny"] td:first-child:before,
+tr[data-simply-list-icon="fa-rmb"] td:first-child:before,
+tr[data-simply-list-icon="fa-yen"] td:first-child:before,
+tr[data-simply-list-icon="fa-jpy"] td:first-child:before{content:"\f157"}
+tr[data-simply-list-icon="fa-ruble"] td:first-child:before,
+tr[data-simply-list-icon="fa-rouble"] td:first-child:before,
+tr[data-simply-list-icon="fa-rub"] td:first-child:before{content:"\f158"}
+tr[data-simply-list-icon="fa-won"] td:first-child:before,
+tr[data-simply-list-icon="fa-krw"] td:first-child:before{content:"\f159"}
+tr[data-simply-list-icon="fa-bitcoin"] td:first-child:before,
+tr[data-simply-list-icon="fa-btc"] td:first-child:before{content:"\f15a"}
+tr[data-simply-list-icon="fa-file"] td:first-child:before{content:"\f15b"}
+tr[data-simply-list-icon="fa-file-text"] td:first-child:before{content:"\f15c"}
+tr[data-simply-list-icon="fa-sort-alpha-asc"] td:first-child:before{content:"\f15d"}
+tr[data-simply-list-icon="fa-sort-alpha-desc"] td:first-child:before{content:"\f15e"}
+tr[data-simply-list-icon="fa-sort-amount-asc"] td:first-child:before{content:"\f160"}
+tr[data-simply-list-icon="fa-sort-amount-desc"] td:first-child:before{content:"\f161"}
+tr[data-simply-list-icon="fa-sort-numeric-asc"] td:first-child:before{content:"\f162"}
+tr[data-simply-list-icon="fa-sort-numeric-desc"] td:first-child:before{content:"\f163"}
+tr[data-simply-list-icon="fa-thumbs-up"] td:first-child:before{content:"\f164"}
+tr[data-simply-list-icon="fa-thumbs-down"] td:first-child:before{content:"\f165"}
+tr[data-simply-list-icon="fa-youtube-square"] td:first-child:before{content:"\f166"}
+tr[data-simply-list-icon="fa-youtube"] td:first-child:before{content:"\f167"}
+tr[data-simply-list-icon="fa-xing"] td:first-child:before{content:"\f168"}
+tr[data-simply-list-icon="fa-xing-square"] td:first-child:before{content:"\f169"}
+tr[data-simply-list-icon="fa-youtube-play"] td:first-child:before{content:"\f16a"}
+tr[data-simply-list-icon="fa-dropbox"] td:first-child:before{content:"\f16b"}
+tr[data-simply-list-icon="fa-stack-overflow"] td:first-child:before{content:"\f16c"}
+tr[data-simply-list-icon="fa-instagram"] td:first-child:before{content:"\f16d"}
+tr[data-simply-list-icon="fa-flickr"] td:first-child:before{content:"\f16e"}
+tr[data-simply-list-icon="fa-adn"] td:first-child:before{content:"\f170"}
+tr[data-simply-list-icon="fa-bitbucket"] td:first-child:before{content:"\f171"}
+tr[data-simply-list-icon="fa-bitbucket-square"] td:first-child:before{content:"\f172"}
+tr[data-simply-list-icon="fa-tumblr"] td:first-child:before{content:"\f173"}
+tr[data-simply-list-icon="fa-tumblr-square"] td:first-child:before{content:"\f174"}
+tr[data-simply-list-icon="fa-long-arrow-down"] td:first-child:before{content:"\f175"}
+tr[data-simply-list-icon="fa-long-arrow-up"] td:first-child:before{content:"\f176"}
+tr[data-simply-list-icon="fa-long-arrow-left"] td:first-child:before{content:"\f177"}
+tr[data-simply-list-icon="fa-long-arrow-right"] td:first-child:before{content:"\f178"}
+tr[data-simply-list-icon="fa-apple"] td:first-child:before{content:"\f179"}
+tr[data-simply-list-icon="fa-windows"] td:first-child:before{content:"\f17a"}
+tr[data-simply-list-icon="fa-android"] td:first-child:before{content:"\f17b"}
+tr[data-simply-list-icon="fa-linux"] td:first-child:before{content:"\f17c"}
+tr[data-simply-list-icon="fa-dribbble"] td:first-child:before{content:"\f17d"}
+tr[data-simply-list-icon="fa-skype"] td:first-child:before{content:"\f17e"}
+tr[data-simply-list-icon="fa-foursquare"] td:first-child:before{content:"\f180"}
+tr[data-simply-list-icon="fa-trello"] td:first-child:before{content:"\f181"}
+tr[data-simply-list-icon="fa-female"] td:first-child:before{content:"\f182"}
+tr[data-simply-list-icon="fa-male"] td:first-child:before{content:"\f183"}
+tr[data-simply-list-icon="fa-gittip"] td:first-child:before,
+tr[data-simply-list-icon="fa-gratipay"] td:first-child:before{content:"\f184"}
+tr[data-simply-list-icon="fa-sun-o"] td:first-child:before{content:"\f185"}
+tr[data-simply-list-icon="fa-moon-o"] td:first-child:before{content:"\f186"}
+tr[data-simply-list-icon="fa-archive"] td:first-child:before{content:"\f187"}
+tr[data-simply-list-icon="fa-bug"] td:first-child:before{content:"\f188"}
+tr[data-simply-list-icon="fa-vk"] td:first-child:before{content:"\f189"}
+tr[data-simply-list-icon="fa-weibo"] td:first-child:before{content:"\f18a"}
+tr[data-simply-list-icon="fa-renren"] td:first-child:before{content:"\f18b"}
+tr[data-simply-list-icon="fa-pagelines"] td:first-child:before{content:"\f18c"}
+tr[data-simply-list-icon="fa-stack-exchange"] td:first-child:before{content:"\f18d"}
+tr[data-simply-list-icon="fa-arrow-circle-o-right"] td:first-child:before{content:"\f18e"}
+tr[data-simply-list-icon="fa-arrow-circle-o-left"] td:first-child:before{content:"\f190"}
+tr[data-simply-list-icon="fa-toggle-left"] td:first-child:before,
+tr[data-simply-list-icon="fa-caret-square-o-left"] td:first-child:before{content:"\f191"}
+tr[data-simply-list-icon="fa-dot-circle-o"] td:first-child:before{content:"\f192"}
+tr[data-simply-list-icon="fa-wheelchair"] td:first-child:before{content:"\f193"}
+tr[data-simply-list-icon="fa-vimeo-square"] td:first-child:before{content:"\f194"}
+tr[data-simply-list-icon="fa-turkish-lira"] td:first-child:before,
+tr[data-simply-list-icon="fa-try"] td:first-child:before{content:"\f195"}
+tr[data-simply-list-icon="fa-plus-square-o"] td:first-child:before{content:"\f196"}
+tr[data-simply-list-icon="fa-space-shuttle"] td:first-child:before{content:"\f197"}
+tr[data-simply-list-icon="fa-slack"] td:first-child:before{content:"\f198"}
+tr[data-simply-list-icon="fa-envelope-square"] td:first-child:before{content:"\f199"}
+tr[data-simply-list-icon="fa-wordpress"] td:first-child:before{content:"\f19a"}
+tr[data-simply-list-icon="fa-openid"] td:first-child:before{content:"\f19b"}
+tr[data-simply-list-icon="fa-institution"] td:first-child:before,
+tr[data-simply-list-icon="fa-bank"] td:first-child:before,
+tr[data-simply-list-icon="fa-university"] td:first-child:before{content:"\f19c"}
+tr[data-simply-list-icon="fa-mortar-board"] td:first-child:before,
+tr[data-simply-list-icon="fa-graduation-cap"] td:first-child:before{content:"\f19d"}
+tr[data-simply-list-icon="fa-yahoo"] td:first-child:before{content:"\f19e"}
+tr[data-simply-list-icon="fa-google"] td:first-child:before{content:"\f1a0"}
+tr[data-simply-list-icon="fa-reddit"] td:first-child:before{content:"\f1a1"}
+tr[data-simply-list-icon="fa-reddit-square"] td:first-child:before{content:"\f1a2"}
+tr[data-simply-list-icon="fa-stumbleupon-circle"] td:first-child:before{content:"\f1a3"}
+tr[data-simply-list-icon="fa-stumbleupon"] td:first-child:before{content:"\f1a4"}
+tr[data-simply-list-icon="fa-delicious"] td:first-child:before{content:"\f1a5"}
+tr[data-simply-list-icon="fa-digg"] td:first-child:before{content:"\f1a6"}
+tr[data-simply-list-icon="fa-pied-piper"] td:first-child:before{content:"\f1a7"}
+tr[data-simply-list-icon="fa-pied-piper-alt"] td:first-child:before{content:"\f1a8"}
+tr[data-simply-list-icon="fa-drupal"] td:first-child:before{content:"\f1a9"}
+tr[data-simply-list-icon="fa-joomla"] td:first-child:before{content:"\f1aa"}
+tr[data-simply-list-icon="fa-language"] td:first-child:before{content:"\f1ab"}
+tr[data-simply-list-icon="fa-fax"] td:first-child:before{content:"\f1ac"}
+tr[data-simply-list-icon="fa-building"] td:first-child:before{content:"\f1ad"}
+tr[data-simply-list-icon="fa-child"] td:first-child:before{content:"\f1ae"}
+tr[data-simply-list-icon="fa-paw"] td:first-child:before{content:"\f1b0"}
+tr[data-simply-list-icon="fa-spoon"] td:first-child:before{content:"\f1b1"}
+tr[data-simply-list-icon="fa-cube"] td:first-child:before{content:"\f1b2"}
+tr[data-simply-list-icon="fa-cubes"] td:first-child:before{content:"\f1b3"}
+tr[data-simply-list-icon="fa-behance"] td:first-child:before{content:"\f1b4"}
+tr[data-simply-list-icon="fa-behance-square"] td:first-child:before{content:"\f1b5"}
+tr[data-simply-list-icon="fa-steam"] td:first-child:before{content:"\f1b6"}
+tr[data-simply-list-icon="fa-steam-square"] td:first-child:before{content:"\f1b7"}
+tr[data-simply-list-icon="fa-recycle"] td:first-child:before{content:"\f1b8"}
+tr[data-simply-list-icon="fa-automobile"] td:first-child:before,
+tr[data-simply-list-icon="fa-car"] td:first-child:before{content:"\f1b9"}
+tr[data-simply-list-icon="fa-cab"] td:first-child:before,
+tr[data-simply-list-icon="fa-taxi"] td:first-child:before{content:"\f1ba"}
+tr[data-simply-list-icon="fa-tree"] td:first-child:before{content:"\f1bb"}
+tr[data-simply-list-icon="fa-spotify"] td:first-child:before{content:"\f1bc"}
+tr[data-simply-list-icon="fa-deviantart"] td:first-child:before{content:"\f1bd"}
+tr[data-simply-list-icon="fa-soundcloud"] td:first-child:before{content:"\f1be"}
+tr[data-simply-list-icon="fa-database"] td:first-child:before{content:"\f1c0"}
+tr[data-simply-list-icon="fa-file-pdf-o"] td:first-child:before{content:"\f1c1"}
+tr[data-simply-list-icon="fa-file-word-o"] td:first-child:before{content:"\f1c2"}
+tr[data-simply-list-icon="fa-file-excel-o"] td:first-child:before{content:"\f1c3"}
+tr[data-simply-list-icon="fa-file-powerpoint-o"] td:first-child:before{content:"\f1c4"}
+tr[data-simply-list-icon="fa-file-photo-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-file-picture-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-file-image-o"] td:first-child:before{content:"\f1c5"}
+tr[data-simply-list-icon="fa-file-zip-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-file-archive-o"] td:first-child:before{content:"\f1c6"}
+tr[data-simply-list-icon="fa-file-sound-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-file-audio-o"] td:first-child:before{content:"\f1c7"}
+tr[data-simply-list-icon="fa-file-movie-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-file-video-o"] td:first-child:before{content:"\f1c8"}
+tr[data-simply-list-icon="fa-file-code-o"] td:first-child:before{content:"\f1c9"}
+tr[data-simply-list-icon="fa-vine"] td:first-child:before{content:"\f1ca"}
+tr[data-simply-list-icon="fa-codepen"] td:first-child:before{content:"\f1cb"}
+tr[data-simply-list-icon="fa-jsfiddle"] td:first-child:before{content:"\f1cc"}
+tr[data-simply-list-icon="fa-life-bouy"] td:first-child:before,
+tr[data-simply-list-icon="fa-life-buoy"] td:first-child:before,
+tr[data-simply-list-icon="fa-life-saver"] td:first-child:before,
+tr[data-simply-list-icon="fa-support"] td:first-child:before,
+tr[data-simply-list-icon="fa-life-ring"] td:first-child:before{content:"\f1cd"}
+tr[data-simply-list-icon="fa-circle-o-notch"] td:first-child:before{content:"\f1ce"}
+tr[data-simply-list-icon="fa-ra"] td:first-child:before,
+tr[data-simply-list-icon="fa-rebel"] td:first-child:before{content:"\f1d0"}
+tr[data-simply-list-icon="fa-ge"] td:first-child:before,
+tr[data-simply-list-icon="fa-empire"] td:first-child:before{content:"\f1d1"}
+tr[data-simply-list-icon="fa-git-square"] td:first-child:before{content:"\f1d2"}
+tr[data-simply-list-icon="fa-git"] td:first-child:before{content:"\f1d3"}
+tr[data-simply-list-icon="fa-y-combinator-square"] td:first-child:before,
+tr[data-simply-list-icon="fa-yc-square"] td:first-child:before,
+tr[data-simply-list-icon="fa-hacker-news"] td:first-child:before{content:"\f1d4"}
+tr[data-simply-list-icon="fa-tencent-weibo"] td:first-child:before{content:"\f1d5"}
+tr[data-simply-list-icon="fa-qq"] td:first-child:before{content:"\f1d6"}
+tr[data-simply-list-icon="fa-wechat"] td:first-child:before,
+tr[data-simply-list-icon="fa-weixin"] td:first-child:before{content:"\f1d7"}
+tr[data-simply-list-icon="fa-send"] td:first-child:before,
+tr[data-simply-list-icon="fa-paper-plane"] td:first-child:before{content:"\f1d8"}
+tr[data-simply-list-icon="fa-send-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-paper-plane-o"] td:first-child:before{content:"\f1d9"}
+tr[data-simply-list-icon="fa-history"] td:first-child:before{content:"\f1da"}
+tr[data-simply-list-icon="fa-circle-thin"] td:first-child:before{content:"\f1db"}
+tr[data-simply-list-icon="fa-header"] td:first-child:before{content:"\f1dc"}
+tr[data-simply-list-icon="fa-paragraph"] td:first-child:before{content:"\f1dd"}
+tr[data-simply-list-icon="fa-sliders"] td:first-child:before{content:"\f1de"}
+tr[data-simply-list-icon="fa-share-alt"] td:first-child:before{content:"\f1e0"}
+tr[data-simply-list-icon="fa-share-alt-square"] td:first-child:before{content:"\f1e1"}
+tr[data-simply-list-icon="fa-bomb"] td:first-child:before{content:"\f1e2"}
+tr[data-simply-list-icon="fa-soccer-ball-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-futbol-o"] td:first-child:before{content:"\f1e3"}
+tr[data-simply-list-icon="fa-tty"] td:first-child:before{content:"\f1e4"}
+tr[data-simply-list-icon="fa-binoculars"] td:first-child:before{content:"\f1e5"}
+tr[data-simply-list-icon="fa-plug"] td:first-child:before{content:"\f1e6"}
+tr[data-simply-list-icon="fa-slideshare"] td:first-child:before{content:"\f1e7"}
+tr[data-simply-list-icon="fa-twitch"] td:first-child:before{content:"\f1e8"}
+tr[data-simply-list-icon="fa-yelp"] td:first-child:before{content:"\f1e9"}
+tr[data-simply-list-icon="fa-newspaper-o"] td:first-child:before{content:"\f1ea"}
+tr[data-simply-list-icon="fa-wifi"] td:first-child:before{content:"\f1eb"}
+tr[data-simply-list-icon="fa-calculator"] td:first-child:before{content:"\f1ec"}
+tr[data-simply-list-icon="fa-paypal"] td:first-child:before{content:"\f1ed"}
+tr[data-simply-list-icon="fa-google-wallet"] td:first-child:before{content:"\f1ee"}
+tr[data-simply-list-icon="fa-cc-visa"] td:first-child:before{content:"\f1f0"}
+tr[data-simply-list-icon="fa-cc-mastercard"] td:first-child:before{content:"\f1f1"}
+tr[data-simply-list-icon="fa-cc-discover"] td:first-child:before{content:"\f1f2"}
+tr[data-simply-list-icon="fa-cc-amex"] td:first-child:before{content:"\f1f3"}
+tr[data-simply-list-icon="fa-cc-paypal"] td:first-child:before{content:"\f1f4"}
+tr[data-simply-list-icon="fa-cc-stripe"] td:first-child:before{content:"\f1f5"}
+tr[data-simply-list-icon="fa-bell-slash"] td:first-child:before{content:"\f1f6"}
+tr[data-simply-list-icon="fa-bell-slash-o"] td:first-child:before{content:"\f1f7"}
+tr[data-simply-list-icon="fa-trash"] td:first-child:before{content:"\f1f8"}
+tr[data-simply-list-icon="fa-copyright"] td:first-child:before{content:"\f1f9"}
+tr[data-simply-list-icon="fa-at"] td:first-child:before{content:"\f1fa"}
+tr[data-simply-list-icon="fa-eyedropper"] td:first-child:before{content:"\f1fb"}
+tr[data-simply-list-icon="fa-paint-brush"] td:first-child:before{content:"\f1fc"}
+tr[data-simply-list-icon="fa-birthday-cake"] td:first-child:before{content:"\f1fd"}
+tr[data-simply-list-icon="fa-area-chart"] td:first-child:before{content:"\f1fe"}
+tr[data-simply-list-icon="fa-pie-chart"] td:first-child:before{content:"\f200"}
+tr[data-simply-list-icon="fa-line-chart"] td:first-child:before{content:"\f201"}
+tr[data-simply-list-icon="fa-lastfm"] td:first-child:before{content:"\f202"}
+tr[data-simply-list-icon="fa-lastfm-square"] td:first-child:before{content:"\f203"}
+tr[data-simply-list-icon="fa-toggle-off"] td:first-child:before{content:"\f204"}
+tr[data-simply-list-icon="fa-toggle-on"] td:first-child:before{content:"\f205"}
+tr[data-simply-list-icon="fa-bicycle"] td:first-child:before{content:"\f206"}
+tr[data-simply-list-icon="fa-bus"] td:first-child:before{content:"\f207"}
+tr[data-simply-list-icon="fa-ioxhost"] td:first-child:before{content:"\f208"}
+tr[data-simply-list-icon="fa-angellist"] td:first-child:before{content:"\f209"}
+tr[data-simply-list-icon="fa-cc"] td:first-child:before{content:"\f20a"}
+tr[data-simply-list-icon="fa-shekel"] td:first-child:before,
+tr[data-simply-list-icon="fa-sheqel"] td:first-child:before,
+tr[data-simply-list-icon="fa-ils"] td:first-child:before{content:"\f20b"}
+tr[data-simply-list-icon="fa-meanpath"] td:first-child:before{content:"\f20c"}
+tr[data-simply-list-icon="fa-buysellads"] td:first-child:before{content:"\f20d"}
+tr[data-simply-list-icon="fa-connectdevelop"] td:first-child:before{content:"\f20e"}
+tr[data-simply-list-icon="fa-dashcube"] td:first-child:before{content:"\f210"}
+tr[data-simply-list-icon="fa-forumbee"] td:first-child:before{content:"\f211"}
+tr[data-simply-list-icon="fa-leanpub"] td:first-child:before{content:"\f212"}
+tr[data-simply-list-icon="fa-sellsy"] td:first-child:before{content:"\f213"}
+tr[data-simply-list-icon="fa-shirtsinbulk"] td:first-child:before{content:"\f214"}
+tr[data-simply-list-icon="fa-simplybuilt"] td:first-child:before{content:"\f215"}
+tr[data-simply-list-icon="fa-skyatlas"] td:first-child:before{content:"\f216"}
+tr[data-simply-list-icon="fa-cart-plus"] td:first-child:before{content:"\f217"}
+tr[data-simply-list-icon="fa-cart-arrow-down"] td:first-child:before{content:"\f218"}
+tr[data-simply-list-icon="fa-diamond"] td:first-child:before{content:"\f219"}
+tr[data-simply-list-icon="fa-ship"] td:first-child:before{content:"\f21a"}
+tr[data-simply-list-icon="fa-user-secret"] td:first-child:before{content:"\f21b"}
+tr[data-simply-list-icon="fa-motorcycle"] td:first-child:before{content:"\f21c"}
+tr[data-simply-list-icon="fa-street-view"] td:first-child:before{content:"\f21d"}
+tr[data-simply-list-icon="fa-heartbeat"] td:first-child:before{content:"\f21e"}
+tr[data-simply-list-icon="fa-venus"] td:first-child:before{content:"\f221"}
+tr[data-simply-list-icon="fa-mars"] td:first-child:before{content:"\f222"}
+tr[data-simply-list-icon="fa-mercury"] td:first-child:before{content:"\f223"}
+tr[data-simply-list-icon="fa-intersex"] td:first-child:before,
+tr[data-simply-list-icon="fa-transgender"] td:first-child:before{content:"\f224"}
+tr[data-simply-list-icon="fa-transgender-alt"] td:first-child:before{content:"\f225"}
+tr[data-simply-list-icon="fa-venus-double"] td:first-child:before{content:"\f226"}
+tr[data-simply-list-icon="fa-mars-double"] td:first-child:before{content:"\f227"}
+tr[data-simply-list-icon="fa-venus-mars"] td:first-child:before{content:"\f228"}
+tr[data-simply-list-icon="fa-mars-stroke"] td:first-child:before{content:"\f229"}
+tr[data-simply-list-icon="fa-mars-stroke-v"] td:first-child:before{content:"\f22a"}
+tr[data-simply-list-icon="fa-mars-stroke-h"] td:first-child:before{content:"\f22b"}
+tr[data-simply-list-icon="fa-neuter"] td:first-child:before{content:"\f22c"}
+tr[data-simply-list-icon="fa-genderless"] td:first-child:before{content:"\f22d"}
+tr[data-simply-list-icon="fa-facebook-official"] td:first-child:before{content:"\f230"}
+tr[data-simply-list-icon="fa-pinterest-p"] td:first-child:before{content:"\f231"}
+tr[data-simply-list-icon="fa-whatsapp"] td:first-child:before{content:"\f232"}
+tr[data-simply-list-icon="fa-server"] td:first-child:before{content:"\f233"}
+tr[data-simply-list-icon="fa-user-plus"] td:first-child:before{content:"\f234"}
+tr[data-simply-list-icon="fa-user-times"] td:first-child:before{content:"\f235"}
+tr[data-simply-list-icon="fa-hotel"] td:first-child:before,
+tr[data-simply-list-icon="fa-bed"] td:first-child:before{content:"\f236"}
+tr[data-simply-list-icon="fa-viacoin"] td:first-child:before{content:"\f237"}
+tr[data-simply-list-icon="fa-train"] td:first-child:before{content:"\f238"}
+tr[data-simply-list-icon="fa-subway"] td:first-child:before{content:"\f239"}
+tr[data-simply-list-icon="fa-medium"] td:first-child:before{content:"\f23a"}
+tr[data-simply-list-icon="fa-yc"] td:first-child:before,
+tr[data-simply-list-icon="fa-y-combinator"] td:first-child:before{content:"\f23b"}
+tr[data-simply-list-icon="fa-optin-monster"] td:first-child:before{content:"\f23c"}
+tr[data-simply-list-icon="fa-opencart"] td:first-child:before{content:"\f23d"}
+tr[data-simply-list-icon="fa-expeditedssl"] td:first-child:before{content:"\f23e"}
+tr[data-simply-list-icon="fa-battery-4"] td:first-child:before,
+tr[data-simply-list-icon="fa-battery-full"] td:first-child:before{content:"\f240"}
+tr[data-simply-list-icon="fa-battery-3"] td:first-child:before,
+tr[data-simply-list-icon="fa-battery-three-quarters"] td:first-child:before{content:"\f241"}
+tr[data-simply-list-icon="fa-battery-2"] td:first-child:before,
+tr[data-simply-list-icon="fa-battery-half"] td:first-child:before{content:"\f242"}
+tr[data-simply-list-icon="fa-battery-1"] td:first-child:before,
+tr[data-simply-list-icon="fa-battery-quarter"] td:first-child:before{content:"\f243"}
+tr[data-simply-list-icon="fa-battery-0"] td:first-child:before,
+tr[data-simply-list-icon="fa-battery-empty"] td:first-child:before{content:"\f244"}
+tr[data-simply-list-icon="fa-mouse-pointer"] td:first-child:before{content:"\f245"}
+tr[data-simply-list-icon="fa-i-cursor"] td:first-child:before{content:"\f246"}
+tr[data-simply-list-icon="fa-object-group"] td:first-child:before{content:"\f247"}
+tr[data-simply-list-icon="fa-object-ungroup"] td:first-child:before{content:"\f248"}
+tr[data-simply-list-icon="fa-sticky-note"] td:first-child:before{content:"\f249"}
+tr[data-simply-list-icon="fa-sticky-note-o"] td:first-child:before{content:"\f24a"}
+tr[data-simply-list-icon="fa-cc-jcb"] td:first-child:before{content:"\f24b"}
+tr[data-simply-list-icon="fa-cc-diners-club"] td:first-child:before{content:"\f24c"}
+tr[data-simply-list-icon="fa-clone"] td:first-child:before{content:"\f24d"}
+tr[data-simply-list-icon="fa-balance-scale"] td:first-child:before{content:"\f24e"}
+tr[data-simply-list-icon="fa-hourglass-o"] td:first-child:before{content:"\f250"}
+tr[data-simply-list-icon="fa-hourglass-1"] td:first-child:before,
+tr[data-simply-list-icon="fa-hourglass-start"] td:first-child:before{content:"\f251"}
+tr[data-simply-list-icon="fa-hourglass-2"] td:first-child:before,
+tr[data-simply-list-icon="fa-hourglass-half"] td:first-child:before{content:"\f252"}
+tr[data-simply-list-icon="fa-hourglass-3"] td:first-child:before,
+tr[data-simply-list-icon="fa-hourglass-end"] td:first-child:before{content:"\f253"}
+tr[data-simply-list-icon="fa-hourglass"] td:first-child:before{content:"\f254"}
+tr[data-simply-list-icon="fa-hand-grab-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-hand-rock-o"] td:first-child:before{content:"\f255"}
+tr[data-simply-list-icon="fa-hand-stop-o"] td:first-child:before,
+tr[data-simply-list-icon="fa-hand-paper-o"] td:first-child:before{content:"\f256"}
+tr[data-simply-list-icon="fa-hand-scissors-o"] td:first-child:before{content:"\f257"}
+tr[data-simply-list-icon="fa-hand-lizard-o"] td:first-child:before{content:"\f258"}
+tr[data-simply-list-icon="fa-hand-spock-o"] td:first-child:before{content:"\f259"}
+tr[data-simply-list-icon="fa-hand-pointer-o"] td:first-child:before{content:"\f25a"}
+tr[data-simply-list-icon="fa-hand-peace-o"] td:first-child:before{content:"\f25b"}
+tr[data-simply-list-icon="fa-trademark"] td:first-child:before{content:"\f25c"}
+tr[data-simply-list-icon="fa-registered"] td:first-child:before{content:"\f25d"}
+tr[data-simply-list-icon="fa-creative-commons"] td:first-child:before{content:"\f25e"}
+tr[data-simply-list-icon="fa-gg"] td:first-child:before{content:"\f260"}
+tr[data-simply-list-icon="fa-gg-circle"] td:first-child:before{content:"\f261"}
+tr[data-simply-list-icon="fa-tripadvisor"] td:first-child:before{content:"\f262"}
+tr[data-simply-list-icon="fa-odnoklassniki"] td:first-child:before{content:"\f263"}
+tr[data-simply-list-icon="fa-odnoklassniki-square"] td:first-child:before{content:"\f264"}
+tr[data-simply-list-icon="fa-get-pocket"] td:first-child:before{content:"\f265"}
+tr[data-simply-list-icon="fa-wikipedia-w"] td:first-child:before{content:"\f266"}
+tr[data-simply-list-icon="fa-safari"] td:first-child:before{content:"\f267"}
+tr[data-simply-list-icon="fa-chrome"] td:first-child:before{content:"\f268"}
+tr[data-simply-list-icon="fa-firefox"] td:first-child:before{content:"\f269"}
+tr[data-simply-list-icon="fa-opera"] td:first-child:before{content:"\f26a"}
+tr[data-simply-list-icon="fa-internet-explorer"] td:first-child:before{content:"\f26b"}
+tr[data-simply-list-icon="fa-tv"] td:first-child:before,
+tr[data-simply-list-icon="fa-television"] td:first-child:before{content:"\f26c"}
+tr[data-simply-list-icon="fa-contao"] td:first-child:before{content:"\f26d"}
+tr[data-simply-list-icon="fa-500px"] td:first-child:before{content:"\f26e"}
+tr[data-simply-list-icon="fa-amazon"] td:first-child:before{content:"\f270"}
+tr[data-simply-list-icon="fa-calendar-plus-o"] td:first-child:before{content:"\f271"}
+tr[data-simply-list-icon="fa-calendar-minus-o"] td:first-child:before{content:"\f272"}
+tr[data-simply-list-icon="fa-calendar-times-o"] td:first-child:before{content:"\f273"}
+tr[data-simply-list-icon="fa-calendar-check-o"] td:first-child:before{content:"\f274"}
+tr[data-simply-list-icon="fa-industry"] td:first-child:before{content:"\f275"}
+tr[data-simply-list-icon="fa-map-pin"] td:first-child:before{content:"\f276"}
+tr[data-simply-list-icon="fa-map-signs"] td:first-child:before{content:"\f277"}
+tr[data-simply-list-icon="fa-map-o"] td:first-child:before{content:"\f278"}
+tr[data-simply-list-icon="fa-map"] td:first-child:before{content:"\f279"}
+tr[data-simply-list-icon="fa-commenting"] td:first-child:before{content:"\f27a"}
+tr[data-simply-list-icon="fa-commenting-o"] td:first-child:before{content:"\f27b"}
+tr[data-simply-list-icon="fa-houzz"] td:first-child:before{content:"\f27c"}
+tr[data-simply-list-icon="fa-vimeo"] td:first-child:before{content:"\f27d"}
+tr[data-simply-list-icon="fa-black-tie"] td:first-child:before{content:"\f27e"}
+tr[data-simply-list-icon="fa-fonticons"] td:first-child:before{content:"\f280"}

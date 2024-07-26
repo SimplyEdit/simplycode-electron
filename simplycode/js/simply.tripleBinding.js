@@ -174,6 +174,7 @@ tripleBinding = function(triple, dataBinding) {
 				if (key !== "value") {
 					subItem = new $rdf.BlankNode();
 					item[key].about = "[_:" + newItem.value + "]";
+					item._bindings_[key].resolve(true); // make sure the elements are resolved to have the correct 'about' value;
 					// console.log("created blank node " + subItem.value + " as child of " + newItem.value);
 					self.triple.store.add(subItem, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("typeof"))));
 					self.triple.store.add(newItem, $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_[key]).element.getAttribute("property"))), subItem); // FIXME: this assumes it is nested one deep; It could be deeper though
@@ -191,9 +192,14 @@ tripleBinding = function(triple, dataBinding) {
 			}
 			if (
 				(typeof item.value === "undefined") ||
-				((typeof item.value.about === "object") && (!item.value.about))
+				((typeof item.value === "object") && (item.value.about === null))
 			) {
 				var keys = Object.keys(item);
+				if (keys.indexOf("value") > 0) { // move value to the front so we handle that first, setting the about value for the other fields
+					var index = keys.indexOf("value");
+					keys.splice(index, 1);
+					keys.unshift("value");
+				}
 				var blankNode = new $rdf.BlankNode();
 				item['value'] = "[_:" + blankNode.value + "]";
 				// console.log("created blank node " + blankNode.value + " as parent");
@@ -266,9 +272,9 @@ tripleBinding = function(triple, dataBinding) {
 						var triple = new tripleBinding(
 							{
 								store : self.triple.store,
-								subject : subject.value,
+								subject : (subject.isBlank ? "[_:" + subject.value + "]" : subject.value),
 								predicate: predicate,
-								initFromStore : false
+								initFromStore : self.triple.initFromStore
 							},
 							item._bindings_[key]
 						);
@@ -290,6 +296,22 @@ tripleBinding = function(triple, dataBinding) {
 	};
 
 	this.setter = function(data) {
+		try {
+			if (this.getFirstElementBinding(this.triple.dataBinding).element.closest("[about]").getAttribute("about") !== this.triple.subject) {
+				// 'about' changed, update to reflect;
+				console.log("Updating subject from: " + this.triple.subject);
+				delete this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate];
+				this.triple.subject = this.getFirstElementBinding(this.triple.dataBinding).element.closest("[about]").getAttribute("about");
+				console.log("Updating subject to: " + this.triple.subject);
+				this.triple.store.simplyDataBindings[this.triple.subject][this.triple.predicate] = this;
+			}
+		} catch (e) {
+		}
+
+		if ((typeof data === "object") && (typeof data.about !== "undefined") && (data.about === null)) {
+			return;
+		}
+
 		var objects = this.getObjects();
 		if (this.dataBinding.mode == "field") {
 		/*
@@ -304,6 +326,9 @@ tripleBinding = function(triple, dataBinding) {
 							objects[0] = data;
 						break;
 						default:
+							if (objects[0].termType === "BlankNode") {
+								data = data.replace(/^\[_:(.*)\]$/, "$1");
+							}
 							objects[0].value = data;
 						break;
 					}
@@ -311,6 +336,16 @@ tripleBinding = function(triple, dataBinding) {
 					this.triple.store.removeStatement(this.getTriples()[0]);
 				}
 			} else {
+				if (this.triple.subject == data) {
+					return; // skip descriptions for ourself
+				}
+				if (data == "") {
+					return; // skip creation of empty data
+				}
+				if ((typeof data.about === "object") && (data.about === null)) {
+					return; // no known about, skip it
+				}
+
 				console.log("create a new triple for value");
 				console.log(data);
 				console.log(this.triple);
@@ -332,7 +367,11 @@ tripleBinding = function(triple, dataBinding) {
 					subject = this.triple.store.subjectIndex[subject][0].subject;
 				}
 				if ((data !== null) && (typeof data !== "undefined") && data !== "") {
-					this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
+					if ((typeof data.about !== "undefined") && (subject.isBlank) && ("[_:" + subject.value + "]" == data.about)) {
+						console.log("skip adding about self");
+					} else {
+						this.triple.store.add(subject, $rdf.sym(this.triple.predicate), data);
+					}
 				}
 			}
 		} else {
@@ -434,39 +473,49 @@ tripleBinding = function(triple, dataBinding) {
 	// Init triples from the rdfStore to start with;
 	if (this.triple.initFromStore) {
 		var storeValue = this.getter();
-		if (storeValue) {
-			this.dataBinding.set(this.getter());
+		if (Array.isArray(storeValue) && !storeValue.length) {
+			return;
 		}
+		if (!storeValue) {
+			return;
+		}
+		this.dataBinding.set(this.getter());
+		this.dataBinding.resolve(true);
 	}	
 };
 
 editor.field.storedInit = editor.field.init;
 editor.list.storedInit = editor.list.init;
 
+window.simplyBlankNodeCount = 1;
 
 var initRdflibTriple = function(element) {
-	if (
-		(typeof element.dataBinding.config.data.value !== "undefined") &&
-		((typeof element.dataBinding.config.data.value.about === "object") && (!element.dataBinding.config.data.value.about))
-	) {
-		// wait for the 'about' to be set;
-		setTimeout(function() {
-			initRdflibTriple(element);
-		}, 250);
-		return;
+	var fieldName = element.getAttribute("data-simply-field");
+	if (!fieldName) {
+		fieldName = element.getAttribute("data-simply-list");
 	}
 
 	var about = element.closest("[about]");
 	if (!about) {
+		window.setTimeout(function() {
+			initRdflibTriple(element);
+		}, 10);
 		return;
 	}
-	var subject = element.closest("[about]").getAttribute("about"); // FIXME: this goes wrong if the 'about' is slow to get set for new elements;
 
+	var subject = about.getAttribute("about");
 	if (element.hasAttribute("typeof")) {
 		if (subject.indexOf("[") !== 0) { // skip blank nodes; FIXME: do we need a better way to exclude them?
-			simplyApp.rdfStore.add($rdf.sym(subject), $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(element.getAttribute("typeof"))));
+			// Only add the type if it is not already set;
+			var currentType = simplyApp.rdfStore.match($rdf.sym(subject), $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"));
+			if (currentType.length) {
+				element.setAttribute("typeof", currentType[0].object.value);
+			} else {
+				simplyApp.rdfStore.add($rdf.sym(subject), $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(element.getAttribute("typeof"))));
+			}
 		}
 	}
+
 	if (!element.hasAttribute("property")) {
 		return;
 	}

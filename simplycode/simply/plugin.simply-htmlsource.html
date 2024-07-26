@@ -1,0 +1,190 @@
+<section id="simply-htmlsource" class="simply-dialog simply-modal">
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-action="simply-htmlsource-selectall"><i class="fa fa-quote-right"></i>Select field</button></li>
+			<!-- li><button data-simply-action="simply-htmlsource-editable"><i class="fa fa-lock"></i>Lock source</button></li -->
+			<li class='simply-right'><button data-simply-action="simply-dialog-close"><i class="fa fa-times"></i>Cancel</button></li>
+			<li class='simply-right'><button data-simply-action="simply-dialog-fullscreen"><i class="fa fa-expand"></i>Full screen</button></li>
+		</ul>
+	</div>
+	<div class="simply-dialog-body">
+		<textarea id="insertHTMLSource"></textarea>
+	</div>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li class="simply-warning" id="insertHTMLWarning" style="display: none;">
+				<i class='fa fa-warning'></i> Warning: editable source and javascript do not mix.
+			</li>
+			<li class='simply-right'><button data-simply-action="simply-htmlsource-insert"><i class="fa fa-check"></i>Insert</button></li>
+		</ul>
+	</div>
+</section>
+<style type="text/css">
+	#simply-htmlsource .simply-dialog-body {
+		overflow-y: hidden;
+	}
+	#simply-htmlsource textarea {
+		width: 100%;
+		height: 100%;
+		border: 1px solid #9F9F9F;
+		background-color: white;
+		box-sizing: border-box;
+	}
+	#insertHTMLWarning {
+		height: 60px;
+		line-height: 60px;
+		overflow: hidden;
+		font-size: 14px;
+		margin-left: 5px;
+	}
+</style>
+<script>
+	editor.plugins.htmlsource = {
+		currentField : null,
+		currentSel : null,
+		selectAll : function() {
+			var element = editor.plugins.htmlsource.currentField;
+			var sel = vdSelectionState.get();
+			vdSelection.selectNode(sel, element);
+			vdSelectionState.save(sel);
+			vdSelectionState.selectAll = true;
+			editor.plugins.htmlsource.dialog.setSource();
+		},
+		getSourceSpan : function() {
+			var parent=false;
+			var sel = vdSelectionState.get();
+			if (sel) {
+				parent = vdSelection.getNode(sel);
+				while (parent && (parent.tagName=='DIV' || parent.tagName=='SPAN') && parent.parentNode && !parent.getAttribute('data-simply-htmlsource')) {
+					parent=parent.parentNode;
+				}
+				if (!parent || (parent.tagName!='DIV' && parent.tagName!='SPAN') || !parent.getAttribute('data-simply-htmlsource')) {
+					parent=false;
+				}
+			}
+			return parent;
+		},
+		get : function() {
+			var span = editor.plugins.htmlsource.getSourceSpan();
+			if (span) {
+				return simply.util.base64.decode(span.getAttribute('data-simply-htmlsource'));
+			} else {
+				var sel = vdSelectionState.get();
+				return vdSelection.getHTMLText(sel);
+			}
+		},
+		dialog : {
+			setSource : function() {
+				var source = editor.plugins.htmlsource.get();
+				editor.toolbarsContainer.getElementById('insertHTMLSource').value = source;
+
+				var span = editor.plugins.htmlsource.getSourceSpan();
+
+				var button = editor.toolbarsContainer.querySelector("[data-simply-action=simply-htmlsource-editable]");
+				if (button) {
+					if (span) {
+						button.classList.add("simply-selected");
+					} else {
+						button.classList.remove("simply-selected");
+					}
+					editor.toolbarsContainer.getElementById('insertHTMLSource').select();
+				}
+
+				var fullscreen = editor.toolbarsContainer.querySelector("[data-simply-action=simply-dialog-fullscreen]");
+				if (editor.toolbarsContainer.getElementById('simply-htmlsource').classList.contains("fullscreen")) {
+					fullscreen.classList.add("simply-selected");
+				} else {
+					fullscreen.classList.remove("simply-selected");
+				}
+			},
+			open : function() {
+				editor.plugins.htmlsource.currentSel = vdSelectionState.get().cloneRange();
+				editor.plugins.htmlsource.currentField = editor.node.getEditableField();
+				vdSelectionState.save(editor.plugins.htmlsource.currentSel);
+
+				editor.plugins.dialog.open(editor.toolbarsContainer.getElementById('simply-htmlsource'), editor.plugins.htmlsource.dialog.setSource);
+				editor.plugins.htmlsource.dialog.setWarning();
+
+				vdSelectionState.selectAll = false;
+				vdSelectionState.selectedElement = false;
+			},
+			setWarning : function() {
+				var button = editor.toolbarsContainer.querySelector("[data-simply-action=simply-htmlsource-editable]");
+				if (button && button.classList.contains("simply-selected")) {
+					editor.toolbarsContainer.getElementById('insertHTMLWarning').style.display='none';
+				} else {
+					editor.toolbarsContainer.getElementById('insertHTMLWarning').style.display='block';
+				}
+			}
+		},
+		tidy : function(html) {
+			var d = document.createElement('div');
+			d.innerHTML = html;
+			if (d.querySelector("iframe")) {
+				return d.innerHTML.replace(/&amp;/g, "&");
+			} else {
+				return d.innerHTML;
+			}
+		},
+		insert : function() {
+			var source = editor.toolbarsContainer.getElementById('insertHTMLSource').value;
+			var tidySource = editor.plugins.htmlsource.tidy(source);
+			if (tidySource != source) {
+				if (confirm("The HTML content does not seem valid and cannot be inserted. Correct it automatically?")) {
+					editor.toolbarsContainer.getElementById('insertHTMLSource').value = tidySource;
+				}
+				return;
+			}
+
+			var field=editor.plugins.htmlsource.currentField;
+			if (field) {
+				vdSelectionState.restore(editor.plugins.htmlsource.currentSel);
+				editor.plugins.htmlsource.currentField.hopeEditor.selection.updateRange();
+
+				var button = editor.toolbarsContainer.querySelector("[data-simply-action=simply-htmlsource-editable]");
+				if (button && button.classList.contains("simply-selected")) {
+					var encodedsource = simply.util.base64.encode(source); // this makes sure IE doesn't touch the sourcecode.
+					var decodedsource = source;
+
+					source = '<div data-simply-selectable data-simply-htmlsource="'+encodedsource+'" contenteditable="false">'+source+'</div>';
+				}
+				var span = editor.plugins.htmlsource.getSourceSpan();
+	
+				if (vdSelectionState.selectAll) {
+					field.innerHTML = source;
+				} else if (span) {
+					if (button && button.classList.contains("simply-selected")) {
+						span.innerHTML = decodedsource;
+						span.setAttribute("data-simply-htmlsource", encodedsource);
+					} else {
+						span.innerHTML = source;
+						editor.node.unwrap(span);
+					}
+				} else {
+					if (!editor.plugins.htmlsource.currentSel.collapsed) {
+						vdSelectionState.restore(editor.plugins.htmlsource.currentSel);
+						document.execCommand('delete'); // this is somehow needed to trick IE into breaking potential <P>'s into 2
+					}
+					vdSelection.setHTMLText(editor.plugins.htmlsource.currentSel, source);
+				}
+			}
+
+			var hopeEditor = editor.plugins.htmlsource.currentField.hopeEditor;
+
+			if (hopeEditor) {
+				hopeEditor.parseHTML();
+				hopeEditor.update();
+			}
+
+			vdSelectionState.selectAll = false;
+			editor.plugins.htmlsource.currentField = false;
+			vdSelectionState.remove();
+			editor.plugins.dialog.close();
+		}
+	};
+
+	editor.addAction("simply-insert-source", editor.plugins.htmlsource.dialog.open);
+	editor.addAction("simply-edit-source", editor.plugins.htmlsource.dialog.open);
+	editor.addAction("simply-htmlsource-selectall", editor.plugins.htmlsource.selectAll);
+	editor.addAction("simply-htmlsource-insert", editor.plugins.htmlsource.insert);
+</script>

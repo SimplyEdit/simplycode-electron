@@ -1,0 +1,673 @@
+<section id="simply-image" class="simply-section">
+	<h1>HTML Image Toolbar</h1>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-section="simply-image-style" class="simply-expands"><i class="fa fa-paint-brush"></i>Style</button></li>
+			<li><button data-simply-section="simply-image-align" class="simply-expands"><i class="fa fa-align-left"></i>Align</button></li>
+			<li><button data-simply-section="simply-image-properties" class="simply-expands"><i class="fa fa-tags"></i>Properties</button></li>
+			<li><button data-simply-section="simply-hyperlink" class="simply-expands"><i class="fa fa-link"></i>Link</button></li>
+			<li><button data-simply-section="simply-code" data-simply-action="simply-edit-source"><i class="fa fa-code"></i>Code</button></li>
+			<li><button data-simply-action="simply-hyperlink-follow"><i class="fa fa-external-link"></i>Follow link</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-image-style">
+		</div>
+		<div class="simply-toolbar-section simply-image-align">
+			<ul data-type="simply-buttongroup-radio" style='display: inline-block;'>
+				<li><button data-simply-action="simply-image-class" data-value="simply-image-align-left"><i class="fa fa-align-left"></i>Left</button></li>
+				<li><button data-simply-action="simply-image-class" data-value="simply-image-align-right"><i class="fa fa-align-right"></i>Right</button></li>
+				<li><button data-simply-action="simply-image-class" data-value="none"><i class="fa fa-times"></i>None</button></li>
+			</ul>
+			<ul data-type="simply-buttongroup-radio" style='display: inline-block;'>
+				<li><button data-simply-action="simply-image-class" data-value="simply-image-align-top"><i class="fa fa-chevron-up"></i>Top</button></li>
+				<li><button data-simply-action="simply-image-class" data-value="simply-image-align-bottom"><i class="fa fa-chevron-down"></i>Bottom</button></li>
+				<li><button data-simply-action="simply-image-class" data-value="simply-image-align-middle"><i class="fa fa-chevron-right"></i>Middle</button></li>
+				<li><button data-simply-action="simply-image-class" data-value="none"><i class="fa fa-times"></i>None</button></li>
+			</ul>
+		</div>
+		<div class="simply-toolbar-section simply-image-properties">
+			<div><label>URL</label><input type="text" class="simply-image-src" data-simply-action="simply-image-src"></div>
+			<div><label>Alt</label><input type="text" class="simply-image-alt" data-simply-action="simply-image-alt"></div>
+			<div><label>Title</label><input type="text" class="simply-image-title" data-simply-action="simply-image-title"></div>
+		</div>
+		<div class="simply-toolbar-section simply-hyperlink">
+			<div><label>URL</label><input type="text" class="simply-hyperlink-href" data-simply-action="simply-hyperlink-href"></div>
+			<div><label>Title</label><input type="text" class="simply-hyperlink-title" data-simply-action="simply-hyperlink-title"></div>
+			<div><label>Name</label><input type="text" class="simply-hyperlink-name" data-simply-action="simply-hyperlink-name"></div>
+			<div>
+				<button class="simply-hyperlink-nofollow" data-simply-action="simply-hyperlink-nofollow"><i class="fa fa-chain-broken"></i>Nofollow</button>
+				<button class="simply-hyperlink-newwindow" data-simply-action="simply-hyperlink-newwindow"><i class="fa fa-external-link"></i>New window</button>
+				<button class="simply-hyperlink-unlink" data-simply-action="simply-hyperlink-unlink"><i class="fa fa-chain-broken"></i>Remove link</button>
+			</div>
+		</div>
+	</div>
+</section>
+<section id="simply-image-field" class="simply-section">
+	<h1>HTML Image Toolbar</h1>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-section="simply-image-style" class="simply-expands"><i class="fa fa-paint-brush"></i>Style</button></li>
+			<li><button data-simply-section="simply-image-properties" class="simply-expands"><i class="fa fa-tags"></i>Properties</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-image-style">
+		</div>
+		<div class="simply-toolbar-section simply-image-properties">
+			<div><label>URL</label><input type="text" class="simply-image-src" data-simply-action="simply-image-src"></div>
+			<div><label>Alt</label><input type="text" class="simply-image-alt" data-simply-action="simply-image-alt"></div>
+			<div><label>Title</label><input type="text" class="simply-image-title" data-simply-action="simply-image-title"></div>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+	var currentImage;
+	var currentLink;
+
+	editor.plugins.image = {
+		placeholderData : null,
+		placeholder : function() {
+			if (!editor.plugins.image.placeholderData) {
+				// Create a nice placeholder image and insert that;
+				var canvas = document.createElement("canvas");
+				canvas.setAttribute("height", 60);
+				canvas.setAttribute("width", 80);
+
+				var ctx = canvas.getContext("2d");
+				ctx.fillStyle = "#ccc";
+				ctx.fillRect(0,0,canvas.getAttribute("width"), canvas.getAttribute("height"));
+				ctx.fillStyle = "#eee";
+				ctx.fillRect(2,2,canvas.getAttribute("width")-4, canvas.getAttribute("height")-4);
+
+				ctx.font = "48px FontAwesome";
+				ctx.fillStyle = "#999";
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+
+				// Use FontAwesome 'photo' icon;
+				ctx.fillText("\uf03e", canvas.getAttribute("width")/2, canvas.getAttribute("height")/2);
+				
+				editor.plugins.image.placeholderData = canvas.toDataURL("image/png");
+			}
+			return editor.plugins.image.placeholderData;
+		},
+		reselect : function() {
+			var field = editor.context.hopeEditor.field;
+			var hopeEditor = field.hopeEditor;
+
+			hopeEditor.showCursor();
+			vdSelectionState.remove();
+			var sel = window.getSelection();
+			var image = vdSelection.getNode(vdSelectionState.get());
+
+			var found = false;
+			if (field.tagName.toLowerCase() == "img") {
+				image = field;
+				found = true;
+			} else if (image.nodeType == 1 && image.tagName.toLowerCase() == "img") {
+				found = true;
+			} else if (sel.focusNode.nextSibling && sel.focusNode.nextSibling.nodeType == 1 && sel.focusNode.nextSibling.tagName.toLowerCase() == "img") {
+				image = sel.focusNode.nextSibling;
+				found = true;
+			} else if (sel.focusNode.childNodes.length && sel.focusNode.childNodes[0].nodeType == 1 && sel.focusNode.childNodes[0].tagName.toLowerCase() == "img") {
+				image = sel.focusNode.childNodes[0];
+				found = true;
+			} else if (sel.focusNode.parentNode.nextSibling && sel.focusNode.parentNode.nextSibling.nodeType == 1 && sel.focusNode.parentNode.nextSibling.tagName.toLowerCase() == "img") {
+				image = sel.focusNode.parentNode.nextSibling;
+				found = true;
+			}
+
+			if (found) {
+				var range = document.createRange();
+				range.setStartBefore(image);
+				range.setEndAfter(image);
+
+				sel.removeAllRanges();
+				sel.addRange(range);
+				return image;
+			} else {
+				sel.removeAllRanges();
+			}
+		}
+	};
+
+	editor.addToolbar({
+		"name" : "simply-image",
+		"filter" : {
+			"selector" : "IMG",
+			"parent" : {
+				"selector" : "*"
+			}
+		},
+		"update" : function(toolbar) {
+			var sel = vdSelectionState.get();
+			var image = vdSelection.getNode(sel);
+			var field = editor.node.getEditableField();
+			var hopeEditor = field.hopeEditor;
+			editor.context.hopeEditor = hopeEditor;
+
+			var imagePos = hopeEditor.selection.getTotalOffset(image);
+			hopeEditor.selection.start = imagePos;
+			hopeEditor.selection.end = imagePos+1;
+
+			var range = hopeEditor.selection.getRange();
+			hopeEditor.currentRange = range;
+
+			var annotation = hopeEditor.fragment.has(range, "img");
+			
+			var imageData = editor.field.get(image);
+			toolbar.data.alt = (typeof imageData.alt !== "undefined") ? imageData.alt : '';
+			toolbar.data.title = (typeof imageData.title !== "undefined") ? imageData.title : '';
+			toolbar.data.src = ((typeof imageData.src == "undefined") || (imageData.src == editor.plugins.image.placeholder())) ? "" : imageData.src;
+
+			var showStyles = false;
+			var imageStyles = toolbar.querySelectorAll(".simply-image-style [data-type=simply-buttongroup-radio]");
+			if (imageStyles) {
+				for (var i=0; i<imageStyles.length; i++) {
+					var selector = imageStyles[i].config.selector;
+					var node = editor.node.findClassNode(image, selector);
+					if (node) {
+						imageStyles[i].style.display = "block";
+						showStyles = true;
+
+						var buttons = imageStyles[i].querySelectorAll("[data-value]");
+						toolbar.data.style[i] = '';
+						for (var j=0; j<buttons.length; j++) {
+							if (node.classList.contains(buttons[j].getAttribute("data-value"))) {
+								toolbar.data.style[i] = buttons[j].getAttribute("data-value");
+							}
+						}
+					} else {
+						imageStyles[i].style.display = "none";
+					}
+				}
+			}
+
+			if (showStyles) {
+				toolbar.querySelector("[data-simply-section='simply-image-style']").parentNode.style.display = "block";
+			} else {
+				toolbar.querySelector("[data-simply-section='simply-image-style']").parentNode.style.display = "none";
+			}
+
+			var alignClasses = toolbar.querySelectorAll(".simply-image-align [data-type=simply-buttongroup-radio]");
+			if (alignClasses) {
+				var tempNode;
+				if (annotation) {
+					tempNode = editor.plugins.hope.annotation.explode(annotation.tag);
+				} else if (hopeEditor.field.tagName.toLowerCase() === "img") {
+					tempNode = hopeEditor.field;
+				}
+
+				for (var i=0; i<alignClasses.length; i++) {
+					var buttons = alignClasses[i].querySelectorAll("[data-value]");
+					toolbar.data.align[i] = '';
+					for (var j=0; j<buttons.length; j++) {
+						if (tempNode.classList.contains(buttons[j].getAttribute("data-value"))) {
+							toolbar.data.align[i] = buttons[j].getAttribute("data-value");
+						}
+					}
+				}
+			}
+
+			toolbar.querySelector("button[data-simply-action=simply-hyperlink-follow]").parentNode.style.display = "none";
+
+			toolbar.data.hyperlink.href = '';
+			toolbar.data.hyperlink.title = '';
+			toolbar.data.hyperlink.name = '';
+			toolbar.data.hyperlink.nofollow = false;
+			toolbar.data.hyperlink.newwindow = false;
+
+			var linkNode;
+			var hyperlink = hopeEditor.fragment.has(range, "a");
+			if (hyperlink) {
+				linkNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+			} else if (hopeEditor.field.tagName.toLowerCase() === "a") {
+				linkNode = hopeEditor.field;
+			}
+			if (linkNode) {
+				toolbar.querySelector("button[data-simply-action=simply-hyperlink-follow]").parentNode.style.display = "block";
+				var hyperlinkData = editor.field.get(linkNode);
+				for (var key in toolbar.data.hyperlink) {
+					toolbar.data.hyperlink[key] = (typeof hyperlinkData[key] !== "undefined") ? hyperlinkData[key] : '';
+				}
+				if (toolbar.data.hyperlink.nofollow == '') {
+					toolbar.data.hyperlink.nofollow = false;
+				}
+				if (toolbar.data.hyperlink.newwindow == '') {
+					toolbar.data.hyperlink.newwindow = false;
+				}
+			}
+
+			// Hide the unlink button if there is no hyperlink;
+			var hyperlinkUnlink = toolbar.querySelector("button.simply-hyperlink-unlink");
+			if (hyperlinkUnlink) {
+				if (hyperlink) {
+					toolbar.querySelector("button.simply-hyperlink-unlink").style.display = "inline-block";
+				} else {
+					toolbar.querySelector("button.simply-hyperlink-unlink").style.display = "none";
+				}
+			}
+
+			// Set the parent icon for alignment as well;
+			var currentIcon = editor.toolbarsContainer.querySelector("div.simply-image-align button.simply-selected i");
+			if (!currentIcon || (currentIcon.parentNode.getAttribute("data-value") == "none")) {
+				currentIcon = editor.toolbarsContainer.querySelector("div.simply-image-align button i");
+			}
+			if (currentIcon) {
+				var icons = editor.toolbarsContainer.querySelectorAll("button[data-simply-section=simply-image-align] i");
+				for (var i=0; i<icons.length; i++) {
+					icons[i].className = currentIcon.className;
+				}
+			}
+
+
+		},
+		"init" : function(config) {
+			var toolbar = editor.toolbarsContainer.querySelector("#" + this.name);
+			if (typeof config === "object" && toolbar) {
+				// Backwards compatibility for classes/styles
+				if (config.class && !config.style) {
+					console.log("Warning: the classes configuration was changed in version 1.15; Please update your configuration.");
+					config.style = config.class;
+					if (config.style.length) {
+						for (var i=0; i<config.style.length; i++) {
+							if (config.style[i].classes) {
+								config.style[i].styles = config.style[i].classes;
+							}
+						}
+					}
+				}
+
+				// Init block styles
+				if (config.style) {
+					var styleSections = toolbar.querySelectorAll('div.simply-toolbar-section.simply-image-style');
+					for (var i=0; i<styleSections.length; i++) {
+						if (config.style.length) {
+							styleSections[i].innerHTML = '';
+							for (var j=0; j<config.style.length; j++) {
+								var groupConfig = config.style[j];
+								if (groupConfig instanceof Array) {
+									groupConfig = {
+										styles : groupConfig,
+										description: "Image",
+										selector : "img"
+									};
+								}
+								if (!groupConfig.selector) {
+									groupConfig.selector = "img";
+								}
+								if (groupConfig.styles.length) {
+									var styleList = groupConfig.styles.slice();
+									// styleList.push({class: "none", name: "Default", icon: "fa-times"});
+									var list = document.createElement("UL");
+									list.config = groupConfig;
+									list.innerHTML = "<li class='simply-label'>" + groupConfig.description + "</li>";
+									list.setAttribute("data-type", "simply-buttongroup-radio");
+									for (var k=0; k<styleList.length; k++) {
+										var item = document.createElement("li");
+										var button = document.createElement("button");
+										button.setAttribute("data-value", styleList[k].class);
+										button.setAttribute("data-simply-action", "simply-image-class");
+										button.innerHTML = "<i class='fa " + styleList[k].icon + "'></i>" + styleList[k].name;
+										item.appendChild(button);
+										list.appendChild(item);
+									}
+									styleSections[i].appendChild(list);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Disable user zoom, because it will zoom extremely weird when you select an image on android devices;
+			var viewportMeta = document.head.querySelector("meta[name=viewport]");
+			if (!viewportMeta) {
+				viewportMeta = document.createElement("meta");
+				viewportMeta.setAttribute("name", "viewport");
+				viewportMeta.setAttribute("content", "user-scalable=no");
+				document.head.appendChild(viewportMeta);
+			} else {
+				viewportMeta.setAttribute("content", viewportMeta.getAttribute("content") + ", user-scalable=no");
+			}
+
+			toolbar.data = {
+				src : '',
+				alt : '',
+				title : ''
+			};
+			editor.toolbar.bindInput(toolbar.data, "src", toolbar.querySelector(".simply-image-src"));
+			editor.toolbar.bindInput(toolbar.data, "alt", toolbar.querySelector(".simply-image-alt"));
+			editor.toolbar.bindInput(toolbar.data, "title", toolbar.querySelector(".simply-image-title"));
+
+			// Styles
+			toolbar.data.style = [];
+			var styleGroups = toolbar.querySelectorAll("div.simply-image-style [data-type=simply-buttongroup-radio]");
+			for (var i=0; i<styleGroups.length; i++) {
+				editor.toolbar.bindButtonGroup(toolbar.data.style, i, styleGroups[i]);
+			}
+
+			// Align
+			toolbar.data.align = [];
+			var alignGroups = toolbar.querySelectorAll("div.simply-image-align [data-type=simply-buttongroup-radio]");
+			for (var i=0; i<alignGroups.length; i++) {
+				editor.toolbar.bindButtonGroup(toolbar.data.align, i, alignGroups[i]);
+			}
+			
+			// Hyperlinks
+			toolbar.data.hyperlink = {
+				href      : '',
+				title     : '',
+				name      : '',
+				nofollow  : false,
+				newwindow : false
+			};
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "href", toolbar.querySelector(".simply-hyperlink-href"));
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "title", toolbar.querySelector(".simply-hyperlink-title"));
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "name", toolbar.querySelector(".simply-hyperlink-name"));
+			editor.toolbar.bindButton(toolbar.data.hyperlink, "nofollow", toolbar.querySelector("button.simply-hyperlink-nofollow"));
+			editor.toolbar.bindButton(toolbar.data.hyperlink, "newwindow", toolbar.querySelector("button.simply-hyperlink-newwindow"));
+		},
+		"actions" : {
+			'simply-image-class' : function(el) {
+				var sel = vdSelectionState.get();
+				var parent = vdSelection.getNode(sel);
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var selector;
+				if (el.parentNode.parentNode.config && el.parentNode.parentNode.config.selector) {
+					selector = el.parentNode.parentNode.config.selector;
+				} else {
+					selector = "img";
+				}
+
+				var targetNode = editor.node.findClassNode(parent, selector);
+
+				if (targetNode.classList.contains(el.getAttribute("data-value"))) {
+					targetNode.classList.remove(el.getAttribute("data-value"));
+				} else {
+					var buttons = el.parentNode.parentNode.querySelectorAll("[data-value]");
+					for (var i=0; i<buttons.length; i++) {
+						targetNode.classList.remove(buttons[i].getAttribute("data-value"));
+					}
+					if (el.getAttribute("data-value") !== "none") {
+						targetNode.classList.add(el.getAttribute("data-value"));
+					}
+				}
+				if (targetNode.className == "") {
+					targetNode.removeAttribute("class");
+				}
+				hopeEditor.parseHTML();
+				var imageNode = editor.plugins.image.reselect();
+				if (imageNode) {
+					editor.responsiveImages.initImage(imageNode);
+				}
+				editor.fireEvent("databinding:valuechanged", field);
+				editor.context.show();
+			},
+			"simply-image-delete" : function() {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var range = hopeEditor.currentRange;
+				var annotation = hopeEditor.fragment.has(range, "img");
+
+				if (annotation) {
+					hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					hopeEditor.update();
+				}
+			},
+			"simply-image-alt" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var range = hopeEditor.currentRange;
+				var annotation = hopeEditor.fragment.has(range, "img");
+				if (annotation) {
+					var tempNode = editor.plugins.hope.annotation.explode(annotation.tag);
+					tempNode.setAttribute("alt", value);
+
+					hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(annotation.range, editor.plugins.hope.annotation.implode(tempNode));
+					hopeEditor.update();
+					editor.plugins.image.reselect();
+				} else if (hopeEditor.field.tagName.toLowerCase() === "img") {
+					hopeEditor.field.setAttribute("alt", value);
+				}
+			},
+			"simply-image-title" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var range = hopeEditor.currentRange;
+				var annotation = hopeEditor.fragment.has(range, "img");
+				if (annotation) {
+					var tempNode = editor.plugins.hope.annotation.explode(annotation.tag);
+					tempNode.setAttribute("title", value);
+					hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(annotation.range, editor.plugins.hope.annotation.implode(tempNode));
+					hopeEditor.update();
+					editor.plugins.image.reselect();
+				} else if (hopeEditor.field.tagName.toLowerCase() === "img") {
+					hopeEditor.field.setAttribute("title", value);
+				}
+			},
+			"simply-image-src" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				value = value.replace(/\\/g, "/");
+
+				var range = hopeEditor.currentRange;
+				var annotation = hopeEditor.fragment.has(range, "img");
+
+				if (annotation) {
+					var tempNode = editor.plugins.hope.annotation.explode(annotation.tag);
+					if (value) {
+						tempNode.setAttribute("data-simply-src", value);
+					} else {
+						tempNode.setAttribute("data-simply-src", editor.plugins.image.placeholder());
+					}
+					hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(annotation.range, editor.plugins.hope.annotation.implode(tempNode));
+					hopeEditor.update();
+					var imageNode = editor.plugins.image.reselect();
+					if (imageNode) {
+						editor.responsiveImages.initImage(imageNode);
+					}
+				} else if (hopeEditor.field.tagName.toLowerCase() === "img") {
+					if (value) {
+						hopeEditor.field.setAttribute("data-simply-src", value);
+					} else {
+						hopeEditor.field.setAttribute("data-simply-src", editor.plugins.image.placeholder());
+					}
+					editor.responsiveImages.initImage(hopeEditor.field);
+					editor.plugins.image.reselect();
+					editor.context.update();
+				}
+			},
+			"simply-insert-image" : function() {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var imageSrc = editor.plugins.image.placeholder();
+				var range = hopeEditor.currentRange;
+
+				if ( range.length ) {
+					hopeEditor.fragment = hopeEditor.fragment.delete(range);
+				}
+				var imageFragment = hope.fragment.create("\u00AD", '0-1:img src="' + imageSrc + '"');
+				hopeEditor.fragment = hopeEditor.fragment.insert(range.start, imageFragment);
+
+				range = hope.range.create(range.start, range.start+1);
+
+				hopeEditor.fragment = hopeEditor.fragment.apply(range, 'img src="' + imageSrc + '"');
+				hopeEditor.selection.updateRange(range.start, range.start+1);
+
+				hopeEditor.update();
+				editor.plugins.image.reselect();
+				window.setTimeout(editor.context.update, 100);
+			}
+		}
+	});
+
+	editor.addToolbar({
+		"name" : "simply-image-field",
+		"filter" : {
+			"selector" : "IMG[data-simply-field]",
+			"parent" : {
+				"selector" : "*"
+			}
+		},
+		"update" : function(toolbar) {
+			var sel = vdSelectionState.get();
+			var image = vdSelection.getNode(sel);
+			if (!image.hopeEditor) {
+				editor.field.initHopeStub(image);
+			}
+
+			var hopeEditor = image.hopeEditor;
+			editor.context.hopeEditor = hopeEditor;
+
+			var annotation = false;
+
+			var imageData = editor.field.get(image);
+			toolbar.data.alt = (typeof imageData.alt !== "undefined") ? imageData.alt : '';
+			toolbar.data.title = (typeof imageData.title !== "undefined") ? imageData.title : '';
+			toolbar.data.src = ((typeof imageData.src == "undefined") || (imageData.src == editor.plugins.image.placeholder())) ? "" : imageData.src;
+
+			var showStyles = false;
+			var imageStyles = toolbar.querySelectorAll(".simply-image-style [data-type=simply-buttongroup-radio]");
+			if (imageStyles) {
+				for (var i=0; i<imageStyles.length; i++) {
+					var selector = imageStyles[i].config.selector;
+					var node = editor.node.findClassNode(image, selector);
+					if (node) {
+						imageStyles[i].style.display = "block";
+						showStyles = true;
+
+						var buttons = imageStyles[i].querySelectorAll("[data-value]");
+						toolbar.data.style[i] = '';
+						for (var j=0; j<buttons.length; j++) {
+							if (node.classList.contains(buttons[j].getAttribute("data-value"))) {
+								toolbar.data.style[i] = buttons[j].getAttribute("data-value");
+							}
+						}
+					} else {
+						imageStyles[i].style.display = "none";
+					}
+				}
+			}
+
+			if (showStyles) {
+				toolbar.querySelector("[data-simply-section='simply-image-style']").parentNode.style.display = "block";
+			} else {
+				toolbar.querySelector("[data-simply-section='simply-image-style']").parentNode.style.display = "none";
+			}
+
+			var alignClasses = toolbar.querySelectorAll(".simply-image-align [data-type=simply-buttongroup-radio]");
+			if (alignClasses) {
+				var tempNode;
+				if (annotation) {
+					tempNode = editor.plugins.hope.annotation.explode(annotation.tag);
+				} else if (hopeEditor.field.tagName.toLowerCase() === "img") {
+					tempNode = hopeEditor.field;
+				}
+
+				for (var i=0; i<alignClasses.length; i++) {
+					var buttons = alignClasses[i].querySelectorAll("[data-value]");
+					toolbar.data.align[i] = '';
+					for (var j=0; j<buttons.length; j++) {
+						if (tempNode.classList.contains(buttons[j].getAttribute("data-value"))) {
+							toolbar.data.align[i] = buttons[j].getAttribute("data-value");
+						}
+					}
+				}
+			}
+
+			// Set the parent icon for alignment as well;
+			var currentIcon = editor.toolbarsContainer.querySelector("div.simply-image-align button.simply-selected i");
+			if (!currentIcon || (currentIcon.parentNode.getAttribute("data-value") == "none")) {
+				currentIcon = editor.toolbarsContainer.querySelector("div.simply-image-align button i");
+			}
+			if (currentIcon) {
+				var icons = editor.toolbarsContainer.querySelectorAll("button[data-simply-section=simply-image-align] i");
+				for (var i=0; i<icons.length; i++) {
+					icons[i].className = currentIcon.className;
+				}
+			}
+		},
+		"init" : function(config) {
+			var toolbar = editor.toolbarsContainer.querySelector("#" + this.name);
+			if (typeof config === "object" && toolbar) {
+				// Backwards compatibility for classes/styles
+				if (config.class && !config.style) {
+					console.log("Warning: the classes configuration was changed in version 1.15; Please update your configuration.");
+					config.style = config.class;
+					if (config.style.length) {
+						for (var i=0; i<config.style.length; i++) {
+							if (config.style[i].classes) {
+								config.style[i].styles = config.style[i].classes;
+							}
+						}
+					}
+				}
+
+				// Init block styles
+				if (config.style) {
+					var styleSections = toolbar.querySelectorAll('div.simply-toolbar-section.simply-image-style');
+					for (var i=0; i<styleSections.length; i++) {
+						if (config.style.length) {
+							styleSections[i].innerHTML = '';
+							for (var j=0; j<config.style.length; j++) {
+								var groupConfig = config.style[j];
+								if (groupConfig instanceof Array) {
+									groupConfig = {
+										styles : groupConfig,
+										description: "Image",
+										selector : "img"
+									};
+								}
+								if (!groupConfig.selector) {
+									groupConfig.selector = "img";
+								}
+								if (groupConfig.styles.length) {
+									var styleList = groupConfig.styles.slice();
+									// styleList.push({class: "none", name: "Default", icon: "fa-times"});
+									var list = document.createElement("UL");
+									list.config = groupConfig;
+									list.innerHTML = "<li class='simply-label'>" + groupConfig.description + "</li>";
+									list.setAttribute("data-type", "simply-buttongroup-radio");
+									for (var k=0; k<styleList.length; k++) {
+										var item = document.createElement("li");
+										var button = document.createElement("button");
+										button.setAttribute("data-value", styleList[k].class);
+										button.setAttribute("data-simply-action", "simply-image-class");
+										button.innerHTML = "<i class='fa " + styleList[k].icon + "'></i>" + styleList[k].name;
+										item.appendChild(button);
+										list.appendChild(item);
+									}
+									styleSections[i].appendChild(list);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			toolbar.data = {
+				src : '',
+				alt : '',
+				title : ''
+			};
+			editor.toolbar.bindInput(toolbar.data, "src", toolbar.querySelector(".simply-image-src"));
+			editor.toolbar.bindInput(toolbar.data, "alt", toolbar.querySelector(".simply-image-alt"));
+			editor.toolbar.bindInput(toolbar.data, "title", toolbar.querySelector(".simply-image-title"));
+
+			// Styles
+			toolbar.data.style = [];
+			var styleGroups = toolbar.querySelectorAll("div.simply-image-style [data-type=simply-buttongroup-radio]");
+			for (var i=0; i<styleGroups.length; i++) {
+				editor.toolbar.bindButtonGroup(toolbar.data.style, i, styleGroups[i]);
+			}
+		}
+	});
+</script>
