@@ -43,6 +43,27 @@ const createWindow = () => {
     });
 }
 
+const createTestWindow = () => {
+    if (codeWindow) {
+        codeWindow.focus();
+        return;
+    }
+    codeWindow = new BrowserWindow({
+      width: 1024,
+      height: 786,
+      title: "Simply Code",
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: false,
+        allowRunningInsecureContent : true
+      }
+    })
+    codeWindow.loadURL('simplycode://index.html/tests/triplebinding/index.html')
+    codeWindow.on('close', function() {
+      codeWindow = false;
+    });
+}
+
 const createSecondWindow = (dataDir) => {
     if (appWindow) {
       appWindow.focus();
@@ -59,6 +80,7 @@ const createSecondWindow = (dataDir) => {
         allowRunningInsecureContent : true
       }
     })
+/*
     let menuTemplate = [
         {
             label: "File",
@@ -74,6 +96,19 @@ const createSecondWindow = (dataDir) => {
         }
     ];
     let menu = Menu.buildFromTemplate(menuTemplate);
+*/
+
+    let menu = Menu.getApplicationMenu();
+    menu.items.forEach(function(menuItem) {
+      if (menuItem.role == "filemenu") {
+        if(menuItem.submenu.items[0].label !== "View app") {
+          menuItem.submenu.insert(0, new MenuItem({
+            label: 'View code',
+            click: function() {createWindow(dataDir)}
+          }));
+        }
+      }
+    });
     appWindow.setMenu(menu);
     appWindow.loadURL('simplyapp://generated.html')
     appWindow.on('close', function() {
@@ -221,6 +256,22 @@ app.whenReady().then(() => {
                     }
                 break
             }
+        } else if(pathicles[0] === "assets") {
+            componentDirectory = pathicles.join('/');
+            switch (request.method){
+                case 'GET':
+                default:
+                    let target = dataDir + componentDirectory + "/" + componentName;
+                    if(fs.existsSync(target)){
+                        const filestuff = fs.readFileSync(target)
+                        return new Response(filestuff, {
+                            // headers: { 'content-type': 'text/html' }
+                        })
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
+                break
+            }
         } else {
             switch (request.method){
                 default:
@@ -288,8 +339,9 @@ app.whenReady().then(() => {
                         })
                     } else {
                         if (
-                            (componentPath === "/js/simply-edit.js") ||
-                            (componentPath === "/js/simply.everything.js")
+                            (componentPath.indexOf("/js/simply") === 0) ||
+                            (componentPath.indexOf("/simply") === 0) ||
+                            (componentPath.indexOf("/hope") === 0)
                         ) {
                             const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
                             return new Response(filestuff, {
@@ -313,7 +365,8 @@ app.whenReady().then(() => {
         try {
             dataDir = dialog.showOpenDialogSync({properties: ['openDirectory']})[0];
         } catch(e) {
-            app.quit();
+            createTestWindow();
+            // app.quit();
             return;
         }
     }
@@ -322,7 +375,7 @@ app.whenReady().then(() => {
         dataDir += "/";
     }
     createWindow()
-
+    createSecondWindow()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             if (!process.argv[0].match(/electron$/) && process.argv[1]) {
@@ -339,9 +392,18 @@ app.whenReady().then(() => {
                 dataDir += "/";
             }
             createWindow()
+            createSecondWindow()
         }
     })
 })
+
+// SSL/TSL: this is the self signed certificate support
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+    // On certificate error we disable default behaviour (stop loading the page)
+    // and we then say "it is all fine - true" to the callback
+    event.preventDefault();
+    callback(true);
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()

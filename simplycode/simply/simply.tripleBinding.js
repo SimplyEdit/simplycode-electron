@@ -110,7 +110,7 @@ tripleBinding = function(triple, dataBinding) {
 			triples.push(triple);
 		});
 		return triples;
-	}
+	};
 
 	this.getter = function() {
 		var self = this;
@@ -137,16 +137,16 @@ tripleBinding = function(triple, dataBinding) {
 								contents: item.contents
 							};
 						});
-					break;
+					// break;
 					case "Literal":
 						return object;
-					break;
+					// break;
 					case "BlankNode":
 						return {
 							value: "[_:" + object.value + "]",
 							contents: self.getBlankNode(self, object.value)
-						}
-					break;
+						};
+					// break;
 				}
 			});
 			return result;
@@ -201,18 +201,18 @@ tripleBinding = function(triple, dataBinding) {
 					keys.unshift("value");
 				}
 				var blankNode = new $rdf.BlankNode();
-				item['value'] = "[_:" + blankNode.value + "]";
+				item.value = "[_:" + blankNode.value + "]";
 				// console.log("created blank node " + blankNode.value + " as parent");
-				var predicate = self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("property");
+				var predicate = self.getFirstElementBinding(item._bindings_.value).element.getAttribute("property");
 				if (!predicate) {
-					predicate = self.getFirstElementBinding(item._bindings_['value']).element.parentNode.getAttribute("property");
+					predicate = self.getFirstElementBinding(item._bindings_.value).element.parentNode.getAttribute("property");
 				}
 				if (!predicate) {
 					return;
 				}
 				predicate = resolveNameSpace(predicate);
 
-				self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_['value']).element.getAttribute("typeof"))));
+				self.triple.store.add(blankNode, $rdf.sym("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), $rdf.sym(resolveNameSpace(self.getFirstElementBinding(item._bindings_.value).element.getAttribute("typeof"))));
 				self.triple.store.subjectIndex[subject].every(function(triple) {
 					if (triple.predicate.value != predicate) {
 						return true; // continue
@@ -311,7 +311,7 @@ tripleBinding = function(triple, dataBinding) {
 		if ((typeof data === "object") && (typeof data.about !== "undefined") && (data.about === null)) {
 			return;
 		}
-
+		var subject = this.triple.subject;
 		var objects = this.getObjects();
 		if (this.dataBinding.mode == "field") {
 		/*
@@ -349,7 +349,6 @@ tripleBinding = function(triple, dataBinding) {
 				console.log("create a new triple for value");
 				console.log(data);
 				console.log(this.triple);
-				var subject = this.triple.subject;
 				if (!this.triple.store.subjectIndex[subject]) {
 					if (this.triple.store.subjectIndex["<" + subject + ">"]) {
 						subject = "<" + subject + ">";
@@ -376,7 +375,6 @@ tripleBinding = function(triple, dataBinding) {
 			}
 		} else {
 			var self = this;
-			var subject = this.triple.subject;
 			if (!this.triple.store.subjectIndex[subject]) {
 				if (this.triple.store.subjectIndex["<" + subject + ">"]) {
 					subject = "<" + subject + ">";
@@ -394,7 +392,7 @@ tripleBinding = function(triple, dataBinding) {
 			
 			var triples = this.getTriples();
 			if (triples.length === 0 && dataNodes.length > 0) {
-				self.triple.store.add($rdf.sym(self.triple.subject), $rdf.sym(self.triple.predicate), new $rdf.Collection);
+				self.triple.store.add($rdf.sym(self.triple.subject), $rdf.sym(self.triple.predicate), new $rdf.Collection());
 			}
 
 			triples.forEach(function(entry) {
@@ -544,13 +542,13 @@ var initRdflibTriple = function(element) {
 			);
 		}
 	}
-}
+};
 
 editor.field.init = function(field, dataParent, useDataBinding) {
 	editor.field.storedInit(field, dataParent, useDataBinding);
 	initRdflibTriple(field);
-}
+};
 editor.list.init = function(list, dataParent, useDataBinding) {
 	editor.list.storedInit(list, dataParent, useDataBinding);
 	initRdflibTriple(list);
-}
+};
