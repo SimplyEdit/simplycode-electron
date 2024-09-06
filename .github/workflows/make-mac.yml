@@ -30,10 +30,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: npm run publish
-      release-name: 'Latest rolling build'
-      tag-name: 'v0.1-alpha'
-      asset-name: 'simply-code-1.0.0-arm64.dmg'
-      file: 'out/make/simply-code-1.0.0-arm64.dmg'
 
   # build:
   #   strategy:

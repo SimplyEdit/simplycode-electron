@@ -58,11 +58,11 @@ module.exports = {
   ],
   publishers: [
     {
-      name: 'simplycode',
+      name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'Govert Combée',
-          name: 'simplycode'
+          owner: 'SimplyEdit',
+          name: 'simplycode-electron'
         },
         prerelease: true
       }
