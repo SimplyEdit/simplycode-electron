@@ -1,41 +1,41 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
 
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: '/simplycode/camil_512x512.png',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
+      platforms: ['darwin', 'linux', 'windows'],
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       }
     },
     {
       name: '@electron-forge/maker-dmg',
+      platforms: ['darwin', 'linux'],
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       },
     },
     {
       name: '@electron-forge/maker-deb',
+      platforms: ['darwin', 'linux'],
       config: {
-        bin: 'simply-code',
+        bin: 'simplycode',
         options: {
-          icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
         },
       }
     },
     {
       name: '@electron-forge/maker-rpm',
+      platforms: ['darwin', 'linux'],
       config: {
-        bin: 'simply-code',
-        icon:path.join(__dirname, '/simplycode/camil_192x192.png'),
+        bin: 'simplycode',
       }
     }
   ],
@@ -58,11 +58,11 @@ module.exports = {
   ],
   publishers: [
     {
-      name: 'simply-code',
+      name: 'simplycode',
       config: {
         repository: {
           owner: 'Govert Combée',
-          name: 'simply-code'
+          name: 'simplycode'
         },
         prerelease: true
       }
