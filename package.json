@@ -78,7 +78,18 @@
             }
           }
       ],
-      "publishers": []
+      "publishers": [
+        {
+        "name": "@electron-forge/publisher-github",
+        "config": {
+          "repository": {
+            "owner": "SimplyEdit",
+            "name": "simplycode-electron"
+          },
+          "prerelease": true
+        }
+      }
+    ]
     }
   }
 }
