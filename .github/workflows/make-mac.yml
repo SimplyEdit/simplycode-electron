@@ -25,32 +25,7 @@ jobs:
       run: npm install
     - name: build
       run: npm run make-mac
-
     - name: Publish app
       run: npm run publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # build:
-  #   strategy:
-  #     matrix:
-  #       os:
-  #         [
-  #           { name: 'linux', image: 'ubuntu-latest' },
-  #           { name: 'windows', image: 'windows-latest' },
-  #           { name: 'macos', image: 'macos-latest' },
-  #         ]
-  #   runs-on: ${{ matrix.os.image }}
-  #   steps:
-  #     - name: Github checkout
-  #       uses: actions/checkout@v4
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #     - run: npm install --save-dev @electron-forge/cli
-  #     - run: npx electron-forge import
-  #     - name: Publish app
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: npm run publish
