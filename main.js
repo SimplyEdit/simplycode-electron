@@ -361,10 +361,16 @@ app.whenReady().then(() => {
 
                 } else {
                     var target = dataDir + componentDirectory + '\/' + componentName;
+                    let headers = {};
+                    if (componentName.match(/\.svg$/)) {
+                        headers = {
+                          'content-type' : 'image/svg+xml'
+                        }
+                    }
                     if(fs.existsSync(target)) {
                         const filestuff = fs.readFileSync(target)
                         return new Response(filestuff, {
-                            // headers: { 'content-type': 'text/html' }
+                            headers: headers
                         })
                     } else {
                         if (
@@ -374,7 +380,7 @@ app.whenReady().then(() => {
                         ) {
                             const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
                             return new Response(filestuff, {
-                                // headers: { 'content-type': 'text/html' }
+                                headers: headers
                             })
                         }
                         return new Response("Not found", {"status" : 404})
