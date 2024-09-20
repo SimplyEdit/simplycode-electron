@@ -22,7 +22,9 @@ const createWindow = () => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname, '/simplycode/camil_512x512.png')
+
     })
 
     let defaultMenu = Menu.getApplicationMenu();
@@ -78,7 +80,8 @@ const createSecondWindow = (dataDir) => {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: false,
         allowRunningInsecureContent : true
-      }
+      },
+      icon: path.join(__dirname,'/simplycode/camil_512x512.png')
     })
 /*
     let menuTemplate = [
@@ -208,6 +211,8 @@ async function createComponentFile(componentPath, filecontent){
 }
 
 app.whenReady().then(() => {
+    if (require('electron-squirrel-startup') === true) app.quit(); // prevents Squirrel.Windows from launching your app multiple times during the installation/updating/uninstallation.
+
     protocol.handle('simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
         console.log('[simplycode://]' + componentPath)
@@ -302,8 +307,6 @@ app.whenReady().then(() => {
                 break    
             }
         }
-
-        
     })
 
     protocol.handle('simplyapp', (request) => {
@@ -313,11 +316,15 @@ app.whenReady().then(() => {
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
         
-        let pathicles = componentPath.split('\/');
+        let pathicles = componentPath.split('\/'); // also splits on an empty string
+        
         let componentName = pathicles.pop();
-        let componentDirectory = pathicles.join('/');
-        pathicles.shift();
 
+        if (pathicles[0] == ''){
+            pathicles.shift()
+        }
+
+        let componentDirectory = pathicles.join('/');
      
         switch (request.method){
             case 'OPTIONS':
@@ -344,13 +351,14 @@ app.whenReady().then(() => {
             default:
                 if(componentPath.endsWith('\/')){
                     componentPath = componentPath.substring(0, (componentPath.length - 1))
-                }
+                } 
 
                 if (!componentPath || componentPath === "/") {
                     const filestuff = fs.readFileSync(dataDir + '/generated.html')
                     return new Response(filestuff, {
                         // headers: { 'content-type': 'text/html' }
                     })
+
                 } else {
                     var target = dataDir + componentDirectory + '\/' + componentName;
                     if(fs.existsSync(target)) {
@@ -373,11 +381,7 @@ app.whenReady().then(() => {
                     }
                 }    
             break    
-        }
-        
-        
-
-        
+            }     
     })
 
     if (!process.argv[0].match(/electron$/) && process.argv[1]) {
@@ -394,6 +398,7 @@ app.whenReady().then(() => {
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
+        console.log(dataDir);
     }
     createWindow()
     createSecondWindow()
