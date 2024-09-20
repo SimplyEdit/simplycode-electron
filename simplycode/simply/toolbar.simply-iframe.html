@@ -1,0 +1,82 @@
+<section id="simply-iframe" class="simply-section">
+	<h1>HTML Iframe Toolbar</h1>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-section="simply-iframe-properties" class="simply-expands"><i class="fa fa-link"></i>IFrame target</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-iframe-properties">
+			<div><label>URL</label><input type="text" id="vdIframeSrc" data-simply-action="simply-iframe-src"></div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript">
+	editor.addToolbar({
+		"name" : "simply-iframe",
+		"filter" : {
+			"selector" : "IFRAME",
+			"parent" : {
+				"selector" : "*"
+			}
+		},
+		"update" : function(toolbar) {
+			var sel = vdSelectionState.get();
+			var iframe = vdSelection.getNode(sel);
+
+			vdSelectionState.currentSelection = sel;
+			vdSelectionState.currentNode = iframe;
+
+			var fieldData = editor.field.get(iframe);
+			toolbar.data.src = (typeof fieldData.src !== "undefined") ? fieldData.src : '';
+		},
+		"init" : function() {
+			var toolbar = editor.toolbarsContainer.querySelector("#simply-iframe");
+			toolbar.data = {};
+			toolbar.data.src = '';
+			editor.toolbar.bindInput(toolbar.data, 'src', toolbar.querySelector("input[data-simply-action=simply-iframe-src]"));
+		},
+		"actions" : {
+			"simply-iframe-delete" : function() {
+				var sel = vdSelectionState.get();
+				var iframe = vdSelection.getNode(sel);
+				iframe.parentNode.removeChild(iframe);
+			},
+			"simply-iframe-src" : function(value) {
+				if (vdSelectionState.currentNode) {
+					if (value) {
+						vdSelectionState.currentNode.setAttribute("src", value);
+					} else {
+						vdSelectionState.currentNode.setAttribute("src", '');
+					}
+				}
+			}
+		}
+	});
+
+	function monitorIframe() {
+		// monitor for iframes that get focus;
+		var monitor = setInterval(function(){
+			var elem = document.activeElement;
+			if(elem && elem.tagName == 'IFRAME'){
+				if (editor.context.currentIframe != elem) {
+					editor.context.currentIframe = elem;
+					var sel = vdSelectionState.get();
+					sel.selectNode(elem);
+					sel.startContainer.ownerDocument.defaultView.getSelection().removeAllRanges();
+					sel.startContainer.ownerDocument.defaultView.getSelection().addRange(sel);
+					vdSelectionState.save(sel);
+					sel.startContainer.ownerDocument.defaultView.getSelection().removeAllRanges();
+					editor.context.update();
+				}
+			} else {
+				if (editor.context.currentIframe) {
+					vdSelectionState.remove();
+					vdSelectionState.restore();
+					editor.context.update();
+					editor.context.currentIframe = null;
+				}
+			}
+		}, 100);
+	}
+
+	monitorIframe();
+</script>

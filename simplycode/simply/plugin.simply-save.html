@@ -1,0 +1,86 @@
+<section id="simply-save" class="simply-dialog">
+	<div class="simply-dialog-body">
+		<i class="fa fa-spinner fa-spin"></i>
+		<div class="simply-title">Saving...</div>
+		<div class="simply-message">Please wait...</div>
+	</div>
+</section>
+<style type="text/css">
+	#simply-save {
+		top: 50%;
+		max-height: 80%;
+		margin-top: -100px;
+		bottom: auto;
+		right: auto;
+		left: 50%;
+		width: 200px;
+		max-width: 80%;
+		margin-left: -100px;
+	}
+	#simply-save .simply-title {
+		font-size: 20px;
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+	#simply-save .simply-message {
+		font-size: 12px;
+	}
+	#simply-save i {
+		float: right;
+		font-size: 24px;
+	}
+	#simply-save .simply-dialog-body {
+		padding: 10px;
+	}
+	
+	@media (max-width: 481px) {
+		#simply-save {
+			top: 50%;
+			max-height: 80%;
+			margin-top: -100px;
+			left: 50%;
+			margin-left: -100px;
+			width: 200px;
+			max-width: 80%;
+			bottom: auto;
+			right: auto;
+			max-width: 100%;
+			max-height: 100%;
+			height: auto;
+		}
+	}
+</style>
+<script>
+	editor.plugins.save = {
+		beforeSave : function() {
+			editor.toolbarsContainer.querySelector("#simply-save .simply-message").innerHTML = "Storing your changes.";
+			editor.plugins.dialog.open(editor.toolbarsContainer.getElementById('simply-save'));
+		},
+		afterSave : function() {
+			window.setTimeout(function() {
+				editor.toolbarsContainer.querySelector("#simply-save .simply-message").innerHTML = "All changes saved.";
+				window.setTimeout(function() {
+					editor.plugins.dialog.close();
+				}, 800);
+			}, 300);
+		},
+		afterSaveError : function(result) {
+			window.setTimeout(function() {
+				if (result.error) {
+					var errorEvent = editor.fireEvent("simply-page-save-error", document, result);
+					if (!errorEvent.defaultPrevented) {
+						var message = errorEvent.data.message;
+						editor.toolbarsContainer.querySelector("#simply-save .simply-message").innerHTML = "Error saving: " + message;
+						window.setTimeout(function() {
+							editor.plugins.dialog.close();
+						}, 2000);
+					}
+				}
+			}, 300);
+		}
+	};
+
+	editor.addAction("simply-beforesave", editor.plugins.save.beforeSave);
+	editor.addAction("simply-aftersave", editor.plugins.save.afterSave);
+	editor.addAction("simply-aftersave-error", editor.plugins.save.afterSaveError);
+</script>

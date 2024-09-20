@@ -1,0 +1,38 @@
+<section id="simply-main-toolbar" class="simply-section">
+	<div class="simply-toolbar" data-simply-section="simply-page-management">
+		<ul class="simply-buttons">
+			<li>
+				<button data-simply-action="simply-about" id="simply-logo">
+				</button>
+			</li>
+			<li>
+				<button data-simply-action="simply-save">
+					<i class="fa fa-save"></i>Save
+				</button>
+			</li>
+			<li>
+				<button data-simply-action="simply-logout">
+					<i class="fa fa-power-off"></i>Log out
+				</button>
+			</li>
+			<li>
+				<button data-simply-action="simply-meta">
+					<i class="fa fa-tags"></i>Meta tags
+				</button>
+			</li>
+		</ul>
+	</div>
+</section>
+<script type="text/javascript">
+	editor.addToolbar({
+		init: function() {
+			var img = document.createElement('img');
+			img.src = editor.baseURL + 'graphics/simply-edit-centered.svg';
+			img.alt = 'SimplyEdit';
+			editor.toolbarsContainer.getElementById("simply-logo").appendChild(img);
+		}
+	});
+
+	editor.addAction("simply-save", editor.data.save);
+	editor.addAction("simply-logout", editor.editmode.stop);
+</script>
