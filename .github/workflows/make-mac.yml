@@ -8,9 +8,9 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["pypy3.9", "pypy3.10", "3.9", "3.10", "3.11"]
+        python-version: ["3.11"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -18,34 +18,14 @@ jobs:
       # You can test your matrix by printing the current Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    - uses: actions/setup-node@master
+    - uses: actions/setup-node@v4
       with:
         node-version: 20
     - name: install dependencies
       run: npm install
     - name: build
       run: npm run make-mac
-
-  # build:
-  #   strategy:
-  #     matrix:
-  #       os:
-  #         [
-  #           { name: 'linux', image: 'ubuntu-latest' },
-  #           { name: 'windows', image: 'windows-latest' },
-  #           { name: 'macos', image: 'macos-latest' },
-  #         ]
-  #   runs-on: ${{ matrix.os.image }}
-  #   steps:
-  #     - name: Github checkout
-  #       uses: actions/checkout@v4
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #     - run: npm install --save-dev @electron-forge/cli
-  #     - run: npx electron-forge import
-  #     - name: Publish app
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: npm run publish
+    - name: Publish app
+      run: npm run publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

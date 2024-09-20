@@ -45,40 +45,6 @@
     "simplycode": "github:simplyedit/simplycode"
   },
   "config": {
-    "forge": {
-      "makers": [
-          {
-            "name": "@electron-forge/maker-squirrel",
-            "platforms": ["linux", "windows"],
-            "config": {
-              "bin": "simplycode"
-            }
-          },
-          {
-            "name": "@electron-forge/maker-dmg",
-            "platforms": ["darwin"],
-            "config": {
-              "bin": "simplycode"
-            }
-          },
-          {
-            "name": "@electron-forge/maker-deb",
-            "platforms": ["linux"],
-            "config": {
-              "bin": "simplycode",
-              "options": {
-              }
-            }
-          },
-          {
-            "name": "@electron-forge/maker-rpm",
-            "platforms": ["linux"],
-            "config": {
-              "bin": "simplycode"
-            }
-          }
-      ],
-      "publishers": []
-    }
+    "forge": "forge.config.js"
   }
 }
