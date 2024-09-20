@@ -239,7 +239,7 @@ app.whenReady().then(() => {
                     } else {
                         return new Response('"Not found"', { status: 404})
                     }         
-                break        
+                break
                 case 'PUT':
                     return createComponentDirectory(componentDirectory)
                         .then(createComponentFile(componentDirectory + "/" + componentName, request))
@@ -320,6 +320,27 @@ app.whenReady().then(() => {
 
      
         switch (request.method){
+            case 'OPTIONS':
+                if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                    return new Response('"ok"', { status: 200})
+                } else {
+                    return new Response('"Not found"', { status: 404})
+                }
+            break
+            case 'DELETE':
+                if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                    fs.rmSync((dataDir + componentDirectory + "/" + componentName), { recursive: true, force: true })
+                    return new Response('"deleted"', { status: 200})
+                } else {
+                    return new Response('"Not found"', { status: 404})
+                }         
+            break
+            case 'PUT':
+                return createComponentDirectory(componentDirectory)
+                    .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                    .then(function() { return new Response('"ok"', { status: 200})})
+                    .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+            break
             default:
                 if(componentPath.endsWith('\/')){
                     componentPath = componentPath.substring(0, (componentPath.length - 1))
