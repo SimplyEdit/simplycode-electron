@@ -10,6 +10,7 @@ var dataDir;
 var codeWindow, appWindow;
 
 const createWindow = () => {
+    console.log("BOOOOYAAAAAA!");
     if (codeWindow) {
         codeWindow.focus();
         return;
@@ -310,21 +311,42 @@ app.whenReady().then(() => {
     })
 
     protocol.handle('simplyapp', (request) => {
+        console.log("REQUEST.URL")
+        console.log(request.url)
+        let thing = new URL(request.url)
+        console.log("REQUEST URL.PATHNAME")
+        console.log(thing.pathname)
         let componentPath = new URL(request.url).pathname
+        console.log("COMPONENT PATH AT START");
+        console.log(componentPath);
+        console.log("[simplyapp://] + componentPath");
         console.log('[simplyapp://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
+
+        console.log("COMPONENT PATH AFTER IF");
+        console.log(componentPath);
         
         let pathicles = componentPath.split('\/'); // also splits on an empty string
         
         let componentName = pathicles.pop();
+
+        console.log("COMPONENT PATH AFTER PATHICLES");
+        console.log(componentPath);
 
         if (pathicles[0] == ''){
             pathicles.shift()
         }
 
         let componentDirectory = pathicles.join('/');
+        if (!componentDirectory.match(/^\//)) {
+            componentDirectory = "/" + componentDirectory;
+            console.log(componentDirectory);
+        }
+
+        console.log("COMPONENT DIRECTORY");
+        console.log(componentDirectory);
      
         switch (request.method){
             case 'OPTIONS':
@@ -401,6 +423,8 @@ app.whenReady().then(() => {
             return;
         }
     }
+    //dataDir = "/Volumes/T7/USB_Projects/Websites/waag/website-example";
+
     console.log(dataDir);
     if (!dataDir.match(/\/$/)) {
         dataDir += "/";
