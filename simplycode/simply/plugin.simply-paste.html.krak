@@ -1,22 +1,19 @@
 <script type="text/javascript">
-	var spanListener = function(mutations) {
-		mutations.forEach(function(mutation) {
-			mutation.addedNodes.forEach(function(addedNode) {
-				if (!editor.node.getSimplyField(addedNode)) {
-					return;
-				}
+	var spanListener = function(event) {
+		if (!editor.node.getSimplyField(event.target)) {
+			return;
+		}
 
-				if (addedNode.tagName && addedNode.tagName.toLowerCase()=='span') {
-					editor.node.unwrap(addedNode);
-					var sel = window.getSelection();
-					var range = sel.getRangeAt(0);
-					sel.removeAllRanges();
-					sel.addRange(range);
-				}
-			});
-		});
+		if (event.target.tagName && event.target.tagName.toLowerCase()=='span') {
+			editor.node.unwrap(event.target);
+			var sel = window.getSelection();
+			var range = sel.getRangeAt(0);
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}
 	};
 
+	
 	var fontListener = function(mutations) {
 		mutations.forEach(function(mutation) {
 			mutation.addedNodes.forEach(function(addedNode) {
@@ -24,7 +21,7 @@
 					return;
 				}
 
-				if (addedNode.tagName && addedNode.tagName.toLowerCase()=='font') {
+				if (addedNode.tagName && adedNode.tagName.toLowerCase()=='font') {
 					editor.node.unwrap(addedNode);
 					var sel = window.getSelection();
 					var range = sel.getRangeAt(0);
@@ -32,12 +29,16 @@
 					sel.addRange(range);
 
 					// If a browser is bold enough to ask us to insert a font tag, that must mean they are up to no good. No more tags allowed!
-					addedNode.ownerDocument.noTagsObserver = new MutationObserver(noTagsAllowedListener);
+					var noTagsAllowedObserver = new MutationObserver(noTagsAllowedListener);
+					noTagsAllowedObserver.observe(event.target.ownerDocument, {
+						"childList" : true,
+						"subtree" : true
+					});
 					window.setTimeout(function() {
-						document.noTagsObserver.disconnect();
+						noTagsAllowedObserver.disconnect();
 					}, 200);
 				}
-
+			
 				// Chrome remembers that a text was bold or italic, this will remove those tags when they are inserted.
 				if (addedNode.tagName && (addedNode.tagName.toLowerCase()=='b' || addedNode.tagName.toLowerCase()=='i')) {
 					if (addedNode.attributes.length === 0) { // check for attributes (including class), we do want to allow <i class="fa"> and other things.
@@ -69,7 +70,7 @@
 				}
 
 				if (addedNode.tagName) {
-					editor.node.unwrap(addedNode);
+					editor.node.unwrap(event.target);
 					var sel = window.getSelection();
 					var range = sel.getRangeAt(0);
 					sel.removeAllRanges();
@@ -79,81 +80,82 @@
 		});
 	};
 
-	var divListener = function(mutations) {
-		mutations.forEach(function(mutation) {
-			mutation.addedNodes.forEach(function(addedNode) {
-				if (!editor.node.getSimplyField(addedNode)) {
+	var divListener = function(event) {
+		if (!editor.node.getSimplyField(event.target)) {
+			return;
+		}
+
+		if (
+			event.target.tagName && (event.target.tagName.toLowerCase()=='div')
+		) {
+			window.setTimeout(function() {
+				// allow a bit of time before unwrapping - chrome is still moving elements around at this point
+				if (event.target.innerHTML == '') {
+					event.target.innerHTML = "<br>";
+				}
+
+				// var siblings = newP.parentNode.childNodes;
+				var parent = event.target.parentNode;
+				if (!parent) {
 					return;
 				}
 
-				if (
-					addedNode.tagName && (addedNode.tagName.toLowerCase()=='div')
-				) {
-					if (addedNode.innerHTML == '') {
-						addedNode.innerHTML = "<br>";
-					}
-
-					// var siblings = newP.parentNode.childNodes;
-					var parent = addedNode.parentNode;
-					if (!parent) {
-						return;
-					}
-
-					// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
-					var sel = window.getSelection();
-					if (sel.rangeCount) {
-						var range = sel.getRangeAt(0);
-						var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
-					}
-
-					var nestingRules = hope.render.html.rules.nesting[parent.tagName.toLowerCase()];
-					if (nestingRules && nestingRules.indexOf("p") === -1) {
-						// replace the div with a 'br' element when we are in an element that does not allow paragraphs
-						var breakEl = document.createElement("BR");
-						addedNode.parentNode.insertBefore(breakEl, addedNode);
-					}
-
-					editor.node.unwrap(addedNode);
-					var siblings = parent.childNodes;
-					editor.node.unwrap(addedNode);
-					addParagraphs(siblings);
-					if (caretNode) {
-						range = document.createRange();
-						range.setStart(caretNode, 0);
-						sel.removeAllRanges();
-						sel.addRange(range);
-					}
-				} else if (addedNode.tagName && (addedNode.tagName.toLowerCase() == 'h1')) {
-					// special case for H1 - we don't want it inserted as a result of an enter key. The first one should be a H1, the others should be a paragraph.
-					// Firefox inserts the new element in front of the original; Chrome inserts the new H1 behind the original.
-
-					var parent = addedNode.parentNode;
-					if (!parent) {
-						return;
-					}
-
-					// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
-					var sel = window.getSelection();
-					if (sel.rangeCount) {
-						var range = sel.getRangeAt(0);
-						var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
-					}
-
-					var nodes = parent.querySelectorAll("h1");
-					for (var i=1; i<nodes.length; i++) {
-						editor.node.unwrap(nodes[i]); // Unwrap the other nodes, leave the first H1;
-					}
-					var siblings = parent.childNodes;
-					addParagraphs(siblings);
-					if (caretNode) {
-						range = document.createRange();
-						range.setStart(caretNode, 0);
-						sel.removeAllRanges();
-						sel.addRange(range);
-					}
+				// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
+				var sel = window.getSelection();
+				if (sel.rangeCount) {
+					var range = sel.getRangeAt(0);
+					var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
 				}
-			});
-		});
+
+				var nestingRules = hope.render.html.rules.nesting[parent.tagName.toLowerCase()];
+				if (nestingRules && nestingRules.indexOf("p") === -1) {
+					// replace the div with a 'br' element when we are in an element that does not allow paragraphs
+					var breakEl = document.createElement("BR");
+					event.target.parentNode.insertBefore(breakEl, event.target);
+				}
+
+				editor.node.unwrap(event.target);
+				var siblings = parent.childNodes;
+				editor.node.unwrap(event.target);
+				addParagraphs(siblings);
+				if (caretNode) {
+					range = document.createRange();
+					range.setStart(caretNode, 0);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			}, 10);
+		} else if (event.target.tagName && (event.target.tagName.toLowerCase() == 'h1')) {
+			window.setTimeout(function() {
+				// special case for H1 - we don't want it inserted as a result of an enter key. The first one should be a H1, the others should be a paragraph.
+				// Firefox inserts the new element in front of the original; Chrome inserts the new H1 behind the original.
+
+				var parent = event.target.parentNode;
+				if (!parent) {
+					return;
+				}
+
+				// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
+				var sel = window.getSelection();
+				if (sel.rangeCount) {
+					var range = sel.getRangeAt(0);
+					var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
+				}
+
+				var nodes = parent.querySelectorAll("h1");
+				for (var i=1; i<nodes.length; i++) {
+					editor.node.unwrap(nodes[i]); // Unwrap the other nodes, leave the first H1;
+				}
+				var siblings = parent.childNodes;
+				addParagraphs(siblings);
+				if (caretNode) {
+					range = document.createRange();
+					range.setStart(caretNode, 0);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			}, 10);
+		}
 	};
 
 	var cleanPastedHtml = function(pastedHtml, target) {
@@ -250,9 +252,9 @@
 		init : function() {
 			// Chrome will remember the styling from an element that was removed and helpfully insert it back into the HTML.
 			// We never want that.
-			document.fontObserver = new MutationObserver(fontListener);
-			document.fontObserver.observe(document, {
-				"childList": true,
+			var fontTagObserver = new MutationObserver(fontListener);
+			fontTagObserver.observe(document, {
+				"childList" : true,
 				"subtree" : true
 			});
 
@@ -263,9 +265,9 @@
 				switch (event.keyCode) {
 					case 8:		// backspace
 					case 46: 	// delete
-						event.target.ownerDocument.spanObserver = new MutationObserver(spanListener);
-						event.target.ownerDocument.spanObserver.observe(event.target.ownerDocument, {
-							"childList": true,
+						var spanObserver = new MutationObserver(spanListener);
+						spanObserver.observe(event.target.ownerDocument, {
+							"childList" : true,
 							"subtree" : true
 						});
 
@@ -285,11 +287,7 @@
 						}
 						var simplyParent = editor.node.getSimplyParent(event.target);
 						if (simplyParent) {
-							event.target.ownerDocument.divObserver = new MutationObserver(divListener);
-							event.target.ownerDocument.divObserver.observe(event.target.ownerDocument, {
-								"childList": true,
-								"subtree" : true
-							});
+							event.target.ownerDocument.addEventListener("DOMNodeInserted", divListener);
 							if (simplyParent.hopeEditor) {
 								simplyParent.hopeEditor.needsUpdate = true;
 							}
@@ -302,12 +300,9 @@
 				if (!editor.node.getSimplyField(event.target)) {
 					return;
 				}
-				var targetDocument = event.target.ownerDocument;
-				window.setTimeout(function() {
-					if (targetDocument.divObserver) {targetDocument.divObserver.disconnect();}
-					if (targetDocument.spanObserver) {targetDocument.spanObserver.disconnect();}
-					if (targetDocument.noTagsObserver) {targetDocument.noTagsObserver.disconnect();}
-				}, 1);
+				event.target.ownerDocument.removeEventListener("DOMNodeInserted", spanListener);
+				event.target.ownerDocument.removeEventListener("DOMNodeInserted", divListener);
+				event.target.ownerDocument.removeEventListener("DOMNodeInserted", noTagsAllowedListener);
 			});
 
 			document.addEventListener("paste", function(event) {
@@ -324,38 +319,32 @@
 				}
 
 				var targetField = editor.node.getSimplyParent(event.target);
-				var targetDocument = event.target.ownerDocument;
 
 				pastedHtml = cleanPastedHtml(pastedHtml, event.target);
 				while (pastedHtml && (!pasteAllowed(pastedHtml, targetField))) {
 					pastedHtml = unwrapPastedHtml(pastedHtml);
 				}
 
-				targetDocument.spanObserver = new MutationObserver(spanListener);
-				targetDocument.spanObserver.observe(targetDocument, {
-					"childList": true,
-					"subtree" : true
-				});
+				event.target.ownerDocument.addEventListener("DOMNodeInserted", spanListener);
+				event.target.ownerDocument.addEventListener("DOMNodeInserted", fontListener);
 
 				if (pastedHtml) {
 					event.preventDefault();
-					targetDocument.execCommand("insertHtml", false, pastedHtml);
+					event.target.ownerDocument.execCommand("insertHtml", false, pastedHtml);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", spanListener);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", fontListener);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", noTagsAllowedListener);
+					return;
 				}
 				if (pastedText) {
 					event.preventDefault();
-					targetDocument.divObserver = new MutationObserver(divListener);
-					targetDocument.divObserver.observe(targetDocument, {
-						"childList": true,
-						"subtree" : true
-					});
-					targetDocument.execCommand("insertText", false, pastedText);
-					var targetDocument = targetDocument;
+					event.target.ownerDocument.addEventListener("DOMNodeInserted", divListener);
+					event.target.ownerDocument.execCommand("insertText", false, pastedText);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", spanListener);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", fontListener);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", divListener);
+					event.target.ownerDocument.removeEventListener("DOMNodeInserted", noTagsAllowedListener);
 				}
-				window.setTimeout(function() {
-					if (targetDocument.divObserver) {targetDocument.divObserver.disconnect();}
-					if (targetDocument.spanObserver) {targetDocument.spanObserver.disconnect();}
-					if (targetDocument.noTagsObserver) {targetDocument.noTagsObserver.disconnect();}
-				}, 1);
 			});
 		}
 	});
