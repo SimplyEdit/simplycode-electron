@@ -1,0 +1,998 @@
+<section id="simply-text-cursor" class="simply-section">
+	<h1>*HTML Toolbar for Text Cursor*</h1>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-section="simply-text-textstyle" class="simply-expands"><i class="fa fa-magic"></i>Text</button></li>
+			<li><button data-simply-section="simply-text-style" class="simply-expands"><i class="fa fa-paint-brush"></i>Style</button></li>
+			<li><button data-simply-section="simply-text-align" class="simply-expands"><i class="fa fa-align-left"></i>Align</button></li>
+			<li><button data-simply-section="simply-insert" class="simply-expands"><i class="fa fa-plus"></i>Insert</button></li>
+			<li><button data-simply-action="simply-hyperlink-follow"><i class="fa fa-external-link"></i>Follow link</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-text-textstyle">
+			<ul>
+				<li class="simply-text-format"><select data-simply-action="simply-text-blockstyle">
+					<option value="h1">Heading 1</option>
+					<option value="h2">Heading 2</option>
+					<option value="h3">Heading 3</option>
+					<option value="p">Paragraph</option>
+					<option value="ol">Numbered list</option>
+					<option value="ul">Unnumbered list</option>
+					<option value="">(plain text)</option>
+				</select></li>
+			</ul>
+			<ul class="simply-text-inline">
+				<li><button data-simply-action="simply-text-inline" data-value="strong"><i class="fa fa-bold"></i>Bold</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="em"><i class="fa fa-italic"></i>Italic</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="u"><i class="fa fa-underline"></i>Underline</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="code"><i class="fa fa-code"></i>[Code]</button></li>
+			</ul>
+		</div>
+		<div class="simply-toolbar-section simply-text-style">
+		</div>
+		<div class="simply-toolbar-section simply-text-align">
+			<ul data-type="simply-buttongroup-radio">
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-left"><i class="fa fa-align-left"></i>Left</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-center"><i class="fa fa-align-center"></i>Center</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-right"><i class="fa fa-align-right"></i>Right</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-justify"><i class="fa fa-align-justify"></i>Justify</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="none"><i class="fa fa-times"></i>None</button></li>
+			</ul>
+		</div>
+		<div class="simply-toolbar-section simply-insert">
+			<ul>
+				<li><button data-simply-action="simply-insert-image" data-simply-section="simply-insert-image"><i class="fa fa-picture-o"></i>Image</button></li>
+				<li><button data-simply-action="simply-insert-source" data-simply-section="simply-insert-source"><i class="fa fa-code"></i>Code</button></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section id="simply-text-selection" class="simply-section">
+	<h1>*HTML Toolbar for Text Selection*</h1>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button data-simply-section="simply-text-textstyle" class="simply-expands"><i class="fa fa-magic"></i>Text</button></li>
+			<li><button data-simply-section="simply-text-style" class="simply-expands"><i class="fa fa-paint-brush"></i>Style</button></li>
+			<li><button data-simply-section="simply-text-align" class="simply-expands"><i class="fa fa-align-left"></i>Align</button></li>
+			<li><button data-simply-section="simply-hyperlink" class="simply-expands"><i class="fa fa-link"></i>Link</button></li>
+			<li><button data-simply-section="simply-insert" class="simply-expands"><i class="fa fa-plus"></i>Insert</button></li>
+			<li><button data-simply-action="simply-hyperlink-follow"><i class="fa fa-external-link"></i>Follow link</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-text-textstyle">
+			<ul>
+				<li class="simply-text-format"><select data-simply-action="simply-text-blockstyle">
+					<option value="h1">Heading 1</option>
+					<option value="h2">Heading 2</option>
+					<option value="h3">Heading 3</option>
+					<option value="p">Paragraph</option>
+					<option value="ol">Numbered list</option>
+					<option value="ul">Unnumbered list</option>
+					<option value="">(plain text)</option>
+				</select></li>
+			</ul>
+			<ul class="simply-text-inline">
+				<li><button data-simply-action="simply-text-inline" data-value="strong"><i class="fa fa-bold"></i>Bold</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="em"><i class="fa fa-italic"></i>Italic</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="u"><i class="fa fa-underline"></i>Underline</button></li>
+				<li><button data-simply-action="simply-text-inline" data-value="code"><i class="fa fa-code"></i>[Code]</button></li>
+			</ul>
+		</div>
+		<div class="simply-toolbar-section simply-text-style">
+		</div>
+		<div class="simply-toolbar-section simply-hyperlink">
+			<div><label>URL</label><input type="text" id="vdHyperlinkHref" data-simply-action="simply-hyperlink-href"></div>
+			<div><label>Title</label><input type="text" id="vdHyperlinkTitle" data-simply-action="simply-hyperlink-title"></div>
+			<div><label>Name</label><input type="text" id="vdHyperlinkName" data-simply-action="simply-hyperlink-name"></div>
+			<div>
+				<button class="simply-hyperlink-nofollow" data-simply-action="simply-hyperlink-nofollow"><i class="fa fa-hand-stop-o"></i>Nofollow</button>
+				<button class="simply-hyperlink-newwindow" data-simply-action="simply-hyperlink-newwindow"><i class="fa fa-external-link"></i>New window</button>
+				<button class="simply-hyperlink-unlink" data-simply-action="simply-hyperlink-unlink"><i class="fa fa-chain-broken"></i>Remove link</button>
+			</div>
+		</div>
+		<div class="simply-toolbar-section simply-text-align">
+			<ul data-type="simply-buttongroup-radio">
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-left"><i class="fa fa-align-left"></i>Left</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-center"><i class="fa fa-align-center"></i>Center</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-right"><i class="fa fa-align-right"></i>Right</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="simply-text-align-justify"><i class="fa fa-align-justify"></i>Justify</button></li>
+				<li><button data-simply-action="simply-text-class" data-value="none"><i class="fa fa-times"></i>None</button></li>
+			</ul>
+		</div>
+		<div class="simply-toolbar-section simply-insert">
+			<ul>
+				<li><button data-simply-action="simply-insert-image" data-simply-section="simply-insert-image"><i class="fa fa-picture-o"></i>Image</button></li>
+				<li><button data-simply-action="simply-insert-source" data-simply-section="simply-insert-source"><i class="fa fa-code"></i>Code</button></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<style>
+	.simply-toolbar-section > ul > li.simply-label {
+		height: 40px;
+		line-height: 40px;
+		font-weight: bold;
+		padding-left: 5px;
+		padding-right: 5px;
+		min-width: 60px;
+	}
+</style>
+<script type="text/javascript">
+	window.setTimeout(function() {
+		editor.plugins.text = {};
+	}, 3000);
+
+
+	var initTextToolbar = function(config) {
+		var toolbar = editor.toolbarsContainer.querySelector("#" + this.name);
+
+		if (typeof config === "object" && toolbar) {
+			// Init blockstyles
+			if (config.block) {
+				var blockStyleSelect = toolbar.querySelector('select[data-simply-action=simply-text-blockstyle]');
+				if (blockStyleSelect) {
+					if (config.block.length) {
+						blockStyleSelect.innerHTML = '';
+						for (var i=0; i<config.block.length; i++) {
+							option = document.createElement("option");
+							option.value = config.block[i].tag;
+							option.innerHTML = config.block[i].name;
+							blockStyleSelect.appendChild(option);
+						}
+						option = document.createElement("option");
+						option.value = '';
+						option.innerHTML = '(plain text)';
+						blockStyleSelect.appendChild(option);
+					} else {
+						blockStyleSelect.style.display = "none";
+					}
+				}
+			}
+
+			// Init inline styles
+			if (config.inline) {
+				var inlineStyles = toolbar.querySelector('ul.simply-text-inline');
+				if (inlineStyles) {
+					if (config.inline.length) {
+						inlineStyles.innerHTML = '';
+						for (var i=0; i<config.inline.length; i++) {
+							var item = document.createElement("li");
+							var button = document.createElement("button");
+							button.setAttribute("data-value", config.inline[i].tag);
+							button.setAttribute("data-simply-action", "simply-text-inline");
+							button.innerHTML = "<i class='fa " + config.inline[i].icon + "'></i>" + config.inline[i].name;
+							item.appendChild(button);
+							inlineStyles.appendChild(item);
+
+						}
+					} else {
+						inlineStyles.style.display = "none";
+					}
+				}
+			}
+
+			// Backwards compatibility for classes/styles
+			if (config.class && !config.style) {
+				console.log("Warning: the classes configuration was changed in version 1.15; Please update your configuration.");
+				config.style = config.class;
+				if (config.style.length) {
+					for (var i=0; i<config.style.length; i++) {
+						if (config.style[i].classes) {
+							config.style[i].styles = config.style[i].classes;
+						}
+					}
+				}
+			}
+
+			// Init block styles
+			if (config.style) {
+				var styleSection = toolbar.querySelector('div.simply-toolbar-section.simply-text-style');
+				if (styleSection) {
+					if (config.style.length) {
+						styleSection.innerHTML = '';
+						for (var i=0; i<config.style.length; i++) {
+							var groupConfig = config.style[i];
+							if (groupConfig instanceof Array) {
+								groupConfig = {
+									styles : groupConfig,
+									description : "Block"
+								};
+							}
+							if (!groupConfig.selector) {
+								groupConfig.selector = hope.render.html.rules.nestingSets.block.join(","); // default to blocks only
+							}
+							if (groupConfig.styles.length) {
+								var styleList = groupConfig.styles.slice();
+								// styleList.push({class: "none", name: "Default", icon: "fa-times"});
+
+								var list = document.createElement("UL");
+								list.config = groupConfig;
+								list.innerHTML = "<li class='simply-label'>" + groupConfig.description + "</li>";
+
+								list.setAttribute("data-type", "simply-buttongroup-radio");
+								for (var j=0; j<styleList.length; j++) {
+									var item = document.createElement("li");
+									var button = document.createElement("button");
+									if (styleList[j].class) {
+										button.setAttribute("data-value", styleList[j].class);
+										button.setAttribute("data-simply-action", "simply-text-class");
+									} else if (styleList[j].attribute) {
+										button.setAttribute("data-value", Object.keys(styleList[j].attribute)[0]);
+										button.attributeValue = styleList[j].attribute;
+										button.setAttribute("data-simply-action", "simply-text-attribute");
+									}
+									button.innerHTML = "<i class='fa " + styleList[j].icon + "'></i>" + styleList[j].name;
+									item.appendChild(button);
+									list.appendChild(item);
+								}
+								styleSection.appendChild(list);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		toolbar.data = {};
+		// Blockstyles
+		toolbar.data.blockstyle = '';
+		editor.toolbar.bindInput(toolbar.data, 'blockstyle', toolbar.querySelector("select[data-simply-action=simply-text-blockstyle]"));
+
+		// Inline styles
+		toolbar.data.inline = {};
+		var inlineButtons = toolbar.querySelectorAll("button[data-simply-action=simply-text-inline]");
+		for (var i=0; i<inlineButtons.length; i++) {
+			var key = inlineButtons[i].getAttribute('data-value');
+			toolbar.data.inline[key] = false;
+			editor.toolbar.bindButton(toolbar.data.inline, key, inlineButtons[i]);
+		}
+
+		// Alignment
+		toolbar.data.align = '';
+		editor.toolbar.bindButtonGroup(toolbar.data, 'align', toolbar.querySelector("div.simply-text-align [data-type=simply-buttongroup-radio]"));
+
+		// Styles
+		toolbar.data.style = [];
+		var styleGroups = toolbar.querySelectorAll("div.simply-text-style [data-type=simply-buttongroup-radio]");
+		for (var i=0; i<styleGroups.length; i++) {
+			editor.toolbar.bindButtonGroup(toolbar.data.style, i, styleGroups[i]);
+		}
+
+		toolbar.data.hyperlink = {
+			href      : '',
+			title     : '',
+			name      : '',
+			nofollow  : false,
+			newwindow : false
+		};
+		if (toolbar.querySelector("#vdHyperlinkHref")) {
+			// Databinding for hyperlinks, experimental;
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "href", toolbar.querySelector("#vdHyperlinkHref"));
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "title", toolbar.querySelector("#vdHyperlinkTitle"));
+			editor.toolbar.bindInput(toolbar.data.hyperlink, "name", toolbar.querySelector("#vdHyperlinkName"));
+			editor.toolbar.bindButton(toolbar.data.hyperlink, "nofollow", toolbar.querySelector("button.simply-hyperlink-nofollow"));
+			editor.toolbar.bindButton(toolbar.data.hyperlink, "newwindow", toolbar.querySelector("button.simply-hyperlink-newwindow"));
+		}
+	};
+
+	var updateTextToolbar = function(toolbar) {
+		if (toolbar === null) {
+			return;
+		}
+
+		var sel = vdSelectionState.get();
+		var parent = vdSelection.getNode(sel);
+		var field = editor.node.getEditableField();
+
+		hopeEditor = field.hopeEditor;
+		if (!hopeEditor) {
+			toolbar.querySelector("[data-simply-section=simply-text-align]").parentNode.style.display = "none";
+
+			toolbar.querySelector("[data-simply-section='simply-text-textstyle']").parentNode.style.display = "none";
+			toolbar.querySelector("[data-simply-section='simply-insert']").parentNode.style.display = "none";
+			if (toolbar.querySelector("[data-simply-section='simply-hyperlink']")) {
+				toolbar.querySelector("[data-simply-section='simply-hyperlink']").parentNode.style.display = "none";
+			}
+			toolbar.querySelector("[data-simply-action='simply-hyperlink-follow']").parentNode.style.display = "none";
+		} else {
+			editor.context.hopeEditor = hopeEditor;
+			hopeEditor.selection.updateRange();
+
+			var range = hopeEditor.selection.getRange();
+			hopeEditor.currentRange = range;
+
+			var blockAnnotation = hopeEditor.getBlockAnnotation(range.start);
+			if (blockAnnotation) {
+				blockAnnotation = blockAnnotation.last();
+			}
+
+			var hyperlink = hopeEditor.fragment.has(range, "a");
+
+			if (blockAnnotation && (blockAnnotation.range.end == range.start)) {
+				var tagName1 = blockAnnotation.tag.split(/ /, 2)[0].toLowerCase();
+				var tagName2 = sel.startContainer.tagName;
+				if (!tagName2) {
+					tagName2 = sel.startContainer.parentNode.tagName;
+				}
+
+				tagName2 = tagName2.toLowerCase();
+				if (tagName1 != tagName2) {
+					blockAnnotation = false;
+				}
+			}
+
+			toolbar.data.blockstyle = '';
+			if (blockAnnotation) {
+				var tagName = blockAnnotation.tag.split(/ /, 2)[0].toLowerCase();
+				var foundTag = toolbar.querySelector("[data-simply-action='simply-text-blockstyle'] option[value='" + tagName + "']");
+				if (foundTag) {
+					foundTag.selected = true;
+				} else if (tagName == "li") {
+					var annotation = hopeEditor.fragment.has(range, "ol");
+					if (annotation && toolbar.querySelector("[data-simply-action='simply-text-blockstyle'] option[value='ol']")) {
+						toolbar.data.blockstyle = 'ol';
+					} else {
+						annotation = hopeEditor.fragment.has(range, "ul");
+						if (annotation && toolbar.querySelector("[data-simply-action='simply-text-blockstyle'] option[value='ul']")) {
+							toolbar.data.blockstyle = 'ul';
+						}
+					}
+				}
+				toolbar.querySelector("[data-simply-section=simply-text-align]").parentNode.style.display = "block";
+			} else {
+				toolbar.querySelector("[data-simply-section=simply-text-align]").parentNode.style.display = "none";
+			}
+
+
+			// Check inline styles;
+			var inlineStyles = toolbar.querySelectorAll("[data-simply-action='simply-text-inline']");
+			for (var i=0; i<inlineStyles.length; i++) {
+				var inlineStyle = inlineStyles[i].getAttribute("data-value");
+				toolbar.data.inline[inlineStyle] = hopeEditor.fragment.has(range, inlineStyle) ? true : false;
+			}
+
+			// Check fixed content;
+			if (field.getAttribute("data-simply-content") == "fixed") {
+				toolbar.querySelector("[data-simply-section='simply-text-textstyle']").parentNode.style.display = "none";
+				toolbar.querySelector("[data-simply-section='simply-insert']").parentNode.style.display = "none";
+			} else {
+				toolbar.querySelector("[data-simply-section='simply-text-textstyle']").parentNode.style.display = "block";
+				toolbar.querySelector("[data-simply-section='simply-insert']").parentNode.style.display = "block";
+			}
+
+			// Check hyperlink;
+			toolbar.querySelector("[data-simply-action=simply-hyperlink-follow]").parentNode.style.display = "none";
+
+			if (typeof toolbar.data.hyperlink !== 'undefined') {
+				toolbar.data.hyperlink.href = '';
+				toolbar.data.hyperlink.title = '';
+				toolbar.data.hyperlink.name = '';
+				toolbar.data.hyperlink.nofollow = false;
+				toolbar.data.hyperlink.newwindow = false;
+			}
+			if (hyperlink || (hopeEditor.field.tagName.toLowerCase() === 'a')) {
+
+				toolbar.querySelector("[data-simply-action=simply-hyperlink-follow]").parentNode.style.display = "block";
+
+				var tempNode;
+				if (hyperlink) {
+					tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+				} else {
+					tempNode = hopeEditor.field;
+				}
+
+				var hyperlinkData = editor.field.get(tempNode);
+				for (var key in toolbar.data.hyperlink) {
+					toolbar.data.hyperlink[key] = (typeof hyperlinkData[key] !== "undefined") ? hyperlinkData[key] : '';
+				}
+				if (toolbar.data.hyperlink.nofollow == '') {
+					toolbar.data.hyperlink.nofollow = false;
+				}
+				if (toolbar.data.hyperlink.newwindow == '') {
+					toolbar.data.hyperlink.newwindow = false;
+				}
+
+				var hyperlinkUnlink = toolbar.querySelector("button.simply-hyperlink-unlink");
+				if (hyperlinkUnlink) {
+					if (hyperlink) {
+						toolbar.querySelector("button.simply-hyperlink-unlink").style.display = "inline-block";
+					} else {
+						toolbar.querySelector("button.simply-hyperlink-unlink").style.display = "none";
+					}
+				}
+			}
+
+
+			// Check aligment
+            blockAnnotation = hopeEditor.getBlockAnnotation(range.start);
+            if (blockAnnotation) {
+                blockAnnotation = blockAnnotation.last();
+            };
+			var textAlign = toolbar.querySelector(".simply-text-align [data-type=simply-buttongroup-radio]");
+			if (blockAnnotation && textAlign) {
+				var tempNode = editor.plugins.hope.annotation.explode(blockAnnotation.tag);
+				var buttons = textAlign.querySelectorAll("[data-value]");
+				toolbar.data.align = "none";
+				for (var j=0; j<buttons.length; j++) {
+					if (tempNode.classList.contains(buttons[j].getAttribute("data-value"))) {
+						toolbar.data.align = buttons[j].getAttribute("data-value");
+					}
+				}
+
+				var currentIcon = textAlign.querySelector("button.simply-selected i");
+				if (!currentIcon || (toolbar.data.align == "none")) {
+					currentIcon = textAlign.querySelector("button i");
+				}
+
+				// Set the parent icon for alignment as well;
+				var icon = toolbar.querySelector("button[data-simply-section=simply-text-align] i");
+				icon.className = currentIcon.className;
+			}
+		}
+
+		var showStyles = false;
+		var textStyles = toolbar.querySelectorAll(".simply-text-style [data-type=simply-buttongroup-radio]");
+		if (textStyles) {
+			for (var i=0; i<textStyles.length; i++) {
+				var selector = textStyles[i].config.selector;
+				var node = editor.node.findClassNode(parent, selector);
+				if (node) {
+					textStyles[i].style.display = "block";
+					showStyles = true;
+
+					toolbar.data.style[i] = '';
+					var buttons = textStyles[i].querySelectorAll("[data-value]");
+					for (var j=0; j<buttons.length; j++) {
+						if (buttons[j].getAttribute("data-simply-action") == "simply-text-class") {
+							if (node.classList.contains(buttons[j].getAttribute("data-value"))) {
+								toolbar.data.style[i] = buttons[j].getAttribute("data-value");
+							}
+						} else if (buttons[j].getAttribute("data-simply-action") == "simply-text-attribute") {
+							var attrName = buttons[j].getAttribute("data-value");
+							var attrValue = buttons[j].attributeValue[attrName];
+
+							if (node.getAttribute(attrName) == attrValue) {
+								toolbar.data.style[i] = buttons[j].attributeValue; // buttons[j].getAttribute("data-value");
+							}
+						}
+					}
+				} else {
+					textStyles[i].style.display = "none";
+				}
+			}
+		}
+
+		if (showStyles) {
+			toolbar.querySelector("[data-simply-section='simply-text-style']").parentNode.style.display = "block";
+		} else {
+			toolbar.querySelector("[data-simply-section='simply-text-style']").parentNode.style.display = "none";
+		}
+
+		// Disable the block style options that are not allowed as a child of the field;
+		var blockStyles = toolbar.querySelectorAll('select[data-simply-action=simply-text-blockstyle] option');
+		var fieldTag = field.tagName.toLowerCase();
+		for (var i=0; i<blockStyles.length; i++) {
+			if (blockStyles[i].value != "" && hope.render.html.rules.nesting[fieldTag] && (hope.render.html.rules.nesting[fieldTag].indexOf(blockStyles[i].value) < 0)) {
+				blockStyles[i].setAttribute("disabled", true);
+			} else {
+				blockStyles[i].removeAttribute("disabled");
+			}
+		}
+
+		return true;
+	};
+
+	editor.plugins.hope = {
+		annotation : {
+			explode : function(tag) {
+				var tempElm = document.createElement("DIV");
+				tempElm.innerHTML = "<" + tag + ">";
+				var tempNode = tempElm.childNodes[0];
+
+				return tempNode;
+			},
+			implode : function(node) {
+				if (node.className == '') {
+					node.removeAttribute("class");
+				}
+				result = node.tagName.toLowerCase();
+				for (i=0; i<node.attributes.length; i++) {
+					result += " " + node.attributes[i].name + "=\"" + node.attributes[i].value + "\"";
+				}
+				return result;
+			},
+			tagToggle : [],
+			apply : function(tag) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var range = hopeEditor.currentRange;
+				var annotation = hopeEditor.fragment.has(range, tag);
+
+				if (range.start === range.end) {
+					var addTag = function(mutations) {
+						mutations.forEach(function(mutation) {
+							hopeEditor.field.observer.disconnect(); // remove it now, setting textContent can trigger it again and mess up;
+							var newValue = mutation.newValue.replace(/ $/, "\xa0"); // replace ending space with nbsp;
+							var rangeLength = newValue.length - event.prevValue.length;
+							// FIXME: There used to be an event.preventDefault here;
+							mutation.target.textContent = newValue; // Note: this will trigger another CharacterDataModified if the change wasn't applied yet;
+							// ... and messes up the cursor position;
+
+							hopeEditor.parseHTML();
+							hopeEditor.selection.move(rangeLength);
+							var newRange = hope.range.create(range.start, range.start + rangeLength);
+
+							for (var i=0; i<editor.plugins.hope.annotation.tagToggle.length; i++) {
+								if (!hopeEditor.fragment.has(newRange, editor.plugins.hope.annotation.tagToggle[i])) {
+									hopeEditor.fragment = hopeEditor.fragment.apply(newRange, editor.plugins.hope.annotation.tagToggle[i]);
+								} else {
+									hopeEditor.fragment = hopeEditor.fragment.remove(newRange, editor.plugins.hope.annotation.tagToggle[i]);
+								}
+							}
+							hopeEditor.update();
+
+							window.setTimeout(function() {
+								// this resets the cursor position to where it was; Chrome 54 is still busy doing stuff when the update is running, so give it a cycle to get its stuff together;
+								hopeEditor.selection.updateRange(newRange.end, newRange.end);
+								hopeEditor.showCursor();
+							}, 0);
+
+							editor.plugins.hope.annotation.tagToggle = [];
+						});
+					};
+
+					if (editor.plugins.hope.annotation.tagToggle.length === 0) {
+						hopeEditor.field.observer = new MutationObserver(addTag);
+						hopeEditor.field.observer.observe(hopeEditor.field, {
+							"characterData" : true
+						});
+					}
+				}
+
+				if (annotation) {
+					if ((annotation.range.start === range.start) && (annotation.range.end === range.end)) {
+						hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					} else if (range.start === range.end) {
+						var index = editor.plugins.hope.annotation.tagToggle.indexOf(tag);
+						if (index !== -1) {
+							editor.plugins.hope.annotation.tagToggle.splice(index, 1);
+						} else {
+							editor.plugins.hope.annotation.tagToggle.push(tag);
+						}
+						if (editor.plugins.hope.annotation.tagToggle.length === 0) {
+							hopeEditor.field.observer.disconnect();
+						}
+						// hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+					} else {
+						hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, annotation.tag);
+						var newRange = hope.range.create(annotation.range.start, range.start);
+						hopeEditor.fragment = hopeEditor.fragment.apply(newRange, tag);
+						newRange = hope.range.create(range.end, annotation.range.end);
+						hopeEditor.fragment = hopeEditor.fragment.apply(newRange, tag);
+					}
+				} else {
+					if (range.start === range.end) {
+						var index = editor.plugins.hope.annotation.tagToggle.indexOf(tag);
+						if (index !== -1) {
+							editor.plugins.hope.annotation.tagToggle.splice(index, 1);
+						} else {
+							editor.plugins.hope.annotation.tagToggle.push(tag);
+						}
+						if (editor.plugins.hope.annotation.tagToggle.length === 0) {
+							hopeEditor.field.observer.disconnect();
+						}
+					} else {
+						hopeEditor.fragment = hopeEditor.fragment.apply(range, tag);
+					}
+				}
+				hopeEditor.update();
+			},
+			blocks : function(range) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				var blocks = [];
+				var blockAnnotations;
+				if (range.start != range.end) {
+					var noBlockStart = -1;
+					for (var i=range.start; i<range.end+1; i++) {
+						blockAnnotations = hopeEditor.getBlockAnnotation(i);
+						if (blockAnnotations.length()) {
+							if (noBlockStart > -1) {
+								blocks.push({
+									range : {
+										start : noBlockStart,
+										end : i
+									},
+									tag : ""
+								});
+								noBlockStart = -1;
+							}
+
+							for (var j=0; j<blockAnnotations.length(); j++) {
+								if (blocks.indexOf(blockAnnotations.get(j)) === -1) {
+									blocks.push(blockAnnotations.get(j));
+								}
+							}
+						} else {
+							if (noBlockStart == -1) {
+								noBlockStart = i - 1;
+							}
+						}
+					}
+				} else {
+					blockAnnotations = hopeEditor.getBlockAnnotation(range.start);
+					if (blockAnnotations.length()) {
+						blocks.push(blockAnnotations.last());
+					} else {
+						var sel = window.getSelection();
+						if (sel.rangeCount) {
+							range = sel.getRangeAt(0);
+							range.setStart(sel.focusNode,0);
+							range.setEnd(sel.focusNode, sel.focusNode.length);
+							sel.removeAllRanges();
+							sel.addRange(range);
+							hopeEditor.selection.updateRange();
+							range = hopeEditor.selection.getRange();
+							blocks.push({
+								range : range,
+								tag : ""
+							});
+						}
+					}
+				}
+				return blocks;
+			}
+		}
+	};
+
+	editor.addToolbar({
+		"name" : "simply-text-cursor",
+		"filter" : {
+			"sel-collapsed" : true
+		},
+		update : updateTextToolbar,
+		init : initTextToolbar
+	});
+
+	editor.addToolbar({
+		name : "simply-text-selection",
+		filter : {
+			"sel-collapsed" : false
+		},
+		update : updateTextToolbar,
+		init : initTextToolbar,
+		actions : {
+			'simply-text-class' : function(el) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var sel = vdSelectionState.get();
+				var parent = vdSelection.getNode(sel);
+				var selector;
+				if (el.parentNode.parentNode.config && el.parentNode.parentNode.config.selector) {
+					selector = el.parentNode.parentNode.config.selector;
+				}
+
+				var targetNode = editor.node.findClassNode(parent, selector);
+				if (targetNode.classList.contains(el.getAttribute("data-value"))) {
+					targetNode.classList.remove(el.getAttribute("data-value"));
+				} else {
+					var buttons = el.parentNode.parentNode.querySelectorAll("[data-value]");
+					for (var i=0; i<buttons.length; i++) {
+						targetNode.classList.remove(buttons[i].getAttribute("data-value"));
+					}
+					if (el.getAttribute("data-value") !== "none") {
+						targetNode.classList.add(el.getAttribute("data-value"));
+					}
+				}
+				if (targetNode.className == "") {
+					targetNode.removeAttribute("class");
+				}
+				hopeEditor.parseHTML();
+				editor.fireEvent("databinding:valuechanged", field);
+				editor.context.show();
+			},
+			'simply-text-attribute' : function(el) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var sel = vdSelectionState.get();
+				var parent = vdSelection.getNode(sel);
+				var selector;
+				if (el.parentNode.parentNode.config && el.parentNode.parentNode.config.selector) {
+					selector = el.parentNode.parentNode.config.selector;
+				}
+
+				var targetNode = editor.node.findClassNode(parent, selector);
+				var attrName = el.getAttribute("data-value");
+				var attrValue = el.attributeValue[attrName];
+
+				if (targetNode.getAttribute(attrName) == attrValue) {
+					targetNode.removeAttribute(el.getAttribute("data-value"));
+				} else {
+					var buttons = el.parentNode.parentNode.querySelectorAll("[data-value]");
+					for (var i=0; i<buttons.length; i++) {
+						targetNode.removeAttribute(attrName);
+					}
+					if (el.getAttribute(attrName) !== "none") {
+						targetNode.setAttribute(attrName, attrValue);
+					}
+				}
+				hopeEditor.parseHTML();
+				editor.fireEvent("databinding:valuechanged", field);
+				editor.context.show();
+			},
+			'simply-text-inline' : function(el) {
+				editor.plugins.hope.annotation.apply(el.getAttribute("data-value"));
+			},
+			// FIXME: These are here for the tests only, tests should be rewritten.
+			'simply-text-bold' : function() {
+				editor.plugins.hope.annotation.apply("strong");
+			},
+			'simply-text-italic' : function(el) {
+				editor.plugins.hope.annotation.apply("em");
+			},
+			'simply-text-underline' : function(el) {
+				editor.plugins.hope.annotation.apply("u");
+			},
+			'simply-text-code' : function(el) {
+				editor.plugins.hope.annotation.apply("code");
+			},
+			'simply-text-blockstyle' : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var range = hopeEditor.currentRange;
+				var blocks = editor.plugins.hope.annotation.blocks(range);
+
+				if (value == "ol" || value == "ul") {
+					var annotation = hopeEditor.fragment.has(range, "ul");
+					if (annotation) {
+						hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, "ul");
+						hopeEditor.fragment = hopeEditor.fragment.apply(annotation.range, value);
+						hopeEditor.update();
+						return;
+					} else {
+						annotation = hopeEditor.fragment.has(range, "ol");
+						if (annotation) {
+							hopeEditor.fragment = hopeEditor.fragment.remove(annotation.range, "ol");
+							hopeEditor.fragment = hopeEditor.fragment.apply(annotation.range, value);
+							hopeEditor.update();
+							return;
+						}
+					}
+
+					if (blocks.length === 0) {
+						hopeEditor.fragment = hopeEditor.fragment.apply(range, "li");
+						hopeEditor.fragment = hopeEditor.fragment.apply(range, value);
+						hopeEditor.update();
+						return;
+					} else {
+						// find out the range that will contain all the to-be-created list items;
+						var containingRange;
+						for (var i=0; i<blocks.length; i++) {
+							if (typeof containingRange === "undefined") {
+								containingRange = hope.range.create(blocks[i].range.start, blocks[i].range.end);
+							} else {
+								containingRange = hope.range.create(Math.min(blocks[i].range.start, containingRange.start), Math.max(blocks[i].range.end, containingRange.end));
+							}
+						}
+						if (range.start != range.end) {
+							containingRange = hope.range.create(Math.max(containingRange.start, range.start), Math.min(containingRange.end, range.end));
+						}
+						hopeEditor.fragment = hopeEditor.fragment.apply(containingRange, value);
+						hopeEditor.update();
+						value = "li";
+					}
+				}
+
+				if (blocks.length === 0) {
+					return editor.plugins.hope.annotation.apply(value);
+				}
+
+				while (blocks.length) {
+					var block = blocks.shift();
+					var newRange;
+					if (range.start != range.end) {
+						newRange = hope.range.create(Math.max(block.range.start, range.start), Math.min(block.range.end, range.end));
+					} else {
+						newRange = hope.range.create(block.range.start, block.range.end);
+					}
+					if (newRange.start == newRange.end) {
+						continue;
+					}
+					if ((newRange.start == block.range.start) && (newRange.end == block.range.end)) {
+						var tagName = block.tag.split(" ")[0];
+						if (editor.toolbarsContainer.querySelector("[data-simply-action='simply-text-blockstyle'] option[value='" + tagName + "']")) {
+							hopeEditor.fragment = hopeEditor.fragment.remove(newRange, block.tag);
+						} else if (tagName.toLowerCase() === "li") {
+							hopeEditor.fragment = hopeEditor.fragment.remove(newRange, block.tag);
+							hopeEditor.fragment = hopeEditor.fragment.remove(newRange, "ul");
+							hopeEditor.fragment = hopeEditor.fragment.remove(newRange, "ol");
+						}
+					}
+					var nodeInfo = false;
+					if (block.tag.indexOf(" ") !== -1) {
+						nodeInfo = block.tag.substr(block.tag.indexOf(" ")+1);
+					}
+					var newValue = value;
+					if (nodeInfo) {
+						newValue += " " + nodeInfo;
+					}
+					if (value) {
+						hopeEditor.fragment = hopeEditor.fragment.apply(newRange, newValue);
+					}
+				}
+
+				hopeEditor.update();
+			},
+			"simply-hyperlink-href" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					hopeEditor.field.setAttribute("href", value);
+					return;
+				}
+
+				var range = hopeEditor.currentRange;
+
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+				
+				if (!hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.apply(range, 'a href="' + value + '"');
+				} else {
+					var tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+					tempNode.setAttribute("href", value);
+					var newValue = editor.plugins.hope.annotation.implode(tempNode);
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(hyperlink.range, newValue);
+				}
+				hopeEditor.update();
+			},
+			"simply-hyperlink-unlink" : function() {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var range = hopeEditor.currentRange;
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+				if (hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.update();
+				}
+			},
+			"simply-hyperlink-title" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					hopeEditor.field.setAttribute("title", value);
+					return;
+				}
+
+				var range = hopeEditor.currentRange;
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+				
+				if (!hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.apply(range, 'a title="' + value + '"');
+				} else {
+					var tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+					tempNode.setAttribute("title", value);
+					var newValue = editor.plugins.hope.annotation.implode(tempNode);
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(hyperlink.range, newValue);
+				}
+				hopeEditor.update();
+			},
+			"simply-hyperlink-name" : function(value) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					hopeEditor.field.setAttribute("name", value);
+					hopeEditor.field.setAttribute("id", value);
+					return;
+				}
+
+				var range = hopeEditor.currentRange;
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+				
+				if (!hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.apply(range, 'a name="' + value + '" id="' + value + '"');
+				} else {
+					var tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+					tempNode.setAttribute("name", value);
+					tempNode.setAttribute("id", value);
+					var newValue = editor.plugins.hope.annotation.implode(tempNode);
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(hyperlink.range, newValue);
+				}
+				hopeEditor.update();
+			},
+			"simply-hyperlink-nofollow" : function(button) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					if (hopeEditor.field.getAttribute("rel") == "nofollow") {
+						hopeEditor.field.removeAttribute("rel");
+					} else {
+						hopeEditor.field.setAttribute("rel", "nofollow");
+					}
+					hopeEditor.update();
+					return;
+				}
+
+				var range = hopeEditor.currentRange;
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+				
+				if (!hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.apply(range, 'a rel="nofollow"');
+				} else {
+					var tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+
+					if (tempNode.getAttribute("rel") == "nofollow") {
+						tempNode.removeAttribute("rel");
+					} else {
+						tempNode.setAttribute("rel", "nofollow");
+					}
+					var newValue = editor.plugins.hope.annotation.implode(tempNode);
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(hyperlink.range, newValue);
+				}
+				hopeEditor.update();
+			},
+			"simply-hyperlink-newwindow" : function(button) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					if (hopeEditor.field.getAttribute("target") == "_blank") {
+						hopeEditor.field.removeAttribute("target");
+					} else {
+						hopeEditor.field.setAttribute("target", "_blank");
+					}
+					hopeEditor.update();
+					return;
+				}
+
+				var range = hopeEditor.currentRange;
+				var hyperlink = hopeEditor.fragment.has(range, "a");
+
+				if (!hyperlink) {
+					hopeEditor.fragment = hopeEditor.fragment.apply(range, 'a target="_blank"');
+				} else {
+					var tempNode = editor.plugins.hope.annotation.explode(hyperlink.tag);
+
+					if (tempNode.getAttribute("target") == "_blank") {
+						tempNode.removeAttribute("target");
+					} else {
+						tempNode.setAttribute("target", "_blank");
+					}
+					var newValue = editor.plugins.hope.annotation.implode(tempNode);
+					hopeEditor.fragment = hopeEditor.fragment.remove(hyperlink.range, hyperlink.tag);
+					hopeEditor.fragment = hopeEditor.fragment.apply(hyperlink.range, newValue);
+				}
+				hopeEditor.update();
+			},
+			"simply-hyperlink-follow" : function(button) {
+				var field = editor.context.hopeEditor.field;
+				var hopeEditor = field.hopeEditor;
+				var target;
+				if (hopeEditor.field.tagName.toLowerCase() === 'a') {
+					target = hopeEditor.field;
+				} else {
+					var sel = vdSelectionState.get();
+					target = vdSelection.getNode(sel);
+					if (target.tagName.toLowerCase() !== 'a') {
+						target = target.parentNode;
+					}
+				}
+				muze.event.fire(target, "dblclick");
+			}
+		}
+	});
+	editor.addContextFilter("simply-hyperlink", {
+		"selector" : "A",
+		"parent" : {
+			"selector" : "*"
+		},
+		"context" : "simply-text-selection"
+	});
+	editor.addContextFilter("simply-textonly", {
+		"selector" : "input,[data-simply-content='text']",
+		"context" : "simply-no-context"
+	});
+</script>

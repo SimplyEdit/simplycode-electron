@@ -1,0 +1,134 @@
+<section id="simply-template" class="simply-dialog simply-modal">
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button class="simply-expands simply-selected" data-simply-action="simply-page-template" data-simply-section="simply-page-template"><i class="fa fa-paint-brush"></i>Page template</li>
+			<li class='simply-right'><button data-simply-action="simply-dialog-close"><i class="fa fa-times"></i>Cancel</button></li>
+			<li class='simply-right'><button data-simply-action="simply-dialog-fullscreen"><i class="fa fa-expand"></i>Full screen</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-page-template simply-selected">
+			<div class="field">
+				<label for="simply-page-template-list">Page template</label>
+				<select id="simply-page-template-list">
+					<option value="index.html">Homepage</option>
+				</select>
+			</div>
+			<div class="field">
+				<label><strong>Notice: </strong>when you apply, the page will be saved and reloaded with the new template;</label>
+			</div>
+		</div>
+	</div>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li class='simply-right'><button data-simply-action="simply-template-apply"><i class="fa fa-check"></i>Apply</button></li>
+		</ul>
+	</div>
+</section>
+<style type="text/css">
+	#simply-template .simply-toolbar-section ul {
+		background: transparent;
+	}
+	#simply-template .simply-page-template button:not(.simply-selected) {
+		background: white;
+	}
+	#simply-template .simply-page-template .simply-buttons {
+		margin-top: 0px;
+		margin-left: -3px;
+		display: inline-block;
+	}
+	#simply-template .simply-page-template .simply-buttons li {
+		margin-right: 5px;
+		list-style: none;
+	}
+	#simply-template .simply-page-template .field {
+		margin-bottom: 10px;
+		padding-left: 120px;
+		margin-right: 20px;
+	}
+	#simply-template .simply-page-template .field label {
+		margin-left: -120px;
+		display: inline-block;
+		width: 95px;
+		vertical-align: top;
+		margin-top: 12px;
+		white-space: normal;
+		line-height: 1.8em;
+    }
+	#simply-template .simply-page-template input {
+		width: 100%;
+	}
+</style>
+<script>
+	editor.plugins.pageTemplate = {
+		dialog : {
+			open : function() {
+				editor.plugins.dialog.open(editor.toolbarsContainer.getElementById('simply-template'), editor.plugins.pageTemplate.dialog.update);
+			},
+			update : function() {
+				var pageTemplate = "index.html";
+				var path = editor.data.getDataPath();
+				if (document.head.querySelector("meta[name=page-template]")) {
+					pageTemplate = document.head.querySelector("meta[name=page-template]").getAttribute("content");
+				} else if (typeof editor.currentData[path] != 'undefined' && editor.currentData[path]['data-simply-page-template']) {
+					pageTemplate = editor.currentData[path]['data-simply-page-template'];
+				}
+				editor.toolbarsContainer.getElementById("simply-page-template-list").value = pageTemplate;
+			}
+		},
+		apply : function() {
+			var pageTemplate = editor.toolbarsContainer.querySelector("#simply-page-template-list").value;
+			editor.plugins.pageTemplate.setMeta("page-template", pageTemplate);
+			editor.plugins.dialog.close();
+			var reloadPage = function() {
+				if (editor.storage.saveTemplate) {
+					editor.storage.saveTemplate(pageTemplate, function() {
+						document.location.reload();
+					});
+				} else {
+					document.location.reload();
+				}
+			};
+			editor.actions['simply-aftersave'] = reloadPage;
+			editor.data.save();
+		},
+		setMeta : function(name, value) {
+			// just set the data, databinding will take care of the rest if needed.
+			var path = editor.data.getDataPath();
+			if (typeof editor.currentData[path] == 'undefined') {
+				editor.currentData[path] = {};
+			}
+			editor.currentData[path]['data-simply-' + name] = value;
+		},
+		init : function(config) {
+			if (
+				(typeof config !== "undefined") && 
+				(typeof config['templates'] !== undefined) && 
+				config['templates'].length
+			) {
+				var listItem = document.createElement("li");
+				var button = document.createElement("button");
+				button.dataset.simplyAction = "simply-template";
+				button.innerHTML = '<i class="fa fa-paint-brush"></i>Page template';
+				listItem.appendChild(button);
+				editor.toolbarsContainer.querySelector("#simply-main-toolbar .simply-buttons").appendChild(listItem);
+
+				var templateSelect = editor.toolbarsContainer.querySelector("#simply-page-template-list");
+
+				templateSelect.innerHTML = '';
+				for (var i=0; i<config['templates'].length; i++) {
+					var option = document.createElement("option");
+					option.value = config['templates'][i].template;
+					option.innerHTML = config['templates'][i].name;
+					templateSelect.appendChild(option);
+				}
+				editor.addAction("simply-page-template", function(el) {
+					el.classList.toggle("simply-selected");
+				});
+
+				editor.addAction("simply-template", editor.plugins.pageTemplate.dialog.open);
+				editor.addAction("simply-template-apply", editor.plugins.pageTemplate.apply);
+			}
+		}
+	};
+
+	editor.plugins.pageTemplate.init(editor.settings['pageTemplates']);
+</script>

@@ -1,0 +1,143 @@
+<section id="simply-meta" class="simply-dialog simply-modal">
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li><button class="simply-expands simply-selected" data-simply-action="simply-metadata" data-simply-section="simply-metadata"><i class="fa fa-tags"></i>Meta tags</li>
+			<li class='simply-right'><button data-simply-action="simply-dialog-close"><i class="fa fa-times"></i>Cancel</button></li>
+			<li class='simply-right'><button data-simply-action="simply-dialog-fullscreen"><i class="fa fa-expand"></i>Full screen</button></li>
+		</ul>
+		<div class="simply-toolbar-section simply-metadata simply-selected">
+			<div class="field">
+				<label for="simply-meta-title">Page title</label>
+				<input type="text" id="simply-meta-title">
+			</div>
+			<div class="field">
+				<label for="simply-meta-description">Page description</label>
+				<input type="text" id="simply-meta-description">
+			</div>
+			<div class="field">
+				<label for="simply-meta-author">Author</label>
+				<input type="text" id="simply-meta-author">
+			</div>
+			<div class="field">
+				<label>Robots</label>
+				<ul class="simply-buttons" id="simply-meta-robots">
+					<li><button data-simply-action="simply-meta-robots" data-value="nofollow"><i class="fa fa-chain-broken"></i>No follow</button></li>
+					<li><button data-simply-action="simply-meta-robots" data-value="noindex"><i class="fa fa-eye-slash"></i>No index</button></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="simply-toolbar">
+		<ul class="simply-buttons">
+			<li class='simply-right'><button data-simply-action="simply-meta-apply"><i class="fa fa-check"></i>Apply</button></li>
+		</ul>
+	</div>
+</section>
+<style type="text/css">
+	#simply-meta .simply-toolbar-section ul {
+		background: transparent;
+	}
+	#simply-meta .simply-metadata button:not(.simply-selected) {
+		background: white;
+	}
+	#simply-meta .simply-metadata .simply-buttons {
+		margin-top: 0px;
+		margin-left: -3px;
+		display: inline-block;
+	}
+	#simply-meta .simply-metadata .simply-buttons li {
+		margin-right: 5px;
+		list-style: none;
+	}
+	#simply-meta .simply-metadata .field {
+		margin-bottom: 10px;
+		padding-left: 120px;
+		margin-right: 20px;
+	}
+	#simply-meta .simply-metadata .field label {
+		margin-left: -120px;
+		display: inline-block;
+		width: 95px;
+		vertical-align: top;
+		margin-top: 12px;
+	}
+	#simply-meta .simply-metadata input {
+		width: 100%;
+	}
+</style>
+<script>
+	editor.plugins.meta = {
+		dialog : {
+			open : function() {
+				editor.plugins.dialog.open(editor.toolbarsContainer.getElementById('simply-meta'), editor.plugins.meta.dialog.update);
+			},
+			update : function() {
+				var metaBindingConfig = {
+					getter : function() {
+						return {
+							content : this.value
+						}
+					},
+					setter : function(value) {
+						this.value = (typeof value.content === "undefined") ? "" : value.content;
+					}
+				};
+
+				var metaRobotsBindingConfig = {
+					getter : function() {
+						var activeButtons = this.querySelectorAll(".simply-selected");
+						var instructions = [];
+						for (var i=0; i<activeButtons.length; i++) {
+							instructions.push(activeButtons[i].getAttribute("data-value"));
+						}
+						return {
+							content : instructions.join(",")
+						}
+					},
+					setter : function(value) {
+						var instructions = (typeof value.content === "undefined") ? [] : value.content.split(",");
+						var allButtons = this.querySelectorAll("[data-value]");
+						for (var i=0; i<allButtons.length; i++) {
+							allButtons[i].classList.remove("simply-selected");
+						}
+						for (var j=0; j<instructions.length; j++) {
+							this.querySelector("[data-value=" + instructions[j] + "]").classList.add("simply-selected");
+						}
+					}
+				};
+
+				var titleElm = document.head.querySelector("title");
+				var descElm = document.head.querySelector("meta[name=description]");
+				var authorElm = document.head.querySelector("meta[name=author]");
+				var robotsElm = document.head.querySelector("meta[name=robots]");
+				if (titleElm && titleElm.dataBinding) {
+					titleElm.dataBinding.bind(editor.toolbarsContainer.getElementById("simply-meta-title"));
+				}
+				if (descElm && descElm.dataBinding) {
+					descElm.dataBinding.bind(editor.toolbarsContainer.getElementById("simply-meta-description"), metaBindingConfig);
+				}
+				if (authorElm && authorElm.dataBinding) {
+					authorElm.dataBinding.bind(editor.toolbarsContainer.getElementById("simply-meta-author"), metaBindingConfig);
+				}
+				if (robotsElm && robotsElm.dataBinding) {
+					robotsElm.dataBinding.bind(editor.toolbarsContainer.getElementById("simply-meta-robots"), metaRobotsBindingConfig);
+				}
+			}
+		},
+		apply : function() {
+			editor.plugins.dialog.close();
+		}
+	};
+
+	editor.addAction("simply-metadata", function(el) {
+		el.classList.toggle("simply-selected");
+		editor.toolbarsContainer.querySelector("#simply-meta .simply-metadata").classList.toggle("simply-selected");
+	});
+
+	editor.addAction("simply-meta-robots", function(el) {
+		el.classList.toggle('simply-selected');
+		muze.event.fire(el, "databinding:valuechanged");
+	});
+	editor.addAction("simply-meta", editor.plugins.meta.dialog.open);
+	editor.addAction("simply-meta-apply", editor.plugins.meta.apply);
+</script>

@@ -1,0 +1,233 @@
+<script type="text/javascript">
+	editor.plugins.undoRedo = {
+		currentUndo : -1,
+		undoSet : [],
+		timer : false,
+		isEqual : function(data1, data2) {
+			if (typeof data1 === "undefined" || typeof data2 === "undefined") {
+				return false;
+			}
+			if (JSON.stringify(data1) == JSON.stringify(data2)) {
+				return true;
+			}
+			return false;
+		},
+		storeUndo : function(undoAction) {
+			if (editor.plugins.undoRedo.undoing) {
+				return;
+			}
+			editor.plugins.undoRedo.undoSet.splice(editor.plugins.undoRedo.currentUndo + 1);
+
+			var currentStep = editor.plugins.undoRedo.undoSet[editor.plugins.undoRedo.currentUndo];
+
+			// check if the previous step has the same keys, we are still changing the same thing; maybe we can make the changeset smaller;
+			if (
+				(currentStep) && 
+				(currentStep.meta.dataPath == undoAction.meta.dataPath) &&
+				(currentStep.meta.key == undoAction.meta.key) &&
+				(currentStep.meta.parentKey == undoAction.meta.parentKey)
+			) {
+				// check if the previous step has the same oldvalue, in that case the databinding hasn't resolved yet; just save the last one.
+				if (
+					JSON.stringify(currentStep.meta.oldValue) == JSON.stringify(undoAction.meta.oldValue) // contents can be objects that do not compare well, so stringify them;
+				) {
+					editor.plugins.undoRedo.undoSet.splice(editor.plugins.undoRedo.currentUndo);
+					editor.plugins.undoRedo.currentUndo--;
+				}
+			}
+
+			editor.plugins.undoRedo.undoSet.push(undoAction);
+			editor.plugins.undoRedo.currentUndo++;
+
+			editor.toolbars["simply-undo-redo"].update();
+		},
+		explain : function() {
+			var undoSet = editor.plugins['undoRedo'].undoSet;
+			for (var i=0; i<undoSet.length; i++) {
+				console.log("Step " + i + ": ");
+				console.log("Set " + undoSet[i].meta.key + " from " + undoSet[i].meta.oldValue + " to " + undoSet[i].meta.newValue + " on " + undoSet[i].meta.dataPath + ":" + undoSet[i].meta.parentKey);
+			}
+		},
+		replay : function(data, interactive) {
+			var undoSet = editor.plugins['undoRedo'].undoSet;
+			var mergeErrors = 0;
+			for (var i=0; i<undoSet.length; i++) {
+				var targetValue = data[undoSet[i].meta.dataPath];
+				var myValue = editor.currentData[undoSet[i].meta.dataPath];
+
+				var key = undoSet[i].meta.key;
+				var subkeys = undoSet[i].meta.parentKey.split("/");
+
+				var subkey;
+				while (subkeys.length) {
+					subkey = subkeys.shift();
+					if (subkey != "") {
+						targetValue = targetValue[subkey];
+						myValue = myValue[subkey];
+					}
+				}
+
+				if (typeof targetValue[key] !== 'undefined' && JSON.stringify(targetValue[key]) == JSON.stringify(undoSet[i].meta.oldValue)) {
+					targetValue[key] = undoSet[i].meta.newValue;
+				} else {
+					console.log("Modified value " + targetValue[key] + " in " + ":" + undoSet[i].meta.dataPath + ":" + undoSet[i].meta.parentKey + ":" + undoSet[i].meta.key + " (we had: " + undoSet[i].meta.oldValue + ")");
+					mergeErrors++;
+
+					if (interactive) {
+						alert("Could not merge changes to this value: " + undoSet[i].meta.newValue);
+						if (!confirm("Discard your changes and set this field to the server value? (" + targetValue[key] + ")")) {
+							targetValue[key] = undoSet[i].meta.newValue;
+						}
+						mergeErrors--;
+					}
+				}
+			}
+			if (mergeErrors > 0) {
+				editor.plugins.undoRedo.mergeErrors = mergeErrors;
+				return false;
+			}
+			return data;
+		},
+		undo : function() {
+			if (!editor.plugins.undoRedo.canUndo()) {
+				return;
+			}
+			editor.plugins.undoRedo.undoing = true;
+			editor.context.toolbar.hide = true;
+			var undoStep = editor.plugins.undoRedo.undoSet[editor.plugins.undoRedo.currentUndo];
+			if (typeof undoStep !== "undefined") {
+				var currentScroll = document.body.scrollTop; // removing the items will reset the scrolloffset;
+				undoStep.undo();
+				document.body.scrollTop = currentScroll;
+				editor.plugins.undoRedo.currentUndo--;
+			}
+			editor.plugins.undoRedo.undoing = false;
+			editor.toolbars["simply-undo-redo"].update();
+		},
+		redo : function() {
+			if (!editor.plugins.undoRedo.canRedo()) {
+				return;
+			}
+			editor.plugins.undoRedo.undoing = true;
+			editor.context.toolbar.hide = true;
+			var undoStep = editor.plugins.undoRedo.undoSet[editor.plugins.undoRedo.currentUndo + 1];
+			if (typeof undoStep !== "undefined") {
+				var currentScroll = document.body.scrollTop; // removing the items will reset the scrolloffset;
+				undoStep.redo();
+				document.body.scrollTop = currentScroll;
+				editor.plugins.undoRedo.currentUndo++;
+			}
+			editor.plugins.undoRedo.undoing = false;
+			editor.toolbars["simply-undo-redo"].update();
+		},
+		canUndo : function() {
+			var undoStep = editor.plugins.undoRedo.undoSet[editor.plugins.undoRedo.currentUndo];
+                        if (typeof undoStep !== "undefined") {
+				return true;
+			}
+			return false;
+		},
+		canRedo : function() {
+			var undoStep = editor.plugins.undoRedo.undoSet[editor.plugins.undoRedo.currentUndo + 1];
+			if (typeof undoStep !== "undefined") {
+				return true;
+			}
+			return false;
+		},
+		changeHandler : function(evt) {
+			if (!editor.plugins.undoRedo.undoing) {
+				var dataBinding = evt.data.dataBinding;
+				var newValue = evt.data.arguments[1];
+				var oldValue = evt.data.arguments[2];
+
+				var dataPath = editor.data.getDataPath(dataBinding.elements[0]);
+
+				var set = function(value) {
+					var targetValue = editor.currentData[dataPath];
+					var subkeys = dataBinding.parentKey.split("/");
+					var subkey;
+					while (subkeys.length) {
+						subkey = subkeys.shift();
+						if (subkey != "") {
+							targetValue = targetValue[subkey];
+						}
+					}
+					targetValue[dataBinding.key] = value;
+					dataBinding.resolve(true);
+				};
+					
+				var undoAction = {
+					undo : function() {
+						set(oldValue);
+					},
+					redo : function() {
+						set(newValue);
+					},
+					meta : {
+						dataPath : dataPath,
+						parentKey : dataBinding.parentKey,
+						key : dataBinding.key,
+						oldValue : oldValue,
+						newValue : newValue
+					}
+				};
+				editor.plugins.undoRedo.storeUndo(undoAction);
+			}
+		}
+	};
+
+	editor.addToolbar({
+		name : 'simply-undo-redo',
+		init : function() {
+			var listItem = document.createElement("li");
+			var button = document.createElement("button");
+			button.dataset.simplyAction = "simply-undo";
+			button.setAttribute("disabled", true);
+			button.innerHTML = '<i class="fa fa-undo"></i>Undo';
+			listItem.appendChild(button);
+			editor.toolbarsContainer.querySelector("#simply-main-toolbar .simply-buttons").appendChild(listItem);
+
+			listItem = document.createElement("li");
+			button = document.createElement("button");
+			button.dataset.simplyAction = "simply-redo";
+			button.setAttribute("disabled", true);
+			button.innerHTML = '<i class="fa fa-repeat"></i>Redo';
+			listItem.appendChild(button);
+			editor.toolbarsContainer.querySelector("#simply-main-toolbar .simply-buttons").appendChild(listItem);
+			document.addEventListener("simply-data-changed", editor.plugins.undoRedo.changeHandler);
+		},
+		update : function() {
+			var undoButton = editor.toolbarsContainer.querySelector("#simply-main-toolbar [data-simply-action=simply-undo]");
+			var redoButton = editor.toolbarsContainer.querySelector("#simply-main-toolbar [data-simply-action=simply-redo]");
+
+			if (editor.plugins.undoRedo.canUndo()) {
+				if (undoButton && undoButton.getAttribute("disabled")) {
+					undoButton.removeAttribute("disabled");
+				}
+			} else {
+				if (undoButton && !undoButton.getAttribute("disabled")) {
+					undoButton.setAttribute("disabled", true);
+				}
+			}
+			if (editor.plugins.undoRedo.canRedo()) {
+				if (redoButton && redoButton.getAttribute("disabled")) {
+					redoButton.removeAttribute("disabled");
+				}
+			} else {
+				if (redoButton && !redoButton.getAttribute("disabled")) {
+					redoButton.setAttribute("disabled", true);
+				}
+			}
+		},
+		actions : {
+			"simply-undo" : function() {
+				editor.plugins.undoRedo.undo();
+				editor.toolbars["simply-undo-redo"].update();
+			},
+			"simply-redo" : function() {
+				editor.plugins.undoRedo.redo();
+				editor.toolbars["simply-undo-redo"].update();
+			}
+		}
+	});
+</script>

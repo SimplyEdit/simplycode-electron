@@ -1,0 +1,362 @@
+<script type="text/javascript">
+	var spanListener = function(mutations) {
+		mutations.forEach(function(mutation) {
+			mutation.addedNodes.forEach(function(addedNode) {
+				if (!editor.node.getSimplyField(addedNode)) {
+					return;
+				}
+
+				if (addedNode.tagName && addedNode.tagName.toLowerCase()=='span') {
+					editor.node.unwrap(addedNode);
+					var sel = window.getSelection();
+					var range = sel.getRangeAt(0);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			});
+		});
+	};
+
+	var fontListener = function(mutations) {
+		mutations.forEach(function(mutation) {
+			mutation.addedNodes.forEach(function(addedNode) {
+				if (!editor.node.getSimplyField(addedNode)) {
+					return;
+				}
+
+				if (addedNode.tagName && addedNode.tagName.toLowerCase()=='font') {
+					editor.node.unwrap(addedNode);
+					var sel = window.getSelection();
+					var range = sel.getRangeAt(0);
+					sel.removeAllRanges();
+					sel.addRange(range);
+
+					// If a browser is bold enough to ask us to insert a font tag, that must mean they are up to no good. No more tags allowed!
+					addedNode.ownerDocument.noTagsObserver = new MutationObserver(noTagsAllowedListener);
+					window.setTimeout(function() {
+						document.noTagsObserver.disconnect();
+					}, 200);
+				}
+
+				// Chrome remembers that a text was bold or italic, this will remove those tags when they are inserted.
+				if (addedNode.tagName && (addedNode.tagName.toLowerCase()=='b' || addedNode.tagName.toLowerCase()=='i')) {
+					if (addedNode.attributes.length === 0) { // check for attributes (including class), we do want to allow <i class="fa"> and other things.
+						// replace 'b' tags with 'strong; 'i' tags with 'em'; doing this on the childNodes so that the selection doesn't break for safari;
+						for (var i=addedNode.childNodes.length-1; i > -1; i--) {
+							if (addedNode.tagName.toLowerCase()=='b') {
+								editor.node.wrap(addedNode.childNodes[i], "strong");
+							} else if (addedNode.tagName.toLowerCase()=='i') {
+								editor.node.wrap(addedNode.childNodes[i], "em");
+							}
+						}
+
+						editor.node.unwrap(addedNode);
+						var sel = window.getSelection();
+						var range = sel.getRangeAt(0);
+						sel.removeAllRanges();
+						sel.addRange(range);
+					}
+				}
+			});
+		});
+	};
+
+	var noTagsAllowedListener = function(mutations) {
+		mutations.forEach(function(mutation) {
+			mutation.addedNodes.forEach(function(addedNode) {
+				if (!editor.node.getSimplyField(addedNode)) {
+					return;
+				}
+
+				if (addedNode.tagName) {
+					editor.node.unwrap(addedNode);
+					var sel = window.getSelection();
+					var range = sel.getRangeAt(0);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			});
+		});
+	};
+
+	var divListener = function(mutations) {
+		mutations.forEach(function(mutation) {
+			mutation.addedNodes.forEach(function(addedNode) {
+				if (!editor.node.getSimplyField(addedNode)) {
+					return;
+				}
+
+				if (
+					addedNode.tagName && (addedNode.tagName.toLowerCase()=='div')
+				) {
+					if (addedNode.innerHTML == '') {
+						addedNode.innerHTML = "<br>";
+					}
+
+					// var siblings = newP.parentNode.childNodes;
+					var parent = addedNode.parentNode;
+					if (!parent) {
+						return;
+					}
+
+					// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
+					var sel = window.getSelection();
+					if (sel.rangeCount) {
+						var range = sel.getRangeAt(0);
+						var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
+					}
+
+					var nestingRules = hope.render.html.rules.nesting[parent.tagName.toLowerCase()];
+					if (nestingRules && nestingRules.indexOf("p") === -1) {
+						// replace the div with a 'br' element when we are in an element that does not allow paragraphs
+						var breakEl = document.createElement("BR");
+						addedNode.parentNode.insertBefore(breakEl, addedNode);
+					}
+
+					editor.node.unwrap(addedNode);
+					var siblings = parent.childNodes;
+					editor.node.unwrap(addedNode);
+					addParagraphs(siblings);
+					if (caretNode) {
+						range = document.createRange();
+						range.setStart(caretNode, 0);
+						sel.removeAllRanges();
+						sel.addRange(range);
+					}
+				} else if (addedNode.tagName && (addedNode.tagName.toLowerCase() == 'h1')) {
+					// special case for H1 - we don't want it inserted as a result of an enter key. The first one should be a H1, the others should be a paragraph.
+					// Firefox inserts the new element in front of the original; Chrome inserts the new H1 behind the original.
+
+					var parent = addedNode.parentNode;
+					if (!parent) {
+						return;
+					}
+
+					// remember the textnode where the caret is in, so we can place it back after we are done unwrapping and re-wrapping;
+					var sel = window.getSelection();
+					if (sel.rangeCount) {
+						var range = sel.getRangeAt(0);
+						var caretNode = range.startContainer.firstChild ? range.startContainer.firstChild : range.startContainer;
+					}
+
+					var nodes = parent.querySelectorAll("h1");
+					for (var i=1; i<nodes.length; i++) {
+						editor.node.unwrap(nodes[i]); // Unwrap the other nodes, leave the first H1;
+					}
+					var siblings = parent.childNodes;
+					addParagraphs(siblings);
+					if (caretNode) {
+						range = document.createRange();
+						range.setStart(caretNode, 0);
+						sel.removeAllRanges();
+						sel.addRange(range);
+					}
+				}
+			});
+		});
+	};
+
+	var cleanPastedHtml = function(pastedHtml, target) {
+		var tempNode = document.createElement("DIV");
+		tempNode.innerHTML = pastedHtml;
+
+		// Remove the startfragment and endfragment bits;
+		for (var i=tempNode.childNodes.length-1; i>-1; i--) {
+			if (tempNode.childNodes[i].nodeType == 8) {
+				if ((tempNode.childNodes[i].data == "StartFragment") || (tempNode.childNodes[i].data == "EndFragment")) {
+					tempNode.removeChild(tempNode.childNodes[i]);
+				}
+			}
+		}
+	
+		// Remove inline styles;
+		var tempNodes = tempNode.querySelectorAll("*");
+		for (var i=0; i<tempNodes.length; i++) {
+			tempNodes[i].removeAttribute("style", '');
+		}
+
+		return tempNode.innerHTML.trim();
+	};
+
+	var unwrapPastedHtml = function(pastedHtml) {
+		var tempNode = document.createElement("DIV");
+		tempNode.innerHTML = pastedHtml;
+		if (tempNode.childNodes.length == 1) {
+			editor.node.unwrap(tempNode.firstChild);
+			return tempNode.innerHTML;
+		}
+		return;
+	};
+
+	var pasteAllowed = function(pastedHtml, target) {
+		var tempNode = document.createElement("DIV");
+		tempNode.innerHTML = pastedHtml;
+
+		if (target.nodeType === document.TEXT_NODE) {
+			target = target.parentNode;
+		}
+		while (hope.render.html.rules.nestingSets['block'].indexOf(target.tagName.toLowerCase()) < 0) {
+			target = target.parentNode;
+		}
+
+		var nestingRules = hope.render.html.rules.nesting[target.tagName.toLowerCase()];
+		if (typeof nestingRules === "undefined") {
+			nestingRules = hope.render.html.rules.nesting["span"];
+		}
+
+		for (var i=0; i<tempNode.childNodes.length; i++) {
+			if (tempNode.childNodes[i].nodeType == document.ELEMENT_NODE) {
+				var tagName = tempNode.childNodes[i].tagName.toLowerCase();
+				if (nestingRules.indexOf(tagName) === -1) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	var addParagraphs = function(nodes) {
+		nodes = [].slice.call(nodes);
+
+		if (nodes[0] && nodes[0].parentNode.tagName.toLowerCase() === "p") {
+			return;
+		}
+		var nestingRules = hope.render.html.rules.nesting[nodes[0].parentNode.tagName.toLowerCase()];
+		if (nestingRules && nestingRules.indexOf("p") === -1) {
+			return;
+		}
+		var previousNode = "p";
+
+		for (var i=0; i<nodes.length; i++) {
+			if (!previousNode) {
+				previousNode = 'p';
+			}
+			if (nodes[i] && nodes[i].nodeType == document.TEXT_NODE) {
+				if (nodes[i].nodeValue !== "") {
+					previousNode = editor.node.wrap(nodes[i], previousNode);
+				}
+			} else if (
+				nodes[i] && 
+				(nodes[i].nodeType == document.ELEMENT_NODE) &&
+				(hope.render.html.rules.nestingSets['inline'].indexOf(nodes[i].tagName.toLowerCase()) > -1)
+			) {
+				previousNode = editor.node.wrap(nodes[i], previousNode);
+			}
+		}
+	};
+
+	editor.addToolbar({
+		name : 'simply-paste-handler',
+		init : function() {
+			// Chrome will remember the styling from an element that was removed and helpfully insert it back into the HTML.
+			// We never want that.
+			document.fontObserver = new MutationObserver(fontListener);
+			document.fontObserver.observe(document, {
+				"childList": true,
+				"subtree" : true
+			});
+
+			document.addEventListener("keydown", function(event) {
+				if (!editor.node.getSimplyField(event.target)) {
+					return;
+				}
+				switch (event.keyCode) {
+					case 8:		// backspace
+					case 46: 	// delete
+						event.target.ownerDocument.spanObserver = new MutationObserver(spanListener);
+						event.target.ownerDocument.spanObserver.observe(event.target.ownerDocument, {
+							"childList": true,
+							"subtree" : true
+						});
+
+						// empty the field if only a newline remains;
+						if (
+							(event.target.innerText == "\n") &&
+							(event.target.childNodes.length == 1) // only do this when the newline-text-node is our only node;
+						) {
+							event.target.innerHTML = "";
+						}
+					break;
+					case 13:	// enter
+						// this forces the text into structured paragraphs/headings, so that firefox will behave more sanely with inserting breaks
+						var nestingRules = hope.render.html.rules.nesting[event.target.tagName.toLowerCase()];
+						if (nestingRules && nestingRules.indexOf("p") !== -1) {
+							addParagraphs(event.target.childNodes);
+						}
+						var simplyParent = editor.node.getSimplyParent(event.target);
+						if (simplyParent) {
+							event.target.ownerDocument.divObserver = new MutationObserver(divListener);
+							event.target.ownerDocument.divObserver.observe(event.target.ownerDocument, {
+								"childList": true,
+								"subtree" : true
+							});
+							if (simplyParent.hopeEditor) {
+								simplyParent.hopeEditor.needsUpdate = true;
+							}
+						}
+					break;
+				}
+			});
+
+			document.addEventListener("keyup", function(event) {
+				if (!editor.node.getSimplyField(event.target)) {
+					return;
+				}
+				var targetDocument = event.target.ownerDocument;
+				window.setTimeout(function() {
+					if (targetDocument.divObserver) {targetDocument.divObserver.disconnect();}
+					if (targetDocument.spanObserver) {targetDocument.spanObserver.disconnect();}
+					if (targetDocument.noTagsObserver) {targetDocument.noTagsObserver.disconnect();}
+				}, 1);
+			});
+
+			document.addEventListener("paste", function(event) {
+				if (!editor.node.getSimplyField(event.target)) {
+					return;
+				}
+				var pastedText = undefined;
+				var pastedHtml = undefined;
+					
+				// No IE support is needed, since only webkit/chrome is broken.
+				if (event.clipboardData && event.clipboardData.getData) {
+					pastedText = event.clipboardData.getData('text/plain');
+					pastedHtml = event.clipboardData.getData('text/html');
+				}
+
+				var targetField = editor.node.getSimplyParent(event.target);
+				var targetDocument = event.target.ownerDocument;
+
+				pastedHtml = cleanPastedHtml(pastedHtml, event.target);
+				while (pastedHtml && (!pasteAllowed(pastedHtml, targetField))) {
+					pastedHtml = unwrapPastedHtml(pastedHtml);
+				}
+
+				targetDocument.spanObserver = new MutationObserver(spanListener);
+				targetDocument.spanObserver.observe(targetDocument, {
+					"childList": true,
+					"subtree" : true
+				});
+
+				if (pastedHtml) {
+					event.preventDefault();
+					targetDocument.execCommand("insertHtml", false, pastedHtml);
+				}
+				if (pastedText) {
+					event.preventDefault();
+					targetDocument.divObserver = new MutationObserver(divListener);
+					targetDocument.divObserver.observe(targetDocument, {
+						"childList": true,
+						"subtree" : true
+					});
+					targetDocument.execCommand("insertText", false, pastedText);
+					var targetDocument = targetDocument;
+				}
+				window.setTimeout(function() {
+					if (targetDocument.divObserver) {targetDocument.divObserver.disconnect();}
+					if (targetDocument.spanObserver) {targetDocument.spanObserver.disconnect();}
+					if (targetDocument.noTagsObserver) {targetDocument.noTagsObserver.disconnect();}
+				}, 1);
+			});
+		}
+	});
+</script>
