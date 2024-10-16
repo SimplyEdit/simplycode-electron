@@ -450,7 +450,12 @@
 					var transformer = target.getAttribute('data-simply-transformer');
 					if (transformer) {
 						if (editor.transformers[transformer] && (typeof editor.transformers[transformer].extract === "function")) {
-							data = editor.transformers[transformer].extract.call(target, data);
+							try {
+								data = editor.transformers[transformer].extract.call(target, data);
+							} catch(e) {
+								console.log("Error thrown in transformer " + transformer);
+								console.log(e);
+							}
 						} else {
 							console.log("Warning: transformer " + transformer + " is not defined");
 						}
@@ -858,7 +863,12 @@
 				var transformer = list.getAttribute('data-simply-transformer');
 				if (transformer) {
 					if (editor.transformers[transformer] && (typeof editor.transformers[transformer].render === "function")) {
-						listData = editor.transformers[transformer].render.call(list, listData);
+						try {
+							listData = editor.transformers[transformer].render.call(list, listData);
+						} catch(e) {
+							console.log("Error thrown in transformer " + transformer);
+							console.log(e);
+						}
 					} else {
 						console.log("Warning: transformer " + transformer + " is not defined");
 					}
@@ -1045,7 +1055,7 @@
 
 						clone.firstElementChild.setAttribute("data-simply-list-item", true);
 						clone.firstElementChild.setAttribute("data-simply-selectable", true);
-
+						clone.firstElementChild.simplyListIndex = j;
 						if (list.templateIcons[requestedTemplate]) {
 							clone.firstElementChild.setAttribute("data-simply-list-icon", list.templateIcons[requestedTemplate]);
 						}
@@ -1087,7 +1097,8 @@
 							}
 							clone.setAttribute("data-simply-list-item", true);
 							clone.setAttribute("data-simply-selectable", true);
-							
+							clone.simplyListIndex = j;
+
 							if (list.templateIcons[requestedTemplate]) {
 								clone.firstElementChild.setAttribute("data-simply-list-icon", list.templateIcons[requestedTemplate]);
 							}
@@ -1486,9 +1497,6 @@
 							}
 						}
 						var result = editor.field.defaultGetter(field, attributes);
-						if (typeof field.simplyString === "undefined") {
-						//	field.simplyString = true;
-						}
 						if (field.simplyString && (attributes.length === 1)) {
 							return result[attributes[0]];
 						}
@@ -1516,8 +1524,6 @@
 							var newdata = {};
 							newdata[attributes[0]] = data;
 							return editor.field.defaultSetter(field, newdata);
-						} else if (typeof data === "object") {
-							field.simplyString = false;
 						}
 
 						return editor.field.defaultSetter(field, data, attributes);
@@ -1552,8 +1558,11 @@
 				field.hopeRenderedSource = document.createElement("DIV");
 				field.hopeEditor = hope.editor.create( field.hopeContent, field.hopeMarkup, field, field.hopeRenderedSource );
 				field.hopeEditor.field = field;
-				field.hopeEditor.field.addEventListener("DOMCharacterDataModified", function() {
+				field.hopeEditor.field.characterObserver = new MutationObserver(function() {
 					field.hopeEditor.needsUpdate = true;
+				});
+				field.hopeEditor.field.characterObserver.observe(field.hopeEditor.field, {
+					"characterData" : true
 				});
 				field.addEventListener("slip:beforereorder", function(evt) {
 					var rect = this.getBoundingClientRect();
@@ -1719,7 +1728,12 @@
 				var transformer = field.getAttribute('data-simply-transformer');
 				if (transformer) {
 					if (editor.transformers[transformer] && (typeof editor.transformers[transformer].render === "function")) {
-						data = editor.transformers[transformer].render.call(field, data);
+						try {
+							data = editor.transformers[transformer].render.call(field, data);
+						} catch(e) {
+							console.log("Error thrown in transformer " + transformer);
+							console.log(e);
+						}
 					} else {
 						console.log("Warning: transformer " + transformer + " is not defined");
 					}
@@ -1786,7 +1800,12 @@
 				var transformer = field.getAttribute('data-simply-transformer');
 				if (transformer) {
 					if (editor.transformers[transformer] && (typeof editor.transformers[transformer].extract === "function")) {
-						result = editor.transformers[transformer].extract.call(field, result);
+						try {
+							result = editor.transformers[transformer].extract.call(field, result);
+						} catch(e) {
+							console.log("Error thrown in transformer " + transformer);
+							console.log(e);
+						}
 					} else {
 						console.log("Warning: transformer " + transformer + " is not defined");
 					}
@@ -3740,11 +3759,6 @@
 	editor.data.list = editor.list;
 	editor.data.list.applyTemplates = editor.list.set;
 
-	editor.init({
-		endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
-		toolbars : defaultToolbars,
-		profile : 'live'
-	});
 
 	class SimplyComponent extends HTMLDivElement {
 		constructor() {
@@ -3794,4 +3808,17 @@
 	// Define the new element
 	customElements.define('simply-render', SimplyRender);
 
+	var initSimply = function() {
+		editor.init({
+			endpoint : document.querySelector("[data-simply-endpoint]") ? document.querySelector("[data-simply-endpoint]").getAttribute("data-simply-endpoint") : null,
+			toolbars : defaultToolbars,
+			profile : 'live'
+		});
+	};
+
+	if (scriptEl.hasAttribute("data-simply-initOnEvent")) {
+		document.addEventListener("simply-init", initSimply);
+	} else {
+		initSimply();
+	}
 }());
