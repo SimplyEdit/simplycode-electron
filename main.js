@@ -124,6 +124,9 @@ function readRecursive(componentPath) {
         componentPath = componentPath.substring(0, (componentPath.length - 1))
     }
     const pathicles = componentPath.split('\/');
+    if (pathicles[0] == ''){
+        pathicles.shift()
+    }
     const componentName = pathicles.pop();
     const componentDirectory = pathicles.join('/');
 
@@ -222,8 +225,10 @@ app.whenReady().then(() => {
         
         let pathicles = componentPath.split('\/');
         let componentName = pathicles.pop();
+        if (pathicles[0] == ''){
+            pathicles.shift()
+        }
         let componentDirectory = pathicles.join('/');
-        pathicles.shift();
 
         if(pathicles[0] === "api") {
             pathicles.shift();
@@ -290,12 +295,12 @@ app.whenReady().then(() => {
                             // headers: { 'content-type': 'text/html' }
                         })
                     } else {
-                        var target = __dirname + '/simplycode' + componentDirectory + '\/' + componentName;
+                        var target = __dirname + '/simplycode/' + componentDirectory + '\/' + componentName;
                         if(fs.existsSync(target)) {
                             if (fs.lstatSync(target).isDirectory()) {
                                 // Do the recursive read thing;
                             } else {
-                                const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                                const filestuff = fs.readFileSync(__dirname + '/simplycode/' + componentDirectory + '\/' + componentName)
                                 return new Response(filestuff, {
                                     // headers: { 'content-type': 'text/html' }
                                 })
@@ -323,7 +328,6 @@ app.whenReady().then(() => {
         if (pathicles[0] == ''){
             pathicles.shift()
         }
-
         let componentDirectory = pathicles.join('/');
      
         switch (request.method){
@@ -378,7 +382,7 @@ app.whenReady().then(() => {
                             (componentPath.indexOf("/simply") === 0) ||
                             (componentPath.indexOf("/hope") === 0)
                         ) {
-                            const filestuff = fs.readFileSync(__dirname + '/simplycode' + componentDirectory + '\/' + componentName)
+                            const filestuff = fs.readFileSync(__dirname + '/simplycode/' + componentDirectory + '\/' + componentName)
                             return new Response(filestuff, {
                                 headers: headers
                             })
