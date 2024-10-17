@@ -5,6 +5,8 @@
     <!-- Component CSS -->
     <style>
       /* extra */
+      @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
+      
       html, body {
       	margin: 0;
       	padding: 0;
@@ -32,8 +34,6 @@
       	padding: 5px;
       }
       /* style */
-      @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
-      
       :root {
           --highlight-dark: #f16623;
           --highlight-light: #ff8003;
@@ -3970,14 +3970,14 @@
               "footHtml": editor.transformers.simplyPreviewFootHtml.render(data.footHtml ?? []),
               "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(data.bodyHtml ?? [])
             };
-
+          
             Object.keys(replacements).forEach(function(replacement) {
               matches = fullApp.match("(\\s+){{" + replacement + "}}");
               if (matches) {
                 fullApp = fullApp.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
               }
             });
-
+          
             // escape html
             var dataDiv = document.createElement("div");
             dataDiv.appendChild(document.createTextNode(fullApp));
