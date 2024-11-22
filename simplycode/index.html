@@ -4,6 +4,416 @@
     <meta charset="utf-8">
     <!-- Component CSS -->
     <style>
+      /* extra */
+      @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
+      
+      html, body {
+      	margin: 0;
+      	padding: 0;
+      	width: 100%;
+      }
+      main {
+      	padding: 0px 15px;
+      }
+      [data-simply-command] {
+      	cursor: pointer; /* Dear iOS, why don't you have a click event when the cursor is not a pointer? */
+      }
+      textarea {
+      	width: 100%;
+      	height: 120px;
+      	color: #e0e0e0;
+      	background-color: #151515;
+      	border: 0;
+      	padding: 10px;
+      }
+      input:not([type]),
+      input[type=text] {
+      	color: #e0e0e0;
+      	background-color: #151515;
+      	border: 0;
+      	padding: 5px;
+      }
+      /* style */
+      :root {
+          --highlight-dark: #f16623;
+          --highlight-light: #ff8003;
+          --highlight-color: #fff;
+          --highlight-background: linear-gradient( to left, var(--highlight-light), var(--highlight-dark) );
+      
+          --support-dark: #444;
+          --support-light: #484848;
+          --support-color: #eee;
+          --support-background: linear-gradient( to left, var(--support-light), var(--support-dark) );
+      
+          --grey-dark: #38393c;
+          --grey-medium: #7f8185;
+          --grey-light: #e9ebec;
+          --grey-dark: #38393c;
+          --black: #000;
+          --white: #fff;
+          --grey-background: var(--grey-dark);
+      
+          --font-family: 'Alegreya Sans', sans-serif;
+          --font-size: 14px;
+          --line-height: 1.5em;
+          --color: #7f8185;
+          --background: #333;
+      }
+      
+      /* general styling on default elements */
+      
+      html, body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family);
+          font-size: var(--font-size);
+          line-height: var(--line-height);
+          color: var(--color); 
+          background-color: var(--background);
+      }
+      body {
+          overflow-y: scroll;
+      }
+      body:last-child {
+          margin-bottom: 1.5em;
+      }
+      h1 {
+          font-size: 2em;
+          font-weight: 300;
+          line-height: 1.1em;
+          margin: 0;
+          margin-bottom: 0.5em;
+      }
+      
+      h2 {
+          font-size: 1.6em;
+          font-weight: 400;
+          line-height: 1.1em;
+          margin: 0;
+          margin-bottom: 0.5em;
+      }
+      
+      * {
+          box-sizing: border-box;
+      }
+      
+      img {
+          display: block;
+          max-width: 100%;
+      }
+      
+      a {
+          color: var(--highlight-dark);
+      }
+      a:visited {
+          color: var(--highlight-dark);
+      }
+      
+      /* custom styling for custom elements */
+      
+      .simplycode-button,
+      a.simplycode-button {
+          background: var(--support-background);
+          color: var(--support-color);
+          padding: 0.3em 0.5em;
+          margin: 0 0.3em;
+          border: 1px solid #ccc;
+          text-decoration: none;
+      }
+      
+      .simplycode-button:first-child {
+          margin-left: 0;
+      }
+      .simplycode-button:last-child {
+          margin-right: 0;
+      }
+      .simplycode-button.highlight {
+          background: var(--highlight-background);
+          color: var(--highlight-color);
+      }
+      
+      .text-content {
+          padding: 2.2375em;
+          max-width: 50em;
+      }
+      .text-content *:first-child {
+          margin-top: 0;
+      }
+      
+      body {
+        display: grid; 
+        grid-template-columns: 210px 2fr 2fr; 
+        grid-template-rows: 60px 2fr 2fr; 
+        gap: 0px 0px; 
+        grid-template-areas: 
+          "header header header"
+          "nav pane pane"
+          "nav pane pane"
+      }
+      body > header {
+          grid-area: header;
+      }
+      body > nav {
+          grid-area: nav;
+      }
+      body > div.main {
+          grid-area: pane;
+      }
+      nav ul ul .simplycode-expand {
+          display: none;
+          padding: 0 1.7em;
+      }
+      nav ul {
+          list-style: none;
+          margin: 0 0.5em;
+          padding: 0;
+      }
+      nav ul ul {
+          padding: 0 1.7em;
+      }
+      
+      nav > ul > li[data-simply-command=expandMenu][open]::before {
+          content: "[-] ";
+          font-family: monospace;
+      }
+      nav > ul > li[data-simply-command=expandMenu]::before {
+          content: "[+] ";
+          font-family: monospace;
+      }
+      .simplycode-part {
+          margin-top: 1em;
+      }
+      
+      .simplycode-part-header {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+      }
+      .simplycode-part-header .simplycode-options {
+          text-align: right;
+      }
+      .simplycode-part .simplycode-tab {
+          padding: 10px 5px;
+          margin: 0;
+          background-color: #151515;
+          color: #ddd;
+          border: 0;
+          text-align: center;
+          margin-right: 5px;
+      }
+      .simplycode-part .simplycode-tab input[type=radio] {
+          display: none;
+      }
+      .simplycode-part .simplycode-tab input[type=radio]:checked ~ span {
+          font-weight: bold;
+          border-bottom: 2px solid var(--support-background);
+      }
+      .simplycode-part .simplycode-editor-code {
+          display: grid;
+          grid-template-columns: 1fr;
+      }
+      .simplycode-part .simplycode-dual {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+      }
+      .simplycode-part .simplycode-dual-preview {
+          display: grid;
+          grid-template-columns: auto 480px;
+      }
+      .simplycode-test-header {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+      }
+      .simplycode-test-header .simplycode-options {
+          text-align: right;
+      }
+      .simplycode-component summary {
+          font-size: 1.2em;
+      }
+      .simplycode-component {
+          margin: 10px 0px;
+      }
+      .simplycode-header {
+          display: grid;
+          grid-template-columns: 3fr 1fr;
+          vertical-align: middle;
+      }
+      .simplycode-header .simplycode-controls {
+          text-align: right;
+      }
+      .simplycode-header h1 span {
+          white-space: nowrap;
+      }
+      .simplycode-component summary .simplycode-controls {
+          display: none;
+          margin-left: 1em;
+      }
+      .simplycode-component[open] summary .simplycode-controls {
+          display: inline-block;
+      }
+      header {
+          position: fixed;
+          padding: 8px 10px 6px 10px;
+          left: 0;
+          right: 0;
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          background-color: #404040;
+          border-bottom: 2px solid #2222;
+          vertical-align: middle;
+          z-index: 1;
+      }
+      header h1 {
+          margin: 0;
+      }
+      header .simplycode-controls {
+          padding-top: 5px;
+          padding-right: 5px;
+          text-align: right;
+      }
+      .simplycode-editor-code textarea {
+          margin-top: -1px;
+      }
+      
+      ul.simplycode-components-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 10px;
+          margin-bottom: 1em;
+      }
+      ul.simplycode-components-list li {
+          border: 1px solid #555;
+          background-color: #2a2a2a;
+          padding: 10px;
+          border-radius: 2px;
+      }
+      
+      /* Components: Toast */
+      
+      :root {
+          --simply-toast-height: 60px;
+          --simply-toast-hide-delay: 3s;
+          --simply-toast-show-duration: 0.3s;
+          --simply-toast-hide-duration: 0.5s;
+          --simply-toast-margin: 20px;
+          --simply-error-color: rgb(253, 143, 143);
+          --simply-warning-color: #FFFFCC;
+          --simply-info-color: rgb(140, 180, 250);
+          --simply-white: #FFF;
+          --simply-grey-50: #a8b4c0;
+          --simply-grey-80: #4d565c;
+          --simply-font-size: calc(1.1 * 1rem);
+          --simply-font-weight: 300;
+          --simply-line-height: calc(1.5 * var(--simply-font-size));
+          --simply-color: var(--grey-medium);
+          --simply-contrast: var(--grey-medium);
+          --simply-background:var(--white);
+          --simply-heading-weight: 900;
+          --simply-heading-multiplier: 1.1;
+      }
+      
+      ul.simply-toasts,
+      ol.simply-toasts,
+      .simply-toasts {
+          position: fixed;
+          right: 0;
+          top: 0;
+          z-index: 101;
+          display: block;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          max-width: 50%;
+          min-width: 300px;
+      }
+      .simply-toast,
+      li.simply-toast {
+          min-width: 300px;
+          float: right;
+          clear: both;
+          margin-right: 0;
+          margin-top: 60px;
+          background-color: var(--simply-grey-80);
+          color: var(--simply-white);
+          display: block;
+          border-left: 10px solid var(--simply-grey-50);
+          padding: 20px;
+          border-radius: 2px;
+      }
+      .simply-toast-error,
+      li.simply-toast-error {
+          border-color: var(--simply-error-color);
+      }
+      .simply-toast-info,
+      li.simply-toast-info {
+          border-color: var(--simply-info-color);
+      }
+      .simply-toast-warning,
+      li.simply-toast-warning {
+          border-color: var(--simply-warning-color);
+      }
+      
+      @keyframes simply-toast-show {
+          0% {
+              transform: scaleX(0);
+              transform-origin: right;
+              opacity: 0;
+          }
+          50% {
+              transform: scaleX(0);
+              transform-origin: right;
+              opacity: 0;
+          }
+          75% {
+              opacity: 1;
+          }
+          100% {
+              transform: scaleX(1);
+              transform-origin: right;
+              opacity: 1;
+          }
+      }
+      @keyframes simply-toast-hide {
+          0% {
+              transform: scaleX(1);
+              transform-origin: right;
+              opacity: 1;
+          }
+          50% {
+              opacity: 1;
+          }
+          100% {
+              transform: scaleX(0);
+              transform-origin: right;
+              opacity: 0;
+          }
+      }
+      @keyframes simply-toast-move {
+          0% {
+              transform: translateY(-80px); /* toast-height + toast-margin */
+          }
+          100% {
+              transform: translateY(0px);
+          }
+      }
+      .simply-toast[data-state="new"] {
+          animation: simply-toast-show var(--simply-toast-show-duration) forwards;
+      }
+      .simply-toast-autohide[data-state="new"] {
+          animation: simply-toast-show var(--simply-toast-show-duration);
+          animation-delay: 0s;
+      }
+      .simply-toast-autohide.simply-toast-animated[data-state="shown"] {
+          animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
+          animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
+      }
+      .simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
+          animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
+          animation-delay: 0s, var(--simply-toast-hide-delay);
+      }
+      
       /* QUnit iframe */
       .qunit-code {
         display: none;
@@ -14,36 +424,36 @@
         height: 0px;
       }
       /* code-method block */
-      .sb-code-method {
+      .simplycode-code-method {
         width: 100%;
       }
-      .sb-component summary span[data-count] {
+      .simplycode-component summary span[data-count] {
         font-weight: bold;
       }
-      .sb-component summary span[data-count]:after {
+      .simplycode-component summary span[data-count]:after {
         content: '(' attr(data-count) ')';
       }
-      .sb-component summary span[data-count=""],
-      .sb-component summary span[data-count="0"] {
+      .simplycode-component summary span[data-count=""],
+      .simplycode-component summary span[data-count="0"] {
         font-weight: normal;
       }
-      .sb-component summary span[data-count=""]:after,
-      .sb-component summary span[data-count="0"]:after {
+      .simplycode-component summary span[data-count=""]:after,
+      .simplycode-component summary span[data-count="0"]:after {
         content: '';
       }
       /* deleted-parts */
-      .sb-part[data-deleted="true"] {
+      .simplycode-part[data-deleted="true"] {
         opacity: 0.3;
       }
       /* simply dragdrop */
       [data-simply-list].simply-dragdrop-receiving {
         outline: 2px dashed var(--highlight-dark);
       }
-      .sb-component [data-simply-list].sb-code-method.simply-empty:before {
+      .simplycode-component [data-simply-list].simplycode-code-method.simply-empty:before {
         content: "Nothing here yet... add or drop code blocks here.";
         font-style: italic;
       }
-      .sb-component [data-simply-list].sb-code-method:before {
+      .simplycode-component [data-simply-list].simplycode-code-method:before {
         content: "Drop code blocks here.";
         font-style: italic;
       }
@@ -51,22 +461,22 @@
         cursor: move;
       }
       /* HTML validator */
-      .sb-html-valid,
-      .sb-html-invalid {
+      .simplycode-html-valid,
+      .simplycode-html-invalid {
         padding: 4px 10px;
         background-color: #D2E0E6;
         color: #2B81AF;
       }
-      .sb-html-valid {
+      .simplycode-html-valid {
         border-top: 5px solid #C6E746; /* pass color from qunit */
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
         margin-bottom: 10px;
       }
-      .sb-html-invalid {
+      .simplycode-html-invalid {
         border-top: 5px solid #EE5757; /* fail color from qunit */
       }
-      .sb-html-messages:not(.simply-empty) {
+      .simplycode-html-messages:not(.simply-empty) {
         padding: 4px 10px;
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
@@ -74,27 +484,27 @@
         background-color: #D2E0E6;
         color: #2B81AF;
       }
-      .sb-html-message:not(:last-child) {
+      .simplycode-html-message:not(:last-child) {
         border-bottom: 1px solid #2B81AF;
       }
-      .sb-html-message [data-simply-field=firstLine]:not(:empty):after {
+      .simplycode-html-message [data-simply-field=firstLine]:not(:empty):after {
         content: " - ";
       }
       /* App full preview */
-      .sb-preview-code {
+      .simplycode-preview-code {
         display: none;
       }
-      .sb-preview-data {
+      .simplycode-preview-data {
         display: none;
       }
-      .sb-preview-code [data-simply-list-item]:last-child .trailingComma {
+      .simplycode-preview-code [data-simply-list-item]:last-child .trailingComma {
         display: none;
       }
-      .sb-full-preview-container {
+      .simplycode-full-preview-container {
         height: calc(0.6 * 768px);
         width: calc(0.6 * 1280px);
       }
-      iframe.sb-full-preview {
+      iframe.simplycode-full-preview {
         width: 1280px;
         height: 768px;
         transform: scale(0.6);
@@ -103,12 +513,12 @@
         background-color: white;
       }
       :root {
-        --sb-component-preview-scale: 0.4;
+        --simplycode-component-preview-scale: 0.4;
       }
-      iframe.sb-component-preview {
-        width: calc(480px/var(--sb-component-preview-scale));
-        height: calc(300px/var(--sb-component-preview-scale));
-        transform: scale(var(--sb-component-preview-scale));
+      iframe.simplycode-component-preview {
+        width: calc(480px/var(--simplycode-component-preview-scale));
+        height: calc(300px/var(--simplycode-component-preview-scale));
+        transform: scale(var(--simplycode-component-preview-scale));
         transform-origin: top left;
         position: absolute;
         background-color: white;
@@ -117,8 +527,8 @@
     <!-- /Component CSS -->
     <!-- Page CSS -->
     <style>
-      /* sb-fullscreen-preview */
-      main.sb-fullscreen-preview iframe {
+      /* simplycode-fullscreen-preview */
+      main.simplycode-fullscreen-preview iframe {
         position: fixed;
         top: 0;
         left: 0;
@@ -128,16 +538,14 @@
         border: 0;
         z-index: 10;
       }
-      body:has(main.sb-fullscreen-preview) header, 
-      body:has(main.sb-fullscreen-preview) nav {
+      body:has(main.simplycode-fullscreen-preview) header, 
+      body:has(main.simplycode-fullscreen-preview) nav {
         display: none;
       }
     </style>
     <!-- /Page CSS -->
     <!-- Head HTML -->
-    <!-- base layout -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/extra.css">
+    
     <!-- /Head HTML -->
     <script>
       var simplyDataApi = {};
@@ -1154,8 +1562,8 @@
               .catch(function() {
               let defaults = {
                 "componentPreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\"&gt;\n      &#123;&#123;componentPreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
-                "fullApp.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      var simplyDataApi = &#123;&#125;;\n      var simplyApp = &#123;&#125;;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        simply.bind = false;\n        /* Raw API */\n        var simplyRawApi = &#123;\n          &#123;&#123;rawApi&#125;&#125;\n        &#125;;\n        /* End of Raw API */\n        /* Data API */\n        simplyDataApi = &#123;\n          &#123;&#123;dataApi&#125;&#125;\n        &#125;;\n        /* End of Data API */\n        simplyApp = simply.app(&#123;\n          /* Actions */\n          actions: &#123;\n            &#123;&#123;actions&#125;&#125;\n          &#125;,\n          /* /Actions */\n          /* Commands */\n          commands: &#123;\n            &#123;&#123;commands&#125;&#125;\n          &#125;,\n          /* /Commands */\n          /* Routes */\n          routes: &#123;\n            &#123;&#123;routes&#125;&#125;\n          &#125;\n          /* /Routes */\n        &#125;);\n      &#125;);\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Body HTML --&gt;\n    &#123;&#123;bodyHtml&#125;&#125;\n    &lt;!-- /Body HTML --&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;header data-simply-path=\"/\" data-simply-field=\"header\" data-simply-content=\"template\" data-simply-default-value=\"Header\"&gt;\n      &lt;template data-simply-template='Header' rel=\"header\"&gt;&lt;/template&gt;\n    &lt;/header&gt;\n    &lt;nav&gt;\n      &lt;simply-render rel=\"menu\"&gt;&lt;/simply-render&gt;\n    &lt;/nav&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n    &lt;!-- Page HTML templates --&gt;\n    &#123;&#123;pageTemplates&#125;&#125;\n    &lt;!-- /Page HTML templates --&gt;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
-                "pagePreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;header data-simply-path=\"/\" data-simply-field=\"header\" data-simply-content=\"template\" data-simply-default-value=\"Header\"&gt;\n      &lt;template data-simply-template='Header' rel=\"header\"&gt;&lt;/template&gt;\n    &lt;/header&gt;\n    &lt;nav&gt;\n      &lt;simply-render rel=\"menu\"&gt;&lt;/simply-render&gt;\n    &lt;/nav&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n      &#123;&#123;pagePreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;"
+                "fullApp.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      var simplyDataApi = &#123;&#125;;\n      var simplyApp = &#123;&#125;;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        simply.bind = false;\n        /* Raw API */\n        var simplyRawApi = &#123;\n          &#123;&#123;rawApi&#125;&#125;\n        &#125;;\n        /* End of Raw API */\n        /* Data API */\n        simplyDataApi = &#123;\n          &#123;&#123;dataApi&#125;&#125;\n        &#125;;\n        /* End of Data API */\n        simplyApp = simply.app(&#123;\n          /* Actions */\n          actions: &#123;\n            &#123;&#123;actions&#125;&#125;\n          &#125;,\n          /* /Actions */\n          /* Commands */\n          commands: &#123;\n            &#123;&#123;commands&#125;&#125;\n          &#125;,\n          /* /Commands */\n          /* Routes */\n          routes: &#123;\n            &#123;&#123;routes&#125;&#125;\n          &#125;\n          /* /Routes */\n        &#125;);\n      &#125;);\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Body HTML --&gt;\n    &#123;&#123;bodyHtml&#125;&#125;\n    &lt;!-- /Body HTML --&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n    &lt;!-- Page HTML templates --&gt;\n    &#123;&#123;pageTemplates&#125;&#125;\n    &lt;!-- /Page HTML templates --&gt;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
+                "pagePreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n      &#123;&#123;pagePreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;"
               };
           
               let elements = {};
@@ -1552,27 +1960,27 @@
           /* Commands */
           commands: {
             "autoRunPreviews" : function(el) {
-              var previewRunners = document.querySelectorAll("iframe.sb-full-preview");
+              var previewRunners = document.querySelectorAll("iframe.simplycode-full-preview");
               previewRunners.forEach(function(previewRunner) {
                 previewRunner.contentWindow.document.previewRunner = previewRunner;
                 simplyApp.commands.resetPreview(previewRunner)
                   .then(function(previewRunner) {
                   previewRunner.contentWindow.document.open();
-                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".sb-preview-code").innerText);
+                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".simplycode-preview-code").innerText);
                   previewRunner.contentWindow.document.close();
                 });
               });
             
-              var previewRunners = document.querySelectorAll("iframe.sb-component-preview");
+              var previewRunners = document.querySelectorAll("iframe.simplycode-component-preview");
               previewRunners.forEach(function(previewRunner) {
                 previewRunner.contentWindow.document.previewRunner = previewRunner;
                 simplyApp.commands.resetPreview(previewRunner)
                   .then(function(previewRunner) {
                   previewRunner.contentWindow.document.open();
-                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".sb-preview-code").innerText);
+                  previewRunner.contentWindow.document.write(previewRunner.parentNode.querySelector(".simplycode-preview-code").innerText);
                   previewRunner.contentWindow.document.close();
                   previewRunner.contentWindow.addEventListener("simply-content-loaded", function() {
-                    var previewData = previewRunner.parentNode.querySelector(".sb-preview-data").innerText;
+                    var previewData = previewRunner.parentNode.querySelector(".simplycode-preview-data").innerText;
                     try {
                       previewData = JSON.parse(previewData);
                     } catch(e) {
@@ -1594,7 +2002,7 @@
               });
             },
             "autoRunTests" : function(el) {
-              var testRunners = document.querySelectorAll(".sb-component[open] iframe.qunit");
+              var testRunners = document.querySelectorAll(".simplycode-component[open] iframe.qunit");
               testRunners.forEach(function(testRunner) {
                 testRunner.contentWindow.document.testRunner = testRunner;
                 testRunner.contentWindow.document.open();
@@ -1603,7 +2011,7 @@
               });
             },
             "codeMirrorInit" : function() {
-              var textareas = document.querySelectorAll(".sb-component[open] textarea[data-codemirror-mode]:not([style])");
+              var textareas = document.querySelectorAll(".simplycode-component[open] textarea[data-codemirror-mode]:not([style])");
               textareas.forEach(function(textarea) {
                 var mode = "javascript";
                 if (textarea.hasAttribute("data-codemirror-mode")) {
@@ -1877,7 +2285,7 @@
               });
             },
             "saveAppHtml" : function() {
-              var appHtml = document.querySelector(".sb-preview-code").innerText;
+              var appHtml = document.querySelector(".simplycode-preview-code").innerText;
               appHtml = appHtml.replaceAll(/^(\n)+/g, '');
               appHtml = appHtml.replaceAll(/(\n)+/g, '\n');
               simplyApp.actions.saveAppHtml(appHtml)
@@ -2237,44 +2645,44 @@
     <!-- /Body HTML -->
     <!-- Component HTML templates -->
     <template id="componentActions">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Actions provide the internal API for the app to use. It is called by routes and commands, and makes use of the Data API. Actions should not do any DOM access.">
         <span data-simply-field="count.actions" data-simply-content="attributes" data-simply-attributes="data-count">
           Actions
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addAction">Add action</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addAction">Add action</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.actions">
+      <div class="simplycode-code-method" data-simply-list="component.parts.actions">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="action" placeholder="Action name, eg getItemList">
-                <label class="sb-tab">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="action" placeholder="Action name, eg getItemList">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" value="tests" data-simply-field="editor">
                   <span>Tests</span>
                 </label>
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-deleted="false" data-simply-command="deleteEntry">Delete action</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-deleted="false" data-simply-command="deleteEntry">Delete action</button>
               </div>
             </div>
-            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
               <template data-simply-template="code">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
                   <simply-render rel="componentQUnitActionRunner"></simply-render>
                 </div>
               </template>
               <template data-simply-template="tests">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <simply-render rel="componentQUnitTests"></simply-render>
                 </div>
               </template>
@@ -2285,29 +2693,29 @@
     </details>
     </template>
     <template id="componentBodyHtml">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These are added to the top of the &lt;body&gt; of the HTML">
         <span data-simply-field="count.bodyHtml" data-simply-content="attributes" data-simply-attributes="data-count">
           Additional body HTML
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addBodyHtml">Add body HTML</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addBodyHtml">Add body HTML</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.bodyHtml">
+      <div class="simplycode-code-method" data-simply-list="component.parts.bodyHtml">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
                 <simply-render rel="componentHtmlValidator"></simply-render>
               </div>
@@ -2318,44 +2726,44 @@
     </details>
     </template>
     <template id="componentCommands">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Commands come from user interaction on the DOM, for instance clicking a button. Commands are aware of the DOM, and use actions to execute logic.">
         <span data-simply-field="count.commands" data-simply-content="attributes" data-simply-attributes="data-count">
           Commands
         </span>
-        <span class='sb-controls'>
-          <button class="sb-button" data-simply-command="addCommand">Add command</button>
+        <span class='simplycode-controls'>
+          <button class="simplycode-button" data-simply-command="addCommand">Add command</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.commands">
+      <div class="simplycode-code-method" data-simply-list="component.parts.commands">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="command" placeholder="Command name, eg getItemList">
-                <label class="sb-tab">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="command" placeholder="Command name, eg getItemList">
+                <label class="simplycode-tab">
                   <input type="radio" name="commandEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="commandEditor" value="tests" data-simply-field="editor">
                   <span>Tests</span>
                 </label>
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete command</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete command</button>
               </div>
             </div>
-            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
               <template data-simply-template="code">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
                   <simply-render rel="componentQUnitCommandRunner"></simply-render>
                 </div>
               </template>
               <template data-simply-template="tests">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <simply-render rel="componentQUnitTests"></simply-render>
                 </div>
               </template>
@@ -2367,29 +2775,29 @@
     
     </template>
     <template id="componentComponentCss">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Set component CSS - this CSS is globally available.">
         <span data-simply-field="count.componentCss" data-simply-content="attributes" data-simply-attributes="data-count">
           Component CSS collections
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addComponentCss">Add CSS collection</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addComponentCss">Add CSS collection</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.componentCss">
+      <div class="simplycode-code-method" data-simply-list="component.parts.componentCss">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name this CSS collection">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name this CSS collection">
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="css" data-simply-field="code" placeholder="div {...}"></textarea>
               </div>
             </div>
@@ -2399,37 +2807,37 @@
     </details>
     </template>
     <template id="componentComponentTemplate">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are used to build up page templates.">
         <span data-simply-field="count.componentTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
           Component HTML template
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addComponentTemplate">Add component HTML template</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addComponentTemplate">Add component HTML template</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.componentTemplates">
+      <div class="simplycode-code-method" data-simply-list="component.parts.componentTemplates">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="component" placeholder="Component name">
-                <label class="sb-tab">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="component" placeholder="Component name">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" value="sampledata" data-simply-field="editor">
                   <span>Sample data</span>
                 </label>
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
               </div>
             </div>
-            <div class="sb-editors sb-dual-preview">
-              <div class="sb-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors simplycode-dual-preview">
+              <div class="simplycode-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
                 <template data-simply-template="code">
                   <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Component Html</div></main>"></textarea>
                 </template>
@@ -2437,7 +2845,7 @@
                   <textarea data-codemirror-mode="json" data-simply-field="sampledata" placeholder="{}"></textarea>
                 </template>
               </div>
-              <div class="sb-previews">
+              <div class="simplycode-previews">
                 <simply-render rel="componentPreview"></simply-render>
               </div>
             </div>
@@ -2448,29 +2856,29 @@
     </details>
     </template>
     <template id="componentDataApi">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="The Data API layer provides functions to load en store data types. Makes use of the Raw API and provides data for actions">
         <span data-simply-field="count.dataApi" data-simply-content="attributes" data-simply-attributes="data-count">
           Data API
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addDataApiMethod">Add method</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addDataApiMethod">Add method</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.dataApi">
+      <div class="simplycode-code-method" data-simply-list="component.parts.dataApi">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
               </div>
             </div>
@@ -2480,72 +2888,72 @@
     </details>
     </template>
     <template id="componentDataSources">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Data sources provide list information from an external data source. Use this to provide lists that are not part of the subject of the page. Used as data-simply-data on data-simply-lists">
         <span data-simply-field="count.dataSources" data-simply-content="attributes" data-simply-attributes="data-count">
           Data sources
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addDataSource">Add data source</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addDataSource">Add data source</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.dataSources">
+      <div class="simplycode-code-method" data-simply-list="component.parts.dataSources">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="dataSource" placeholder="Data source name, eg itemList">
-                <label class="sb-tab" title="Load code is used to fetch the data source and render it in the list. Save code is used to gather data from the data source and save it back to where it came from.">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="dataSource" placeholder="Data source name, eg itemList">
+                <label class="simplycode-tab" title="Load code is used to fetch the data source and render it in the list. Save code is used to gather data from the data source and save it back to where it came from.">
                   <input type="radio" checked name="dataSourceEditor" value="code" data-simply-field="editor">
                   <span>Load/Save</span>
                 </label>
-                <label class="sb-tab" title="Get/Set is used to populate the data-simply-list value.">
+                <label class="simplycode-tab" title="Get/Set is used to populate the data-simply-list value.">
                   <input type="radio" checked name="dataSourceEditor" value="getset" data-simply-field="editor">
                   <span>Get/Set</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="dataSourceEditor" value="tests" data-simply-field="editor">
                   <span>Tests</span>
                 </label>
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete data source</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete data source</button>
               </div>
             </div>
-            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
               <template data-simply-template="code">
-                <div class="sb-editor-code sb-dual">
+                <div class="simplycode-editor-code simplycode-dual">
                   <textarea data-codemirror-mode="javascript" data-simply-field="load-code" placeholder="function() {...}"></textarea>
                   <textarea data-codemirror-mode="javascript" data-simply-field="save-code" placeholder="function() {...}"></textarea>
                 </div>
               </template>
               <template data-simply-template="getset">
-                <div class="sb-editor-code sb-dual">
+                <div class="simplycode-editor-code simplycode-dual">
                   <textarea data-codemirror-mode="javascript" data-simply-field="get-code" placeholder="function() {...}"></textarea>
                   <textarea data-codemirror-mode="javascript" data-simply-field="set-code" placeholder="function() {...}"></textarea>
                 </div>
               </template>
               <template data-simply-template="tests">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <simply-render rel="componentQUnitTests"></simply-render>
                 </div>
               </template>
-              <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
                 <template data-simply-template="code">
-                  <div class="sb-editor-code sb-dual">
+                  <div class="simplycode-editor-code simplycode-dual">
                     <textarea data-codemirror-mode="javascript" data-simply-field="load-code" placeholder="function() {...}"></textarea>
                     <textarea data-codemirror-mode="javascript" data-simply-field="save-code" placeholder="function() {...}"></textarea>
                   </div>
                 </template>
                 <template data-simply-template="getset">
-                  <div class="sb-editor-code sb-dual">
+                  <div class="simplycode-editor-code simplycode-dual">
                     <textarea data-codemirror-mode="javascript" data-simply-field="get-code" placeholder="function() {...}"></textarea>
                     <textarea data-codemirror-mode="javascript" data-simply-field="set-code" placeholder="function() {...}"></textarea>
                   </div>
                 </template>
                 <template data-simply-template="tests">
-                  <div class="sb-editor-code">
+                  <div class="simplycode-editor-code">
                     <simply-render rel="componentQUnitTests"></simply-render>
                   </div>
                 </template>
@@ -2557,7 +2965,7 @@
     </details>
     </template>
     <template id="componentDescription">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary title="Describe this component for your own use.">
         Description
       </summary>
@@ -2565,29 +2973,29 @@
     </details>
     </template>
     <template id="componentFootHtml">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are added just before the &lt;/body&gt; in the HTML">
         <span data-simply-field="count.footHtml" data-simply-content="attributes" data-simply-attributes="data-count">
           Additional foot HTML
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addFootHtml">Add foot HTML</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addFootHtml">Add foot HTML</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.footHtml">
+      <div class="simplycode-code-method" data-simply-list="component.parts.footHtml">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
               </div>
-              <div class="sb-options">
-    			<button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
                 <simply-render rel="componentHtmlValidator"></simply-render>
               </div>
@@ -2598,29 +3006,29 @@
     </details>
     </template>
     <template id="componentHeadHtml">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These are added to the &lt;head&gt; section of the HTML">
         <span data-simply-field="count.headHtml" data-simply-content="attributes" data-simply-attributes="data-count">
           Additional head HTML
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addHeadHtml">Add head HTML</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addHeadHtml">Add head HTML</button>
         </span> 
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.headHtml">
+      <div class="simplycode-code-method" data-simply-list="component.parts.headHtml">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete head HTML</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete head HTML</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
                 <simply-render rel="componentHtmlValidator"></simply-render>
               </div>
@@ -2631,29 +3039,29 @@
     </details>
     </template>
     <template id="componentPageCss">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Set page specific CSS - this CSS is only used for this page and is removed when we are on another page.">
         <span data-simply-field="count.pageCss" data-simply-content="attributes" data-simply-attributes="data-count">
           Page CSS collections
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addPageCss">Add CSS collection</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addPageCss">Add CSS collection</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.pageCss">
+      <div class="simplycode-code-method" data-simply-list="component.parts.pageCss">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name this CSS collection">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name this CSS collection">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete CSS</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="css" data-simply-field="code" placeholder="div {...}"></textarea>
               </div>
             </div>
@@ -2663,18 +3071,18 @@
     </details>
     </template>
     <template id="componentPageFrame">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These make up the page frame together with the Simply App parts.">
         Page frame
       </summary>
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <label class="sb-tab">Full app</label>
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <label class="simplycode-tab">Full app</label>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.fullApp" placeholder="<!DOCTYPE...">
     &lt;!DOCTYPE HTML>
     &lt;html lang="en">
@@ -2683,14 +3091,14 @@
         </div>
       </div>
     
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <label class="sb-tab">Page preview</label>
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <label class="simplycode-tab">Page preview</label>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.pagePreview" placeholder="<!DOCTYPE...">
     &lt;!DOCTYPE HTML>
     &lt;html lang="en">
@@ -2699,14 +3107,14 @@
         </div>
       </div>
     
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <label class="sb-tab">Component preview</label>
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <label class="simplycode-tab">Component preview</label>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-codemirror-mode="htmlmixed" data-simply-field="component.parts.componentPreview" placeholder="<!DOCTYPE...">
     &lt;!DOCTYPE HTML>
     &lt;html lang="en">
@@ -2717,37 +3125,37 @@
     </details>
     </template>
     <template id="componentPageTemplate">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are used in routes to set the HTML of the requested page.">
         <span data-simply-field="count.pageTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
           Page HTML template
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addPageTemplate">Add page HTML template</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addPageTemplate">Add page HTML template</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.pageTemplates">
+      <div class="simplycode-code-method" data-simply-list="component.parts.pageTemplates">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="page" placeholder="Page name">
-                <label class="sb-tab">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="page" placeholder="Page name">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" value="sampledata" data-simply-field="editor">
                   <span>Sample data</span>
                 </label>
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
               </div>
             </div>
-            <div class="sb-editors sb-dual">
-              <div class="sb-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors simplycode-dual">
+              <div class="simplycode-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
                 <template data-simply-template="code">
                   <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Page contents</div></main>"></textarea>
                 </template>
@@ -2755,7 +3163,7 @@
                   <textarea data-codemirror-mode="json" data-simply-field="sampledata" placeholder="{}"></textarea>
                 </template>
               </div>
-              <div class="sb-previews">
+              <div class="simplycode-previews">
                 <simply-render rel="pagePreview"></simply-render>
               </div>
             </div>
@@ -2905,52 +3313,52 @@
           </div>
     </template>
     <template id="componentQUnitTests">
-      <div class="sb-editor-qunit-tests">
-      <div class="sb-tests" data-simply-list="tests">
+      <div class="simplycode-editor-qunit-tests">
+      <div class="simplycode-tests" data-simply-list="tests">
         <template>
-          <div class="sb-test" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-test-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Test name">
+          <div class="simplycode-test" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-test-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Test name">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete test</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete test</button>
               </div>
             </div>
-            <div class="sb-test-editor">
+            <div class="simplycode-test-editor">
               <textarea data-codemirror-mode="javascript" data-simply-field="test-code" placeholder="function() {...}"></textarea>
             </div>
           </div>
         </template>
       </div>
-      <button class="sb-button" data-simply-command="addTest">Add test</button>
+      <button class="simplycode-button" data-simply-command="addTest">Add test</button>
     </div>
     </template>
     <template id="componentRawApi">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="The Raw API layer provides lower level functions to access an API. It handles things like authentication, connection, encoding and the likes. It exposes 'get', 'post' methods.">
         <span data-simply-field="count.rawApi" data-simply-content="attributes" data-simply-attributes="data-count">
           Raw API
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addRawApiMethod">Add method</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addRawApiMethod">Add method</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.rawApi">
+      <div class="simplycode-code-method" data-simply-list="component.parts.rawApi">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete method</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
               </div>
             </div>
@@ -2960,30 +3368,30 @@
     </details>
     </template>
     <template id="componentRoutes">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Routes provide a translation from a URL to something the app should do. Routes make use of actions to fetch or store data">
         <span data-simply-field="count.routes" data-simply-content="attributes" data-simply-attributes="data-count">
           Routes
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addRoute">Add route</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addRoute">Add route</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.routes">
+      <div class="simplycode-code-method" data-simply-list="component.parts.routes">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="name" placeholder="Name of the route">
-                <input class="sb-tab" data-simply-field="route" placeholder="#route/:variable">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="name" placeholder="Name of the route">
+                <input class="simplycode-tab" data-simply-field="route" placeholder="#route/:variable">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete route</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete route</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
               </div>
             </div>
@@ -2993,29 +3401,29 @@
     </details>
     </template>
     <template id="componentSorters">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Sorters are utility function that are used to sort arrays, used in datasources, actions.">
         <span data-simply-field="count.sorters" data-simply-content="attributes" data-simply-attributes="data-count">
           Sorters
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addSorter">Add sorter</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addSorter">Add sorter</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.sorters">
+      <div class="simplycode-code-method" data-simply-list="component.parts.sorters">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="sorter" placeholder="Sorter name, eg sortByDescription">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="sorter" placeholder="Sorter name, eg sortByDescription">
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete sorter</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete sorter</button>
               </div>
             </div>
-            <div class="sb-editors">
-              <div class="sb-editor-code">
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
               </div>
             </div>
@@ -3025,44 +3433,44 @@
     </details>
     </template>
     <template id="componentTransformers">
-      <details class="sb-component">
+      <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Transformers provide a last moment change to data, just before it is rendered. Use as a value of data-simply-transform on a data-simply-field">
         <span data-simply-field="count.transformers" data-simply-content="attributes" data-simply-attributes="data-count">
           Transformers
         </span>
-        <span class="sb-controls">
-          <button class="sb-button" data-simply-command="addTransformer">Add transformer</button>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addTransformer">Add transformer</button>
         </span>
       </summary>
-      <div class="sb-code-method" data-simply-list="component.parts.transformers">
+      <div class="simplycode-code-method" data-simply-list="component.parts.transformers">
         <template>
-          <div class="sb-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
-            <div class="sb-part-header">
-              <div class="sb-tabs">
-                <input class="sb-tab" data-simply-field="transformer" placeholder="Transformer name, eg itemNameFromId">
-                <label class="sb-tab" title="Render code transforms the data from what is stored into what the user sees. Extract takes the data as provided from the DOM and transforms it for storage">
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="transformer" placeholder="Transformer name, eg itemNameFromId">
+                <label class="simplycode-tab" title="Render code transforms the data from what is stored into what the user sees. Extract takes the data as provided from the DOM and transforms it for storage">
                   <input type="radio" checked name="transformerEditor" value="code" data-simply-field="editor">
                   <span>Render/Extract</span>
                 </label>
-                <label class="sb-tab">
+                <label class="simplycode-tab">
                   <input type="radio" name="transformerEditor" value="tests" data-simply-field="editor">
                   <span>Tests</span>
                 </label>
               </div>
-              <div class="sb-options">
-                <button class="sb-button" draggable="true">Drag to move</button>
-                <button class="sb-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete transformer</button>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete transformer</button>
               </div>
             </div>
-            <div class="sb-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+            <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
               <template data-simply-template="code">
-                <div class="sb-editor-code sb-dual">
+                <div class="simplycode-editor-code simplycode-dual">
                   <textarea data-codemirror-mode="javascript" data-simply-field="render-code" placeholder="function() {...}"></textarea>
                   <textarea data-codemirror-mode="javascript" data-simply-field="extract-code" placeholder="function() {...}"></textarea>
                 </div>
               </template>
               <template data-simply-template="tests">
-                <div class="sb-editor-code">
+                <div class="simplycode-editor-code">
                   <simply-render rel="componentQUnitTests"></simply-render>
                 </div>
               </template>
@@ -3074,15 +3482,15 @@
     </template>
     <template id="header">
       <h1>Simply Code - Build something awesome!</h1>
-    <div class="sb-controls">
-      <a href="#publish" class="sb-button">Preview and publish!</a>
+    <div class="simplycode-controls">
+      <a href="#publish" class="simplycode-button">Preview and publish!</a>
     </div>
     </template>
     <template id="componentHtmlValidator">
       <div data-simply-field="code" data-simply-transformer="validateHtml"></div>
-    <div class="sb-html-messages" data-simply-list="validateResult.messages">
+    <div class="simplycode-html-messages" data-simply-list="validateResult.messages">
       <template>
-        <div class="sb-html-message">
+        <div class="simplycode-html-message">
           <span data-simply-field="message"></span><br>
           <span data-simply-field="extract" data-simply-transformer="escapeHtml"></span> on line <span data-simply-field="firstLine"></span> <span data-simply-field="lastLine"></span>
         </div>
@@ -3100,14 +3508,14 @@
     </ul>
     </template>
     <template id="componentPreview">
-      <div class="sb-component-preview-container">
-      <iframe class="sb-component-preview"></iframe>
-      <div class="sb-preview-code">
+      <div class="simplycode-component-preview-container">
+      <iframe class="simplycode-component-preview"></iframe>
+      <div class="simplycode-preview-code">
         <pre>
           <span data-simply-field="code" data-simply-transformer="simplyPreviewComponent"></span>
     </pre>
       </div>
-      <div class="sb-preview-data">
+      <div class="simplycode-preview-data">
         <pre>
           <span data-simply-field="sampledata" data-simply-transformer="htmlEscape" data-indent=4></span>
     </pre>
@@ -3115,20 +3523,20 @@
     </div>
     </template>
     <template id="fullAppPreview">
-      <div class="sb-full-preview-container">
-      <iframe class="sb-full-preview"></iframe>
-      <div class="sb-preview-code" data-simply-field="app" data-simply-transformer="simplyPreviewFullApp"></div>
+      <div class="simplycode-full-preview-container">
+      <iframe class="simplycode-full-preview"></iframe>
+      <div class="simplycode-preview-code" data-simply-field="app" data-simply-transformer="simplyPreviewFullApp"></div>
     </div>
     </template>
     <template id="pagePreview">
-      <div class="sb-component-preview-container">
-      <iframe class="sb-component-preview"></iframe>
-      <div class="sb-preview-code">
+      <div class="simplycode-component-preview-container">
+      <iframe class="simplycode-component-preview"></iframe>
+      <div class="simplycode-preview-code">
         <pre>
           <span data-simply-field="code" data-simply-transformer="simplyPreviewPage"></span>
     </pre>
       </div>
-      <div class="sb-preview-data">
+      <div class="simplycode-preview-data">
         <pre>
           <span data-simply-field="sampledata" data-simply-transformer="htmlEscape" data-indent=4></span>
     </pre>
@@ -3146,11 +3554,11 @@
     <!-- Page HTML templates -->
     <template data-simply-template="Edit base component">
       <main>
-      <div class="sb-header">
+      <div class="simplycode-header">
         <h1>Edit base component: <span data-simply-field="component.id"></span></h1>
-        <div class="sb-controls">
-          <button class="sb-button" data-simply-command="saveBaseComponent">Save</button>
-          <button class="sb-button" data-simply-command="deleteBaseComponent">Delete</button>
+        <div class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="saveBaseComponent">Save</button>
+          <button class="simplycode-button" data-simply-command="deleteBaseComponent">Delete</button>
         </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
@@ -3166,7 +3574,7 @@
     <template data-simply-template="Base components">
       <main>
       <h1>Base components</h1>
-      <ul class="sb-components-list" data-simply-list="components">
+      <ul class="simplycode-components-list" data-simply-list="components">
         <template>
           <li data-simply-command="navigate">
             <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="baseComponentLink"><span data-simply-field="id"></span></a>
@@ -3175,17 +3583,17 @@
         </template>
       </ul>
       <h1>Add base component</h1>
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
           </div>
-          <div class="sb-options">
-            <button class="sb-button" data-simply-command="createBaseComponent">Create</button>
+          <div class="simplycode-options">
+            <button class="simplycode-button" data-simply-command="createBaseComponent">Create</button>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
           </div>
         </div>
@@ -3194,11 +3602,11 @@
     </template>
     <template data-simply-template="Edit component">
       <main>
-      <div class="sb-header">
+      <div class="simplycode-header">
         <h1>Edit component: <span data-simply-field="component.id"></span></h1>
-        <div class="sb-controls">
-          <button class="sb-button" data-simply-command="saveComponent">Save</button>
-          <button class="sb-button" data-simply-command="deleteComponent">Delete</button>
+        <div class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="saveComponent">Save</button>
+          <button class="simplycode-button" data-simply-command="deleteComponent">Delete</button>
         </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
@@ -3216,7 +3624,7 @@
     <template data-simply-template="List components">
       <main>
       <h1>Components</h1>
-      <ul class="sb-components-list" data-simply-list="components">
+      <ul class="simplycode-components-list" data-simply-list="components">
         <template>
           <li data-simply-command="navigate">
             <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink"><span data-simply-field="id"></span></a>
@@ -3225,17 +3633,17 @@
         </template>
       </ul>
       <h1>Add component</h1>
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
           </div>
-          <div class="sb-options">
-            <button class="sb-button" data-simply-command="createComponent">Create</button>
+          <div class="simplycode-options">
+            <button class="simplycode-button" data-simply-command="createComponent">Create</button>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
           </div>
         </div>
@@ -3245,11 +3653,11 @@
     </template>
     <template data-simply-template="Edit page">
       <main>
-      <div class="sb-header">
+      <div class="simplycode-header">
         <h1>Edit page: <span data-simply-field="component.id"></span></h1>
-        <div class="sb-controls">
-          <button class="sb-button" data-simply-command="savePage">Save</button>
-          <button class="sb-button" data-simply-command="deletePage">Delete</button>
+        <div class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="savePage">Save</button>
+          <button class="simplycode-button" data-simply-command="deletePage">Delete</button>
         </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
@@ -3266,10 +3674,10 @@
     </template>
     <template data-simply-template="Edit page frame">
       <main>
-      <div class="sb-header">
+      <div class="simplycode-header">
         <h1>Edit page frame</h1>
-        <div class="sb-controls">
-          <button class="sb-button" data-simply-command="savePageFrame">Save</button>
+        <div class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="savePageFrame">Save</button>
         </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
@@ -3279,7 +3687,7 @@
     <template data-simply-template="Pages">
       <main>
       <h1>Pages</h1>
-      <ul class="sb-components-list" data-simply-list="components">
+      <ul class="simplycode-components-list" data-simply-list="components">
         <template>
           <li data-simply-command="navigate">
             <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="pageLink"><span data-simply-field="id"></span></a>
@@ -3288,17 +3696,17 @@
         </template>
       </ul>
       <h1>Add page</h1>
-      <div class="sb-part">
-        <div class="sb-part-header">
-          <div class="sb-tabs">
-            <input data-simply-field="newComponent.id" class="sb-tab" placeholder="Name your component">
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
           </div>
-          <div class="sb-options">
-            <button class="sb-button" data-simply-command="createPage">Create</button>
+          <div class="simplycode-options">
+            <button class="simplycode-button" data-simply-command="createPage">Create</button>
           </div>
         </div>
-        <div class="sb-editors">
-          <div class="sb-editor-code">
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
             <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
           </div>
         </div>
@@ -3307,12 +3715,12 @@
     
     </template>
     <template data-simply-template="preview-app">
-      <main class="sb-fullscreen-preview">
+      <main class="simplycode-fullscreen-preview">
       <simply-render rel="componentAppFullPreview"></simply-render>
     </main>
     </template>
     <template data-simply-template="preview-component">
-      <main class="sb-fullscreen-preview">
+      <main class="simplycode-fullscreen-preview">
       <simply-render rel="componentPreview"></simply-render>
       <simply-render rel="componentPreviewAppHead"></simply-render>
       <simply-render rel="componentPreviewAppFoot"></simply-render>
@@ -3322,7 +3730,7 @@
       <main>
       <h1>App preview</h1>
       <div class="field">
-        <button class="sb-button" data-simply-command="saveAppHtml">Publish App</button>
+        <button class="simplycode-button" data-simply-command="saveAppHtml">Publish App</button>
       </div>
       <simply-render rel="fullAppPreview"></simply-render>
     </main>
@@ -3357,11 +3765,11 @@
                 .then(function(validateResult) {
                 element.dataBinding.config.data.validateResult = validateResult;
                 if(validateResult.messages.length) {
-                  element.className = "sb-html-invalid";
+                  element.className = "simplycode-html-invalid";
                   element.innerHTML = "HTML validation failed:";
                 } else {
                   element.innerHTML = "HTML validated!";
-                  element.className = "sb-html-valid";
+                  element.className = "simplycode-html-valid";
                 }
               });
             }, 1000);
@@ -3565,7 +3973,9 @@
           
             Object.keys(replacements).forEach(function(replacement) {
               matches = fullApp.match("(\\s+){{" + replacement + "}}");
-              fullApp = fullApp.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
+              if (matches) {
+                fullApp = fullApp.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, matches[1]));
+              }
             });
           
             // escape html
@@ -3878,15 +4288,15 @@
       });
     </script>
     <!-- Codemirror base -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js" integrity="sha512-xwrAU5yhWwdTvvmMNheFn9IyuDbl/Kyghz2J3wQRDR8tyNmT8ZIYOd0V3iPYY/g4XdNPy0n/g0NvqGu9f0fPJQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/codemirror/lib/codemirror.js"></script>
     <!-- Codemirror modes -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js" integrity="sha512-2gAMyrBfWPuTJDA2ZNIWVrBBe9eN6/hOjyvewDd0bsk2Zg06sUla/nPPlqQs75MQMvJ+S5AmfKmq9q3+W2qeKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js" integrity="sha512-0IM15+FEzmvrcePHk/gDCLbZnmja9DhCDUrESXPYLM4r+eDtNadxDUa5Fd/tNQGCbCoxu75TaVuvJkdmq0uh/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js" integrity="sha512-IS1FyxQkiJHT1SAvLXBaJu1UTFSIw0GT/DuzxHl69djqyLoEwGmR2davcZUnB8M7ppi9nfTGZR/vdfqmWt+i6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js" integrity="sha512-UWfBe6aiZInvbBlm91IURVHHTwigTPtM3M4B73a8AykmxhDWq4EC/V2rgUNiLgmd/i0y0KWHolqmVQyJ35JsNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/codemirror/mode/css/css.js"></script>
+    <script src="js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="js/codemirror/mode/javascript/javascript.js"></script>
+    <script src="js/codemirror/mode/xml/xml.js"></script>
     <!-- Codemirror styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/base16-dark.min.css" integrity="sha512-CNZkbIVu/G4dB3YpFIZgMtE45vHp/QocgMbf6jg+DFFPLN3emncIob8ubKANmsGQ8JsnzzSVTj7WrFrnx6EgXQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="js/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="js/codemirror/theme/base16-dark.css"/>
     <!-- Data change codeMirror -->
     <script>
       document.addEventListener("simply-data-changed", function(event) {

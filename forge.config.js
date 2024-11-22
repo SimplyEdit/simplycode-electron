@@ -6,7 +6,7 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      platforms: ['linux', 'windows'],
+      platforms: ['windows'],
       config: {
         bin: 'simplycode',
       }

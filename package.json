@@ -12,7 +12,7 @@
     "postinstall": "scripts/post-install.sh",
     "publish": "electron-forge publish"
   },
-  "productName": "simply-code",
+  "productName": "simplycode",
   "keywords": [
     "javascript",
     "html",
@@ -23,7 +23,6 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-dmg": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
     "@electron-forge/maker-squirrel": "^7.4.0",
     "@electron-forge/maker-zip": "^7.4.0",
@@ -33,12 +32,12 @@
     "@electron/fuses": "^1.8.0",
     "electron": "^30.0.9",
     "electron-installer-debian": "^3.0.0",
-    "electron-installer-redhat": "^3.2.0",
-    "appdmg": "^0.6.6",
-    "electron-installer-dmg": "^4.0.0"
+    "electron-installer-redhat": "^3.2.0"
   },
   "optionalDependencies": {
-   
+    "@electron-forge/maker-dmg": "^7.4.0",
+    "appdmg": "^0.6.6",
+    "electron-installer-dmg": "^4.0.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
