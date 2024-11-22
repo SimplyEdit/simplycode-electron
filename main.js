@@ -274,11 +274,17 @@ app.whenReady().then(() => {
                     let target = dataDir + componentDirectory + "/" + componentName;
                     if(fs.existsSync(target)){
                         const filestuff = fs.readFileSync(target)
+                        let headers = {};
+                        if (componentName.match(/\.svg$/)) {
+                            headers = {
+                              'content-type' : 'image/svg+xml'
+                            }
+                        }
                         return new Response(filestuff, {
-                            // headers: { 'content-type': 'text/html' }
+                            headers: headers
                         })
                     } else {
-                        return new Response('"Not found"', { status: 404})
+                        return new Response('"Not found"', { status: 404 })
                     }
                 break
             }
