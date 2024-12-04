@@ -41,6 +41,8 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
+    "codemirror": "5.65.2",
+    "simplyedit": "github:simplyedit/simplyedit",
     "simplycode": "github:simplyedit/simplycode"
   },
   "config": {
