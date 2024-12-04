@@ -225,6 +225,7 @@ app.whenReady().then(() => {
         
         let pathicles = componentPath.split('\/');
         let componentName = pathicles.pop();
+        componentName = decodeURIComponent(componentName);
         if (pathicles[0] == ''){
             pathicles.shift()
         }
@@ -272,7 +273,10 @@ app.whenReady().then(() => {
                 case 'GET':
                 default:
                     let target = dataDir + componentDirectory + "/" + componentName;
-                    if(fs.existsSync(target)){
+                    if(!fs.existsSync(target)) {
+                        target = __dirname + '/simplycode/' + componentDirectory + '\/' + componentName;
+                    }
+                    if (fs.existsSync(target)) {
                         const filestuff = fs.readFileSync(target)
                         let headers = {};
                         if (componentName.match(/\.svg$/)) {
@@ -330,6 +334,7 @@ app.whenReady().then(() => {
         let pathicles = componentPath.split('\/'); // also splits on an empty string
         
         let componentName = pathicles.pop();
+        componentName = decodeURIComponent(componentName);
 
         if (pathicles[0] == ''){
             pathicles.shift()
@@ -386,6 +391,7 @@ app.whenReady().then(() => {
                         if (
                             (componentPath.indexOf("/js/simply") === 0) ||
                             (componentPath.indexOf("/simply") === 0) ||
+                            (componentPath.indexOf("/assets") === 0) ||
                             (componentPath.indexOf("/hope") === 0)
                         ) {
                             const filestuff = fs.readFileSync(__dirname + '/simplycode/' + componentDirectory + '\/' + componentName)
