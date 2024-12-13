@@ -515,6 +515,129 @@
         border: 0;
         padding: 5px;
       }
+      /* simply-toast */
+      :root {
+        --simply-toast-height: 60px;
+        --simply-toast-hide-delay: 3s;
+        --simply-toast-show-duration: 0.3s;
+        --simply-toast-hide-duration: 0.5s;
+        --simply-toast-margin: 20px;
+        --simply-toast-error-color: rgb(253, 143, 143);
+        --simply-toats-warning-color: #FFFFCC;
+        --simply-toast-info-color: rgb(140, 180, 250);
+        --simply-toast-white: #FFF;
+        --simply-toast-grey-50: #a8b4c0;
+        --simply-toast-grey-80: #4d565c;
+        --simply-toast-font-size: calc(1.1 * 1rem);
+        --simply-toast-font-weight: 300;
+        --simply-toast-line-height: calc(1.5 * var(--simply-toast-font-size));
+        --simply-toast-color: var(--simplycode-grey-medium);
+        --simply-toast-contrast: var(--simplycode-grey-medium);
+        --simply-toast-background:var(--simplycode-white);
+        --simply-toast-heading-weight: 900;
+        --simply-toast-heading-multiplier: 1.1;
+      }
+      
+      ul.simply-toasts,
+      ol.simply-toasts,
+      .simply-toasts {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 101;
+        display: block;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-width: 50%;
+        min-width: 300px;
+      }
+      .simply-toast,
+      li.simply-toast {
+        min-width: 300px;
+        float: right;
+        clear: both;
+        margin-right: 0;
+        margin-top: 60px;
+        background-color: var(--simply-toast-grey-80);
+        color: var(--simply-toast-white);
+        display: block;
+        border-left: 10px solid var(--simply-toast-grey-50);
+        padding: 20px;
+        border-radius: 2px;
+      }
+      .simply-toast-error,
+      li.simply-toast-error {
+        border-color: var(--simply-toast-error-color);
+      }
+      .simply-toast-info,
+      li.simply-toast-info {
+        border-color: var(--simply-toast-info-color);
+      }
+      .simply-toast-warning,
+      li.simply-toast-warning {
+        border-color: var(--simply-toast-warning-color);
+      }
+      
+      @keyframes simply-toast-show {
+        0% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+        50% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+        75% {
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(1);
+          transform-origin: right;
+          opacity: 1;
+        }
+      }
+      @keyframes simply-toast-hide {
+        0% {
+          transform: scaleX(1);
+          transform-origin: right;
+          opacity: 1;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+      }
+      @keyframes simply-toast-move {
+        0% {
+          transform: translateY(-80px); /* toast-height + toast-margin */
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      .simply-toast[data-state="new"] {
+        animation: simply-toast-show var(--simply-toast-show-duration) forwards;
+      }
+      .simply-toast-autohide[data-state="new"] {
+        animation: simply-toast-show var(--simply-toast-show-duration);
+        animation-delay: 0s;
+      }
+      .simply-toast-autohide.simply-toast-animated[data-state="shown"] {
+        animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
+        animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
+      }
+      .simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
+        animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
+        animation-delay: 0s, var(--simply-toast-hide-delay);
+      }
+      
       /* simplycode-component-list */
       :root {
         --simplycode-component-list-spacing-row: calc(0.5 * var(--ds-spacing));
@@ -826,131 +949,6 @@
       .simplycode-editor-code textarea {
         margin-top: -1px;
       }
-      
-      /* Components: Toast */
-      
-      :root {
-        --simply-toast-height: 60px;
-        --simply-toast-hide-delay: 3s;
-        --simply-toast-show-duration: 0.3s;
-        --simply-toast-hide-duration: 0.5s;
-        --simply-toast-margin: 20px;
-        --simply-toast-error-color: rgb(253, 143, 143);
-        --simply-toats-warning-color: #FFFFCC;
-        --simply-toast-info-color: rgb(140, 180, 250);
-        --simply-toast-white: #FFF;
-        --simply-toast-grey-50: #a8b4c0;
-        --simply-toast-grey-80: #4d565c;
-        --simply-toast-font-size: calc(1.1 * 1rem);
-        --simply-toast-font-weight: 300;
-        --simply-toast-line-height: calc(1.5 * var(--simply-toast-font-size));
-        --simply-toast-color: var(--simplycode-grey-medium);
-        --simply-toast-contrast: var(--simplycode-grey-medium);
-        --simply-toast-background:var(--simplycode-white);
-        --simply-toast-heading-weight: 900;
-        --simply-toast-heading-multiplier: 1.1;
-      }
-      
-      ul.simply-toasts,
-      ol.simply-toasts,
-      .simply-toasts {
-        position: fixed;
-        right: 0;
-        top: 0;
-        z-index: 101;
-        display: block;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        max-width: 50%;
-        min-width: 300px;
-      }
-      .simply-toast,
-      li.simply-toast {
-        min-width: 300px;
-        float: right;
-        clear: both;
-        margin-right: 0;
-        margin-top: 60px;
-        background-color: var(--simply-toast-grey-80);
-        color: var(--simply-toast-white);
-        display: block;
-        border-left: 10px solid var(--simply-toast-grey-50);
-        padding: 20px;
-        border-radius: 2px;
-      }
-      .simply-toast-error,
-      li.simply-toast-error {
-        border-color: var(--simply-toast-error-color);
-      }
-      .simply-toast-info,
-      li.simply-toast-info {
-        border-color: var(--simply-toast-info-color);
-      }
-      .simply-toast-warning,
-      li.simply-toast-warning {
-        border-color: var(--simply-toast-warning-color);
-      }
-      
-      @keyframes simply-toast-show {
-        0% {
-          transform: scaleX(0);
-          transform-origin: right;
-          opacity: 0;
-        }
-        50% {
-          transform: scaleX(0);
-          transform-origin: right;
-          opacity: 0;
-        }
-        75% {
-          opacity: 1;
-        }
-        100% {
-          transform: scaleX(1);
-          transform-origin: right;
-          opacity: 1;
-        }
-      }
-      @keyframes simply-toast-hide {
-        0% {
-          transform: scaleX(1);
-          transform-origin: right;
-          opacity: 1;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          transform: scaleX(0);
-          transform-origin: right;
-          opacity: 0;
-        }
-      }
-      @keyframes simply-toast-move {
-        0% {
-          transform: translateY(-80px); /* toast-height + toast-margin */
-        }
-        100% {
-          transform: translateY(0px);
-        }
-      }
-      .simply-toast[data-state="new"] {
-        animation: simply-toast-show var(--simply-toast-show-duration) forwards;
-      }
-      .simply-toast-autohide[data-state="new"] {
-        animation: simply-toast-show var(--simply-toast-show-duration);
-        animation-delay: 0s;
-      }
-      .simply-toast-autohide.simply-toast-animated[data-state="shown"] {
-        animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
-        animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
-      }
-      .simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
-        animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
-        animation-delay: 0s, var(--simply-toast-hide-delay);
-      }
-      
       /* QUnit iframe */
       .qunit-code {
         display: none;
@@ -982,6 +980,7 @@
       .simplycode-part[data-deleted="true"] {
         opacity: 0.3;
       }
+      
       /* simply dragdrop */
       [data-simply-list].simply-dragdrop-receiving {
         outline: 2px dashed var(--highlight-dark);
@@ -1192,7 +1191,7 @@
         border-left: 3px solid transparent;
         border-right: 3px solid transparent;
       }
-      .simply-toolbar .simply-toolbar-push-right {
+      .simply-toolbar-push-right {
         margin-left: auto;
       }
       .simply-toolbar-title img {
@@ -1206,7 +1205,7 @@
         line-height: 1.2em;
         height: 35px;
       }
-      .simply-toolbar.simply-main-toolbar {
+      .simply-toolbar.simply-toolbar-main {
         border-top-width: 5px;
       }
       
@@ -1483,6 +1482,22 @@
                     componentPart.contents = JSON.stringify(Object.values(contents));
                   }
                   break;
+                case "builderTemplates":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      partId = partFile.id;
+                      if (typeof contents[partId] === "undefined") {
+                        contents[partId] = {
+                          base : componentPart.id,
+                          builder : partId
+                        }
+                      }
+                      contents[partId]['code'] = partFile.contents;
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
                 case "rawApi":
                 case "dataApi":
                   if (typeof componentPart.contents === "object") {
@@ -1746,13 +1761,14 @@
                 return simplyRawApi.putRaw(basePath + "/meta.json", {}, JSON.stringify(contents));
                 break;
               case "routes":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".json"));
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".json", {},
@@ -1767,12 +1783,13 @@
                 break;
               case "componentCss":
               case "pageCss":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".css"));
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".css", {},
@@ -1782,7 +1799,7 @@
                 });
                 break;
               case "componentTemplates":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.component) {
                     throw new Error("Required part name is empty");
                   }
@@ -1791,6 +1808,7 @@
                     if (componentPart.sampledata) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.component + ".json"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.component + ".html", {},
@@ -1806,7 +1824,7 @@
                 });
                 break;
               case "pageTemplates":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.page) {
                     throw new Error("Required part name is empty");
                   }
@@ -1815,6 +1833,7 @@
                     if (componentPart.sampledata) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.page + ".json"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.page + ".html", {},
@@ -1829,14 +1848,31 @@
                   }
                 });
                 break;
+              case "builderTemplates":
+                contents.forEach(function(componentPart, componentIndex) {
+                  if (!componentPart.builder) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.builder + ".html"));
+                    contents.splice(componentIndex, 1);
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.builder, {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
               case "rawApi":
               case "dataApi":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.method) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.method + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.method + ".js", {},
@@ -1846,7 +1882,7 @@
                 });
                 break;
               case "actions":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.action) {
                     throw new Error("Required part name is empty");
                   }
@@ -1855,18 +1891,20 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.action + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.action + ".js", {},
                       componentPart.code
                     ));
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js", {},
@@ -1879,7 +1917,7 @@
                 });
                 break;
               case "commands":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.command) {
                     throw new Error("Required part name is empty");
                   }
@@ -1888,18 +1926,20 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.command + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.command + ".js", {},
                       componentPart.code
                     ));
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js", {},
@@ -1912,7 +1952,7 @@
                 });
                 break;
               case "dataSources":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.dataSource) {
                     throw new Error("Required part name is empty");
                   }
@@ -1924,6 +1964,7 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     if (componentPart['get-code']) {
                       results.push(simplyRawApi.putRaw(
@@ -1950,12 +1991,13 @@
                       ));
                     }
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js", {},
@@ -1968,7 +2010,7 @@
                 });
                 break;
               case "transformers":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.transformer) {
                     throw new Error("Required part name is empty");
                   }
@@ -1978,6 +2020,7 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.transformer + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     if (componentPart['render-code']) {
                       results.push(simplyRawApi.putRaw(
@@ -1992,12 +2035,13 @@
                       ));
                     }
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js", {},
@@ -2010,12 +2054,13 @@
                 });
                 break;
               case "sorters":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.sorter) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.sorter + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.sorter + ".js", {},
@@ -2027,12 +2072,13 @@
               case "headHtml":
               case "bodyHtml":
               case "footHtml":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".html"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".html", {},
@@ -2123,6 +2169,68 @@
                 return response.json();
               }
               throw new Error("listBaseComponents failed", response.status);
+            })
+              .then(function(components) {
+              components.forEach(function(component) {
+                simplyDataApi.mergeComponent(component.contents);
+                component.description = component.contents.description;
+              });
+              return components;
+            });
+          },
+          "deleteBuilder" : function(component) {
+            return simplyRawApi.delete("builders/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteBuilder failed", response.status);
+            });
+          },
+          "deleteBuilderPart" : function(component, part) {
+            return simplyRawApi.delete("builders/" + component + "/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteBuilderPart failed", response.status);
+            });
+          },
+          "getBuilder" : function(component) {
+            return simplyRawApi.get("builders/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getBuilder failed", response.status);
+            })
+              .then(function(component) {
+              return simplyDataApi.mergeComponent(component);
+            });
+          },
+          "saveBuilderPart" : function(component, part, contents) {
+            return simplyDataApi.savePart("builders/" + component, part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("builders/" + component, part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("saveBuilderPart failed", response.status);
+              });
+            });
+          },
+          "listBuilders" : function() {
+            return simplyRawApi.get("builders")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("listBuilders failed", response.status);
             })
               .then(function(components) {
               components.forEach(function(component) {
@@ -2325,6 +2433,15 @@
               }
               throw new Error("saveAppHtml failed", response.status);
             });
+          },
+          "saveBuild" : function(target, contents) {
+            return simplyRawApi.putRaw(target, {}, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("saveBuild failed", response.status);
+            });
           }
         };
         /* End of Data API */
@@ -2367,6 +2484,39 @@
                   return 'name';
               }
             },
+            "build" : function(builderTemplate, data) {
+              var build = builderTemplate;
+              let replacements = {
+                "actions" : editor.transformers.simplyPreviewActions.render(data.actions ?? []),
+                "commands" : editor.transformers.simplyPreviewCommands.render(data.commands ?? []),
+                "dataApi" : editor.transformers.simplyPreviewDataApi.render(data.dataApi ?? []),
+                "rawApi" : editor.transformers.simplyPreviewRawApi.render(data.rawApi ?? []),
+                "routes" : editor.transformers.simplyPreviewRoutes.render(data.routes ?? []),
+                "dataSources" : editor.transformers.simplyPreviewDataSources.render(data.dataSources ?? []),
+                "transformers" : editor.transformers.simplyPreviewTransformers.render(data.transformers ?? []),
+                "sorters" : editor.transformers.simplyPreviewSorters.render(data.sorters ?? []),
+                "pageTemplates" :editor.transformers.simplyPreviewPageTemplates.render(data.pageTemplates ?? []),
+                "pageCss" : editor.transformers.simplyPreviewPageCss.render(data.pageCss ?? []),
+                "componentCss" : editor.transformers.simplyPreviewComponentCss.render(data.componentCss ?? []),
+                "componentTemplates" : editor.transformers.simplyPreviewComponentTemplates.render(data.componentTemplates ?? []),
+                "headHtml": editor.transformers.simplyPreviewHeadHtml.render(data.headHtml ?? []),
+                "footHtml": editor.transformers.simplyPreviewFootHtml.render(data.footHtml ?? []),
+                "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(data.bodyHtml ?? [])
+              };
+            
+              Object.keys(replacements).forEach(function(replacement) {
+                matches = build.match("(\\s*){{" + replacement + "}}");
+                if (matches) {
+                  let indentedNewline = matches[1];
+                  if (indentedNewline == '') {
+                    indentedNewline = "\n";
+                  }
+                  build = build.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, indentedNewline));
+                }
+              });
+            
+              return build;
+            },
             "browse" : function(path) {
               return simplyDataApi.browse(path)
                 .catch(function(error) {
@@ -2393,6 +2543,13 @@
                     },
                     {
                       item : {
+                        innerHTML : "Pages",
+                        href : "#pages",
+                        "data-path" : "pages"
+                      }
+                    },
+                    {
+                      item : {
                         innerHTML : "Page frame",
                         href : "#page-frame",
                         "data-path" : "page-frame"
@@ -2400,9 +2557,9 @@
                     },
                     {
                       item : {
-                        innerHTML : "Pages",
-                        href : "#pages",
-                        "data-path" : "pages"
+                        innerHTML : "Builders",
+                        href : "#builders",
+                        "data-path" : "builders"
                       }
                     }
                   ]
@@ -2440,6 +2597,41 @@
             },
             "listBaseComponents" : function() {
               return simplyDataApi.listBaseComponents()
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "deleteBuilder" : function(component) {
+              return simplyDataApi.deleteBuilder(component);
+            },
+            "getBuilder" : function(component) {
+              return simplyDataApi.getBuilder(component);
+            },
+            "saveBuilder" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) { 
+                  promises.push(simplyDataApi.saveBuilderPart(component.id, name, component.parts[name]));
+                } else {
+                  editor.pageData.parts.forEach(function(part) {
+                    if (part.id == name) {
+                      promises.push(simplyDataApi.deleteBuilderPart(component.id, name));
+                    }
+                  });
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.saveBuilderPart(meta.id, "meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "listBuilders" : function() {
+              return simplyDataApi.listBuilders()
                 .catch(function(error) {
                 return [];
               });
@@ -2552,6 +2744,27 @@
                 appData.pageFrame = frame;
               })
               .then(function() {
+                return simplyApp.actions.listBuilders()
+                .then(function(builders) {
+                  builders.forEach(function(builder) {
+                    builder.contents.forEach(function(part) {
+                      if (part.id == "meta") {
+                        return;
+                      };
+            
+                      if (typeof appData[part.id] === "undefined") {
+                        appData[part.id] = [];
+                      }
+                      parts = JSON.parse(part.contents);
+                      parts.forEach(function(entry) {
+                        entry.base = builder.id;
+                        appData[part.id].push(entry);
+                      });
+                    });
+                  });
+                });
+              })
+              .then(function() {
                 var promises = [
                   simplyApp.actions.listBaseComponents(),
                   simplyApp.actions.listComponents(),
@@ -2657,6 +2870,9 @@
             },
             "saveAppHtml" : function(appHtml) {
               return simplyDataApi.saveAppHtml(appHtml);
+            },
+            "saveBuild" : function(target, contents) {
+              return simplyDataApi.saveBuild(target, contents);
             }
           },
           /* /Actions */
@@ -2769,6 +2985,9 @@
             "addBodyHtml" : function(el) {
               editor.pageData.component.parts.bodyHtml.push({});
             },
+            "addBuilderTemplate" : function(el) {
+              editor.pageData.component.parts.builderTemplates.push({});
+            },
             "addCommand" : function(el) {
               editor.pageData.component.parts.commands.push({});
             },
@@ -2815,7 +3034,7 @@
               if (!confirm("Delete this?")) {
                 return;
               }
-              el.dataBinding.config.data.deleted = true;
+              el.dataBinding.config.data.deleted = "true";
             },
             "initEditors" : function(el) {
               if (el.parentNode.hasAttribute("open")) {
@@ -2905,6 +3124,44 @@
                 document.location.hash="base/" + newComponent.id;
               });
             },
+            "deleteBuilder" : function() {
+              if (!confirm("Delete builder?")) {
+                return;
+              }
+              simplyApp.actions.deleteBuilder(
+                editor.pageData.component.id
+              )
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder deleted.",
+                  "state" : "new"
+                });
+                document.location.hash="builders/";
+              });
+            },
+            "saveBuilder" : function() {
+              simplyApp.actions.saveBuilder(editor.pageData.component)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "createBuilder" : function() {
+              var newComponent = editor.pageData.newComponent;
+              simplyApp.actions.saveBuilder(newComponent)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder created.",
+                  "state" : "new"
+                });
+                document.location.hash="builders/" + newComponent.id;
+              });
+            },
             "deleteComponent" : function() {
               if (!confirm("Delete component?")) {
                 return;
@@ -2991,17 +3248,34 @@
                 document.location.hash="pages/" + newComponent.id;
               });
             },
+            "runBuilders" : async function() {
+              var appData = await simplyApp.actions.getAppData();
+              appData.builderTemplates.forEach(function(builderTemplate) {
+                let buildContents = simplyApp.actions.build(builderTemplate.code, appData);
+                simplyApp.actions.saveBuild("dist/" + builderTemplate.base + "/" + builderTemplate.builder, buildContents)
+                .then(function() {
+                  editor.pageData.alerts.unshift({
+                    "data-simply-template" : "info",
+                    "message" : builderTemplate.base + "/" + builderTemplate.builder + " published!",
+                    "state" : "new"
+                  });
+                });
+              });
+            }   ,
             "saveAppHtml" : function() {
               var appHtml = document.querySelector(".simplycode-preview-code").innerText;
               appHtml = appHtml.replaceAll(/^(\n)+/g, '');
               appHtml = appHtml.replaceAll(/(\n)+/g, '\n');
               simplyApp.actions.saveAppHtml(appHtml)
-                .then(function() {
+              .then(function() {
                 editor.pageData.alerts.unshift({
                   "data-simply-template" : "info",
                   "message" : "App published!",
                   "state" : "new"
                 });
+              })
+              .then(function() {
+                simplyApp.commands.runBuilders();
               });
             }
           },
@@ -3117,6 +3391,44 @@
                 editor.pageData.page = "Edit base component";
               });
             },
+            "#builders/:component" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getBuilder(params.component);
+              })
+                .then(function(parts) {
+                var component = {
+                  id : params.component
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = params.component;
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {
+                    builderTemplates : []
+                  };
+                }
+                var count = {};
+                parts.forEach(function(part) {
+                  component.parts[part.id] = JSON.parse(part.contents);
+                  count[part.id] = component.parts[part.id].length;
+                });
+                editor.pageData.component = component;
+                editor.pageData.parts = parts;
+                editor.pageData.count = count;
+                editor.pageData.page = "Edit builder";
+              });
+            },
             "#components/:component" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3214,6 +3526,13 @@
                 .then(function(components) {
                 editor.pageData.components = components;
                 editor.pageData.page = "Base components";
+              });
+            },
+            "#builders" : function() {
+              simplyApp.actions.listBuilders()
+                .then(function(components) {
+                editor.pageData.components = components;
+                editor.pageData.page = "Builders";
               });
             },
             "#components" : function() {
@@ -3331,6 +3650,16 @@
         </template>
       </ul>
     </div>
+    <!-- Toast catchall -->
+    <script>
+      window.onerror = function(errorMessage, url, line) {
+        editor.pageData.alerts.unshift({
+          "data-simply-template" : "error",
+          "message" : errorMessage, 
+          "state" : "new"
+        });
+      }
+    </script>
     <!-- Toast styles -->
     <style>
       .simply-toasts {
@@ -3417,6 +3746,44 @@
               <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
                 <simply-render rel="componentHtmlValidator"></simply-render>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentBuilderTemplate">
+      <details class="simplycode-component">
+      <summary data-simply-command="initEditors" title="These templates are used as a boilerplate to build your project.">
+        <span data-simply-field="count.builderTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
+          Builder HTML template
+        </span>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addBuilderTemplate">Add builder HTML template</button>
+        </span>
+      </summary>
+      <div class="simplycode-code-method" data-simply-list="component.parts.builderTemplates">
+        <template>
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="builder" placeholder="Builder name">
+                <label class="simplycode-tab">
+                  <input type="radio" name="builderEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+              </div>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+                <template data-simply-template="code">
+                  <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Builder contents</div></main>"></textarea>
+                </template>
               </div>
             </div>
           </div>
@@ -4299,6 +4666,36 @@
       Publish
     </button>
     </template>
+    <template id="simply-toolbar-builder">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button class="ds-button simply-toolbar-button" data-simply-command="saveBuilder">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="deleteBuilder">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
     <template id="simply-toolbar-component">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4450,8 +4847,9 @@
     </button>
     </template>
     <template id="simply-toolbar">
-      <nav class="simply-toolbar simply-main-toolbar" data-simply-field="page" data-simply-section="simply-code-management" data-simply-content="template" data-simply-default-template="default" data-simply-default-value="default">
+      <nav class="simply-toolbar simply-toolbar-main" data-simply-field="page" data-simply-section="simply-code-management" data-simply-content="template" data-simply-default-template="default" data-simply-default-value="default">
       <template data-simply-template="default" rel="simply-toolbar-default"></template>
+      <template data-simply-template="Edit builder" rel="simply-toolbar-builder"></template>
       <template data-simply-template="Edit page" rel="simply-toolbar-page"></template>
       <template data-simply-template="Edit component" rel="simply-toolbar-component"></template>
       <template data-simply-template="Edit base component" rel="simply-toolbar-base-component"></template>
@@ -4511,6 +4909,45 @@
         </div>
       </div>
     </main>
+    </template>
+    <template data-simply-template="Edit builder">
+      <main>
+      <div class="simplycode-header">
+        <h1>Edit builder: <span data-simply-field="component.id"></span></h1>
+      </div>
+      <simply-render rel="componentDescription"></simply-render>
+      <simply-render rel="componentBuilderTemplate"></simply-render>
+    </main>
+    </template>
+    <template data-simply-template="Builders">
+      <main>
+      <h1>Builders</h1>
+      <div class="simplycode-component-list" data-simply-list="components">
+        <template>
+          <a class="simplycode-component-list-item" data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="builderLink">
+            <h3 data-simply-field="id"></h3>
+            <p class="ds-margin-up" data-simply-field="description"></p>
+          </a>
+        </template>
+      </div>
+      <h1>Add builder</h1>
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+          </div>
+          <div class="simplycode-options">
+            <button class="simplycode-button" data-simply-command="createBuilder">Create</button>
+          </div>
+        </div>
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
+            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+    
     </template>
     <template data-simply-template="Edit component">
       <main>
@@ -5038,6 +5475,18 @@
             return this.simplyData;
           }
         },
+        "builderLink" : {
+          render : function(data) {
+            this.simplyData = data;
+            return {
+              href : "#builders/" + data,
+              innerHTML: data
+            };
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
         "componentLink" : {
           render : function(data) {
               this.simplyData = data;
@@ -5126,6 +5575,12 @@
             var newname = event.data.arguments[1];
             var oldname = event.data.arguments[2];
     
+            if (typeof editor.pageData.app === "undefined") {
+              editor.pageData.app = {};
+            }
+            if (typeof editor.pageData.app[component] === "undefined") {
+              editor.pageData.app[component] = [];
+            }
             editor.pageData.app[component].forEach(function(appPart) {
               if (appPart[componentNameField] == oldname) {
                 appPart[componentNameField] = newname;
@@ -5139,7 +5594,10 @@
           autoRunPreviewTimeout = window.setTimeout(function() {
             // Update the app data for the preview
             for (component in editor.pageData.component.parts) {
-              if (!editor.pageData.app[component]) {
+              if (typeof editor.pageData.app === "undefined") {
+                editor.pageData.app = {};
+              }
+              if (typeof editor.pageData.app[component] === "undefined") {
                 editor.pageData.app[component] = [];
               }
               var componentNameField = simplyApp.actions.getComponentNameField(component);
