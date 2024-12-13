@@ -22,6 +22,14 @@ installSimplyEdit() {
     cp -a "${sSourceDir}/simply/"* "${sTargetDir}/simply"
 }
 
+installSimplyView() {
+    local sSourceDir sTargetDir
+
+    readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplyview"
+    readonly sTargetDir="${npm_config_local_prefix}/simplycode"
+    cp -a "${sSourceDir}/dist/simply.everything.js"* "${sTargetDir}/js/simply.everything.js"
+}
+
 installCodeMirror() {
     sSourceDir="${npm_config_local_prefix}/node_modules"
     sTargetDir="${npm_config_local_prefix}/simplycode/js"
@@ -55,10 +63,12 @@ installSimplyCode() {
 
 if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
     export -f installSimplyEdit
+    export -f installSimplyView
     export -f installCodeMirror
     export -f installSimplyCode
 else
     installSimplyEdit
+    installSimplyView
     installCodeMirror
     installSimplyCode
     exit $?
