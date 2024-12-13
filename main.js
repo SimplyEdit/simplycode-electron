@@ -284,6 +284,11 @@ app.whenReady().then(() => {
                               'content-type' : 'image/svg+xml'
                             }
                         }
+                        if (componentName.match(/\.js$/)) {
+                            headers = {
+                              'content-type' : 'text/javascript'
+                            }
+                        }
                         return new Response(filestuff, {
                             headers: headers
                         })
@@ -380,6 +385,11 @@ app.whenReady().then(() => {
                     if (componentName.match(/\.svg$/)) {
                         headers = {
                           'content-type' : 'image/svg+xml'
+                        }
+                    }
+                    if (componentName.match(/\.js$/)) {
+                        headers = {
+                          'content-type' : 'text/javascript'
                         }
                     }
                     if(fs.existsSync(target)) {
