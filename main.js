@@ -39,7 +39,7 @@ const createWindow = () => {
       }
     });
     codeWindow.setMenu(defaultMenu);
-    codeWindow.loadURL('simplycode://index.html')
+    codeWindow.loadURL('app.simplycode://index.html')
     codeWindow.on('close', function() {
       codeWindow = false;
     });
@@ -60,7 +60,7 @@ const createTestWindow = () => {
         allowRunningInsecureContent : true
       }
     })
-    codeWindow.loadURL('simplycode://index.html/tests/triplebinding/index.html')
+    codeWindow.loadURL('app.simplycode://index.html/tests/triplebinding/index.html')
     codeWindow.on('close', function() {
       codeWindow = false;
     });
@@ -69,7 +69,7 @@ const createTestWindow = () => {
 const createSecondWindow = (dataDir) => {
     if (appWindow) {
       appWindow.focus();
-      appWindow.loadURL('simplyapp://generated.html')
+      appWindow.loadURL('app.simplyapp://generated.html')
       return;
     }
     appWindow = new BrowserWindow({
@@ -113,7 +113,7 @@ const createSecondWindow = (dataDir) => {
       }
     });
     appWindow.setMenu(menu);
-    appWindow.loadURL('simplyapp://generated.html')
+    appWindow.loadURL('app.simplyapp://generated.html')
     appWindow.on('close', function() {
       appWindow = false;
     });
@@ -178,7 +178,7 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 
 protocol.registerSchemesAsPrivileged([
     {
-      scheme: 'simplycode',
+      scheme: 'app.simplycode',
       privileges: {
         standard: true,
         secure: true,
@@ -186,7 +186,7 @@ protocol.registerSchemesAsPrivileged([
       }
     },
     {
-      scheme: 'simplyapp',
+      scheme: 'app.simplyapp',
       privileges: {
         standard: true,
         secure: true,
@@ -216,9 +216,9 @@ async function createComponentFile(componentPath, filecontent){
 app.whenReady().then(() => {
     if (require('electron-squirrel-startup') === true) app.quit(); // prevents Squirrel.Windows from launching your app multiple times during the installation/updating/uninstallation.
 
-    protocol.handle('simplycode', (request) => {
+    protocol.handle('app.simplycode', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log('[simplycode://]' + componentPath)
+        console.log('[app.simplycode://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
@@ -329,9 +329,9 @@ app.whenReady().then(() => {
         }
     })
 
-    protocol.handle('simplyapp', (request) => {
+    protocol.handle('app.simplyapp', (request) => {
         let componentPath = new URL(request.url).pathname
-        console.log('[simplyapp://]' + componentPath)
+        console.log('[app.simplyapp://]' + componentPath)
         if(componentPath.endsWith('\/')){
             componentPath = componentPath.substring(0, (componentPath.length - 1))
         }
