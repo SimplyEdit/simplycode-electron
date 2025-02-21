@@ -44,7 +44,8 @@
     "electron-squirrel-startup": "^1.0.1",
     "codemirror": "5.65.2",
     "simplyedit": "github:simplyedit/simplyedit",
-    "simplycode": "github:simplyedit/simplycode"
+    "simplycode": "github:simplyedit/simplycode",
+    "simplyview": "github:simplyedit/simplyview"
   },
   "config": {
     "forge": "forge.config.js"
