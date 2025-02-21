@@ -41,10 +41,11 @@
     "electron-installer-dmg": "^4.0.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1",
     "codemirror": "5.65.2",
+    "electron-squirrel-startup": "^1.0.1",
+    "simplycode": "github:simplyedit/simplycode",
     "simplyedit": "github:simplyedit/simplyedit",
-    "simplycode": "github:simplyedit/simplycode"
+    "simplyview": "github:simplyedit/simplyview"
   },
   "config": {
     "forge": "forge.config.js"
