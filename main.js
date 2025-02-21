@@ -157,6 +157,41 @@ function readRecursive(componentPath) {
     }
 }
 
+function readDataRecursive(componentPath) { 
+    if(componentPath.endsWith('\/')){
+        componentPath = componentPath.substring(0, (componentPath.length - 1))
+    }
+    const pathicles = componentPath.split('\/');
+    if (pathicles[0] == ''){
+        pathicles.shift()
+    }
+    const componentName = pathicles.pop();
+    const componentDirectory = pathicles.join('/');
+
+    var target = dataDir + componentDirectory + '\/' + componentName;
+
+    if (fs.lstatSync(target).isDirectory()) {
+        const files = fs.readdirSync(target);
+        const result = [];
+        files.forEach((file) => {
+            if (file !== '.' && file !== '..' && !file.startsWith('.')) {
+                let entries = readDataRecursive(componentPath + '\/' + file);
+                let ctime = fs.lstatSync(target + '\/' + file).ctime;
+                let data = {
+                     "id" : file,
+                     "ctime" : ctime,
+                     "ctime-human" : new Date(ctime).toISOString(),
+                     ...entries
+                }
+                result.push(data);
+            }
+        });
+        return result;
+    } else {
+        return JSON.parse(fs.readFileSync(target, 'utf8'));
+    }
+}
+
 function guid() {
      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0,
@@ -345,75 +380,120 @@ app.whenReady().then(() => {
             pathicles.shift()
         }
         let componentDirectory = pathicles.join('/');
-     
-        switch (request.method){
-            case 'OPTIONS':
-                if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                    return new Response('"ok"', { status: 200})
-                } else {
-                    return new Response('"Not found"', { status: 404})
-                }
-            break
-            case 'DELETE':
-                if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
-                    fs.rmSync((dataDir + componentDirectory + "/" + componentName), { recursive: true, force: true })
-                    return new Response('"deleted"', { status: 200})
-                } else {
-                    return new Response('"Not found"', { status: 404})
-                }         
-            break
-            case 'PUT':
-                return createComponentDirectory(componentDirectory)
-                    .then(createComponentFile(componentDirectory + "/" + componentName, request))
-                    .then(function() { return new Response('"ok"', { status: 200})})
-                    .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
-            break
-            default:
-                if(componentPath.endsWith('\/')){
-                    componentPath = componentPath.substring(0, (componentPath.length - 1))
-                } 
 
-                if (!componentPath || componentPath === "/") {
-                    const filestuff = fs.readFileSync(dataDir + '/generated.html')
-                    return new Response(filestuff, {
-                        // headers: { 'content-type': 'text/html' }
-                    })
+        if(pathicles[0] === "data") {
+            pathicles.shift();
+            componentDirectory = pathicles.join('/');
 
-                } else {
-                    var target = dataDir + componentDirectory + '\/' + componentName;
-                    let headers = {};
-                    if (componentName.match(/\.svg$/)) {
-                        headers = {
-                          'content-type' : 'image/svg+xml'
-                        }
-                    }
-                    if (componentName.match(/\.js$/)) {
-                        headers = {
-                          'content-type' : 'text/javascript'
-                        }
-                    }
-                    if(fs.existsSync(target)) {
-                        const filestuff = fs.readFileSync(target)
-                        return new Response(filestuff, {
-                            headers: headers
-                        })
+            switch (request.method){
+                case 'OPTIONS':
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        return new Response('"ok"', { status: 200})
                     } else {
-                        if (
-                            (componentPath.indexOf("/js/simply") === 0) ||
-                            (componentPath.indexOf("/simply") === 0) ||
-                            (componentPath.indexOf("/assets") === 0) ||
-                            (componentPath.indexOf("/hope") === 0)
-                        ) {
-                            const filestuff = fs.readFileSync(__dirname + '/simplycode/' + componentDirectory + '\/' + componentName)
+                        return new Response('"Not found"', { status: 404})
+                    }
+                break
+                case 'DELETE':
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        fs.rmSync((dataDir + componentDirectory + "/" + componentName), { recursive: true, force: true })
+                        return new Response('"deleted"', { status: 200})
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }         
+                break
+                case 'POST':
+                    const newId = guid();
+                    return createComponentDirectory(componentDirectory + "/" + componentName)
+                        .then(createComponentFile(componentDirectory + "/" + componentName + "/" + newId, request))
+                        .then(function() { return new Response(JSON.stringify(newId), { status: 201})})
+                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+                break
+                case 'PUT':
+                    return createComponentDirectory(componentDirectory)
+                        .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                        .then(function() { return new Response('"ok"', { status: 200})})
+                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+                break
+                case 'GET':
+                default:
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        const filestuff = readDataRecursive(componentDirectory + "/" + componentName)
+                        return new Response(JSON.stringify(filestuff), {})
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
+                break
+            }
+        } else {
+            switch (request.method){
+                case 'OPTIONS':
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        return new Response('"ok"', { status: 200})
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }
+                break
+                case 'DELETE':
+                    if(fs.existsSync(dataDir + componentDirectory + "/" + componentName)){
+                        fs.rmSync((dataDir + componentDirectory + "/" + componentName), { recursive: true, force: true })
+                        return new Response('"deleted"', { status: 200})
+                    } else {
+                        return new Response('"Not found"', { status: 404})
+                    }         
+                break
+                case 'PUT':
+                    return createComponentDirectory(componentDirectory)
+                        .then(createComponentFile(componentDirectory + "/" + componentName, request))
+                        .then(function() { return new Response('"ok"', { status: 200})})
+                        .catch(function(){ return new Response('"something went wrong"', { status : 500 })}) // @TODO : return the error code 
+                break
+                default:
+                    if(componentPath.endsWith('\/')){
+                        componentPath = componentPath.substring(0, (componentPath.length - 1))
+                    } 
+
+                    if (!componentPath || componentPath === "/") {
+                        const filestuff = fs.readFileSync(dataDir + '/generated.html')
+                        return new Response(filestuff, {
+                            // headers: { 'content-type': 'text/html' }
+                        })
+
+                    } else {
+                        var target = dataDir + componentDirectory + '\/' + componentName;
+                        let headers = {};
+                        if (componentName.match(/\.svg$/)) {
+                            headers = {
+                              'content-type' : 'image/svg+xml'
+                            }
+                        }
+                        if (componentName.match(/\.js$/)) {
+                            headers = {
+                              'content-type' : 'text/javascript'
+                            }
+                        }
+                        if(fs.existsSync(target)) {
+                            const filestuff = fs.readFileSync(target)
                             return new Response(filestuff, {
                                 headers: headers
                             })
+                        } else {
+                            if (
+                                (componentPath.indexOf("/js/simply") === 0) ||
+                                (componentPath.indexOf("/simply") === 0) ||
+                                (componentPath.indexOf("/assets") === 0) ||
+                                (componentPath.indexOf("/hope") === 0)
+                            ) {
+                                const filestuff = fs.readFileSync(__dirname + '/simplycode/' + componentDirectory + '\/' + componentName)
+                                return new Response(filestuff, {
+                                    headers: headers
+                                })
+                            }
+                            return new Response("Not found", {"status" : 404})
                         }
-                        return new Response("Not found", {"status" : 404})
-                    }
-                }    
-            break    
-            }     
+                    }    
+                break    
+            }
+        }
     })
 
     if (!process.argv[0].match(/electron$/) && process.argv[1]) {
