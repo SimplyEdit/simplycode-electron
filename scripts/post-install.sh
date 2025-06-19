@@ -27,7 +27,7 @@ installSimplyView() {
 
     readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplyview"
     readonly sTargetDir="${npm_config_local_prefix}/simplycode"
-    cp -a "${sSourceDir}/dist/simply.everything.js"* "${sTargetDir}/js/simply.everything.js"
+    cp -a "${sSourceDir}/dist/simply.everything.js" "${sTargetDir}/js/simply.everything.js"
 }
 
 installCodeMirror() {
