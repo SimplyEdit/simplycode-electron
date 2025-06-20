@@ -1158,7 +1158,7 @@ properties for a given parent, keep seperate index for this?
                     subkeyboard = "default";
                 } else {
                     keyboard = keyboard + ".";
-                    subkeyboard = keyboard.replace(/\.$/, "");
+                    subkeyboard = keyboard;
                 }
                 for (var j=0; j<separators.length; j++) {
                     key = eventName.join(separators[j]);
