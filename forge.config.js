@@ -16,6 +16,9 @@ module.exports = {
       platforms: ['darwin'],
       config: {
         bin: 'simplycode',
+        options: {
+          icon: '/simplycode/assets/icons/icon.icns'
+        }
       },
     },
     {
