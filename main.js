@@ -23,7 +23,8 @@ const createWindow = () => {
         webSecurity: false,
         allowRunningInsecureContent : true
       },
-      icon: path.join(__dirname, 'simplycode/assets/icons/icon')
+      icon: path.join(__dirname, '/simplycode/camil_512x512.png')
+
     })
 
     let defaultMenu = Menu.getApplicationMenu();
