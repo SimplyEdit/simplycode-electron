@@ -17,7 +17,7 @@ module.exports = {
       config: {
         bin: 'simplycode',
         options: {
-          icon: '/simplycode/assets/icons/icon.icns'
+          icon: './simplycode/assets/icons/icon.icns'
         }
       },
     },
