@@ -23,7 +23,7 @@ const createWindow = () => {
         webSecurity: false,
         allowRunningInsecureContent : true
       },
-      icon: './simplycode/assets/icons/icon'
+      icon: path.join(__dirname, 'simplycode/assets/icons/icon')
     })
 
     let defaultMenu = Menu.getApplicationMenu();

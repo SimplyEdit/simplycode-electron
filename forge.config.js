@@ -16,9 +16,7 @@ module.exports = {
       platforms: ['darwin'],
       config: {
         bin: 'simplycode',
-        options: {
-          icon: './simplycode/assets/icons/icon.icns'
-        }
+        icon: path.join(__dirname,  'simplycode/assets/icons/icon.icns')
       },
     },
     {
