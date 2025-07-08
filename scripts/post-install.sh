@@ -34,7 +34,7 @@ installSimplyCode() {
     local sSourceDir sTargetDir
 
     readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplycode"
-    readonly sTargetDir="${npm_config_local_prefix}/simplycode/js"
+    readonly sTargetDir="${npm_config_local_prefix}/simplycode"
 
     cp -a  "${sSourceDir}/assets" "${sTargetDir}"
     cp -f  "${sSourceDir}/generated.html" "${sTargetDir}/index.html"
