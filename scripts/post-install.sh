@@ -69,7 +69,7 @@ installQunit() {
         "${sTargetDir}/qunit/"
 
     cp -f "${sSourceDir}/qunit/qunit/qunit.js"* "${sTargetDir}/qunit/qunit.js"
-    cp -f "${sSourceDir}/qunit/qunit/qunit.js"* "${sTargetDir}/qunit/qunit.css"
+    cp -f "${sSourceDir}/qunit/qunit/qunit.css"* "${sTargetDir}/qunit/qunit.css"
 }
 
 if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
