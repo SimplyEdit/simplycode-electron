@@ -16,7 +16,8 @@ module.exports = {
       platforms: ['darwin'],
       config: {
         bin: 'simplycode',
-      },
+        icon: path.join(__dirname, './simplycode/assets/icons/icon.icns')
+      }
     },
     {
       name: '@electron-forge/maker-deb',
@@ -46,5 +47,8 @@ module.exports = {
         prerelease: true
       }
     }
-  ]
+  ],
+  packagerConfig: {
+    icon:  path.join(__dirname, './simplycode/assets/icons/icon.icns')
+  }
 }
