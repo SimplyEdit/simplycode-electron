@@ -15,7 +15,7 @@ installSimplyEdit() {
     mkdir -p \
         "${sTargetDir}/js/" \
         "${sTargetDir}/hope/" \
-        "${sTargetDir}/simply/" \
+        "${sTargetDir}/simply/"
 
     cp -a "${sSourceDir}/js/"* "${sTargetDir}/js"
     cp -a "${sSourceDir}/hope/"* "${sTargetDir}/hope"
@@ -28,6 +28,16 @@ installSimplyView() {
     readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplyview"
     readonly sTargetDir="${npm_config_local_prefix}/simplycode"
     cp -a "${sSourceDir}/dist/simply.everything.js" "${sTargetDir}/js/simply.everything.js"
+}
+
+installSimplyCode() {
+    local sSourceDir sTargetDir
+
+    readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplycode"
+    readonly sTargetDir="${npm_config_local_prefix}/simplycode"
+
+    cp -a  "${sSourceDir}/assets" "${sTargetDir}"
+    cp -f  "${sSourceDir}/generated.html" "${sTargetDir}/index.html"
 }
 
 installCodeMirror() {
@@ -51,14 +61,15 @@ installCodeMirror() {
     cp -f "${sSourceDir}/codemirror/theme/base16-dark.css" "${sTargetDir}/codemirror/theme/base16-dark.css"
 }
 
-installSimplyCode() {
-    local sSourceDir sTargetDir
+installQunit() {
+    sSourceDir="${npm_config_local_prefix}/node_modules"
+    sTargetDir="${npm_config_local_prefix}/simplycode/js"
 
-    readonly sSourceDir="${npm_config_local_prefix}/node_modules/simplycode"
-    readonly sTargetDir="${npm_config_local_prefix}/simplycode"
+    mkdir -p \
+        "${sTargetDir}/qunit/"
 
-    cp -a  "${sSourceDir}/assets" "${sTargetDir}"
-    cp -f  "${sSourceDir}/generated.html" "${sTargetDir}/index.html"
+    cp -f "${sSourceDir}/qunit/qunit/qunit.js"* "${sTargetDir}/qunit/qunit.js"
+    cp -f "${sSourceDir}/qunit/qunit/qunit.css"* "${sTargetDir}/qunit/qunit.css"
 }
 
 if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
@@ -69,7 +80,8 @@ if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
 else
     installSimplyEdit
     installSimplyView
-    installCodeMirror
     installSimplyCode
+    installCodeMirror
+    installQunit
     exit $?
 fi
