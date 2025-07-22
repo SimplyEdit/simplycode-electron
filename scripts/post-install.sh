@@ -5,7 +5,6 @@ if [[ ${INIT_CWD} != ${current_pwd} ]]; then
   exit 0; # Skip posinstall when we are installed as a dependancy
 fi
 
-
 installSimplyEdit() {
     local sSourceDir sTargetDir
 
@@ -41,6 +40,8 @@ installSimplyCode() {
 }
 
 installCodeMirror() {
+    local sSourceDir sTargetDir
+
     sSourceDir="${npm_config_local_prefix}/node_modules"
     sTargetDir="${npm_config_local_prefix}/simplycode/js"
 
@@ -62,6 +63,8 @@ installCodeMirror() {
 }
 
 installQunit() {
+    local sSourceDir sTargetDir
+
     sSourceDir="${npm_config_local_prefix}/node_modules"
     sTargetDir="${npm_config_local_prefix}/simplycode/js"
 
@@ -77,6 +80,7 @@ if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
     export -f installSimplyView
     export -f installCodeMirror
     export -f installSimplyCode
+    export -f installQunit
 else
     installSimplyEdit
     installSimplyView
