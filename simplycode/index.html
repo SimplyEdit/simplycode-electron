@@ -6,144 +6,820 @@
     <style>
       /* extra */
       @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
+      /* style */
+      /* ds-alert-root */
+      :root {
+        --ds-alert-text-color: var(--ds-black);
+        --ds-alert-error-color: var(--ds-error-color);
+        --ds-alert-warning-color: var(--ds-warning-color);
+        --ds-alert-info-color: var(--ds-info-color);
+      }
+      /* ds-alert */
+      .ds-alert {
+        padding: 0.05px; /* contain child margins */
+        color: var(--ds-alert-text-color);
+      }
+      @supports (display: flow-root) {
+        .ds-alert {
+          display: flow-root;
+          padding: 0;
+        }
+      }
+      .ds-alert-error {
+        background-color: var(--ds-alert-error-color);
+      }
+      .ds-alert-warning {
+        background-color: var(--ds-alert-warning-color);
+      }
+      .ds-alert-info {
+        background-color: var(--ds-alert-info-color);
+      }
+      /* ds-align */
+      .ds-align-center {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .ds-align-center-middle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ds-align-right {
+        float: right;
+      }
+      .ds-align-left {
+        float: left;
+      }
+      /* ds-background-root */
+      :root {
+        --ds-background-dark-text-color: white;
+        --ds-background-dark-shadow-color: var(--ds-black);
+        --ds-background-dark-shadox-size: 2px;
+        --ds-background-dark-shadow-offset: 0 0;
+      
+        --ds-background-light-text-color: var(--ds-color);
+        --ds-background-light-shadow-color: white;
+        --ds-background-light-shadox-size: 3px;
+        --ds-background-light-shadow-offset: 0 0;
+      }
+      
+      :root {
+        --ds-background-dark-text-shadow: var(--ds-background-dark-shadow-offset) var(--ds-background-dark-shadow-size) var(--ds-background-dark-shadow-color);
+        --ds-background-light-text-shadow: var(--ds-background-light-shadow-offset) var(--ds-background-light-shadow-size) var(--ds-background-light-shadow-color);
+      }
+      
+      /* ds-background */
+      .ds-background-dark {
+        color: var(--ds-background-dark-text-color);
+        text-shadow: var(--ds-background-dark-text-shadow);
+      }
+      .ds-background-light {
+        color: var(--ds-background-light-text-color);
+        text-shadow: var(--ds-background-light-text-shadow);
+      }
+      /* ds-background-image */
+      .ds-background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+      /* ds-box-root */
+      :root {
+        --ds-box-radius: 3px;
+        --ds-box-shadow: var(--ds-shadow-small);
+      }
+      /* ds-box */
+      .ds-box {
+        border-radius: var(--ds-box-radius);
+        box-shadow: var(--ds-box-shadow);
+        position: relative;
+        break-inside: avoid;
+      }
+      @supports (display: flow-root) {
+        .ds-box {
+          display: flow-root;
+          padding: 0;
+        }
+      }
+      .ds-box-top {
+        border-top-left-radius: var(--ds-box-radius);
+        border-top-right-radius: var(--ds-box-radius);
+      }
+      .ds-box-bottom {
+        border-bottom-left-radius: var(--ds-box-radius);
+        border-bottom-right-radius: var(--ds-box-radius);
+      }
+      
+      /* ds-button-root */
+      :root {
+        --ds-button-spacing: calc(0.5 * var(--ds-input-spacing));
+        --ds-button-bg-color: var(--ds-grey-light);
+        --ds-button-default-bg-color: var(--ds-white);
+        --ds-button-border-color: var(--ds-grey-light);
+        --ds-button-disabled-color: var(--ds-grey-medium);
+        --ds-button-disabled-bg-color: var(--ds-white);
+        --ds-button-primary-bg-color: var(--ds-primary);
+        --ds-button-primary-color: var(--ds-primary-contrast);
+        --ds-button-primary-border-color: var(--ds-primary);
+        --ds-button-line-height: calc(var(--ds-line-height) * 1.5);
+        --ds-button-shadow: var(--ds-shadow-tiny);
+        --ds-button-shadow-hover: var(--ds-shadow-small);
+        --ds-button-radius: 3px;
+      }
+      /* ds-button */
+      :root .ds-button {
+        line-height: var(--ds-button-line-height);
+        min-height: var(--ds-button-line-height);
+      }
+      .ds-button {
+        margin: 0 var(--ds-button-spacing) var(--ds-button-spacing) 0;
+        overflow: visible;
+        font: inherit;
+        color: inherit;
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 0 calc(0.5 * var(--ds-line-height));
+        vertical-align: middle;
+        font-size: calc(0.875 * var(--ds-font-size));
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        background-color: var(--ds-button-bg-color);
+        outline: 1px solid var(--ds-button-border-color);
+        border: 0;
+        white-space: nowrap;
+        box-shadow: var(--ds-button-shadow);
+        border-radius: var(--ds-button-radius);
+      }
+      .ds-button::-moz-focus-inner {
+        border: 0;
+      }
+      .ds-button:hover,
+      .ds-button:focus {
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: var(--ds-button-shadow-hover);
+      }
+      a.ds-button,
+      a.ds-button:hover,
+      a.ds-button:active,
+      a.ds-button:visited {
+        color: inherit;
+      }
+      .ds-button-default {
+        background-color: var(--ds-button-default-bg-color);
+      }
+      a.ds-button-primary, a.ds-button-primary:hover,
+      a.ds-button-primary:active, a.ds-button-primary:visited,
+      .ds-button-primary, .ds-button-primary:hover {
+        background-color: var(--ds-button-primary-bg-color);
+        color: var(--ds-button-primary-color);
+        border-color: var(--ds-button-primary-border-color);
+      }
+      a.ds-button-support, a.ds-button-support:hover,
+      a.ds-button-support:active, a.ds-button-support:visited,
+      .ds-button-support, .ds-button-support:hover {
+        background-color: var(--ds-button-support-bg-color);
+        color: var(--ds-button-support-color);
+        border-color: var(--ds-button-support-border-color);
+      }
+      .ds-button:disabled {
+        background-color: var(--ds-button-disabled-bg-color);
+        color: var(--ds-button-disabled-color);
+      }
+      .ds-button:disabled:hover {
+        cursor: not-allowed;
+        box-shadow: 0 0 0;
+      }
+      .ds-button-group {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .ds-button-light {
+        background: none;
+        outline: 0;
+        padding: 0;
+      }
+      .ds-button-naked {
+        background: none;
+        outline: 0;
+      }
+      .ds-button-close {
+        position: absolute;
+        right: var(--ds-spacing);
+        margin: 0;
+      }
+      
+      .ds-button-grow {
+        display: block;
+        width: 100%;
+      }
+      /* ds-bg */
+      .ds-bg-primary {
+        background: var(--ds-primary);
+        color: var(--ds-primary-contrast);
+        --ds-contrast: var(--ds-primary-contrast);
+      }
+      .ds-bg-primary-gradient {
+        background: var(--ds-primary-gradient);
+        color: var(--ds-primary-contrast);
+        --ds-contrast: var(--ds-primary-contrast);
+      }
+      .ds-bg-support {
+        background: var(--ds-support);
+        color: var(--ds-support-contrast);
+        --ds-contrast: var(--ds-support-contrast);
+      }
+      .ds-bg-support-gradient {
+        background: var(--ds-support-gradient);
+        color: var(--ds-support-contrast);
+        --ds-contrast: var(--ds-support-contrast);
+      }
+      .ds-bg-grey-dark {
+        background: var(--ds-grey-dark);
+        color: var(--ds-white);
+        --ds-contrast: var(--ds-white);
+      }
+      .ds-bg-grey-medium {
+        background: var(--ds-grey-medium);
+        color: var(--ds-white);
+        --ds-contrast: var(--ds-white);
+      }
+      .ds-bg-grey-light {
+        background: var(--ds-grey-light);
+        color: var(--ds-black);
+        --ds-contrast: var(--ds-black);
+      }
+      /* ds-color */
+      .ds-color {
+        display: flex;
+        text-align: center;
+        font-size: 0.8em;
+        align-items: center;
+        justify-content: center;
+      }
+      .ds-color-primary {
+        color: var(--ds-primary);
+      }
+      .ds-color-support {
+        color: var(--ds-support);
+      }
+      /* ds-contain */
+      .ds-contain {
+        padding: 0.05px; /* IE fallback */
+      }
+      @supports (display: flow-root) {
+        .ds-contain {
+          padding: 0;
+          display: flow-root;
+        }
+      }
+      /* ds-core-colors */
+      :root {
+        --ds-black: #000;
+        --ds-white: #FFF;
+      
+        --ds-primary: #ae47ff;
+        --ds-primary-light: #c880ff;
+        --ds-primary-dark: #8d00f8;
+        --ds-primary-bump: #b65cfc;
+        --ds-primary-contrast: var(--ds-white);
+        --ds-primary-gradient: linear-gradient( 180deg, var(--ds-primary), var(--ds-primary-dark) );
+        --ds-primary-gradient-bump: linear-gradient( 180deg, var(--ds-primary-bump), var(--ds-primary-light) 95%, var(--ds-primary-dark) 100%);
+      
+        --ds-support: #06CC06;
+        --ds-support-dark: #05BB05;
+        --ds-support-light: #07DE07;
+        --ds-support-contrast: #FFF;
+        --ds-support-gradient: linear-gradient( to left, var(--ds-support-light), var(--ds-support-dark) );
+        /* http://www.colorbox.io/#steps=11#hue_start=198#hue_end=198#hue_curve=linear#sat_start=15#sat_end=15#sat_curve=linear#sat_rate=130#lum_start=98#lum_end=0#lum_curve=easeOutQuad#lock_hex=eef1f8#minor_steps_map=0 */
+        --ds-grey-0: #eef1f8;
+        --ds-grey-5: #e9edf6;
+        --ds-grey-10: #e4eaf4;
+        --ds-grey-20: #dae2ed;
+        --ds-grey-30: #cdd7e3;
+        --ds-grey-40: #bdc8d4;
+        --ds-grey-50: #a8b4c0;
+        --ds-grey-60: #8f9ba6;
+        --ds-grey-70: #707c84;
+        --ds-grey-80: #4d565c;
+        --ds-grey-90: #262c2f;
+        --ds-grey-100: #000000;
+        --ds-grey-dark: var(--ds-grey-90);
+        --ds-grey-medium: var(--ds-grey-60);
+        --ds-grey-light: var(--ds-grey-0);
+      
+        --ds-error-color: rgb(253, 143, 143);
+        --ds-warning-color: #FFFFCC;
+        --ds-info-color: rgb(140, 180, 250);
+      }
+      /* ds-core-reset */
+      body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,p,blockquote,th,td {
+        margin:0; 
+        padding:0; 
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      /* ds-core-shadows */
+      :root {
+        --ds-shadow-light: rgba(0,0,0,0.07);
+        --ds-shadow-middle: rgba(0,0,0,0.09);
+        --ds-shadow-dark: rgba(0,0,0,0.11);
+        --ds-shadow-tiny: 
+          0 1px 1px var(--ds-shadow-dark)
+          ;
+        --ds-shadow-small: 
+          0 1px 1px var(--ds-shadow-dark),
+          0 2px 2px var(--ds-shadow-middle),
+          0 4px 4px var(--ds-shadow-light)
+          ;
+        --ds-shadow-medium: 
+          0 1px 1px var(--ds-shadow-middle),
+          0 2px 2px var(--ds-shadow-middle),
+          0 4px 4px var(--ds-shadow-middle),
+          0 6px 8px var(--ds-shadow-middle),
+          0 8px 16px var(--ds-shadow-middle)
+          ;
+        --ds-shadow-large: 
+          0 2px 1px var(--ds-shadow-light),
+          0 4px 2px var(--ds-shadow-light),
+          0 8px 4px var(--ds-shadow-light),
+          0 16px 8px var(--ds-shadow-light),
+          0 32px 16px var(--ds-shadow-light) 
+          ;
+      }
+      /* ds-core-typography */
+      @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;1,300&family=Roboto+Condensed:ital@0;1&display=swap');
+      :root {
+        --ds-body-font: 'Lato', sans-serif;
+        --ds-heading-font: 'Roboto Condensed', Helvetica, sans-serif;
+      }
+      :root {
+        --ds-font-size: 1rem;
+        --ds-font-weight: 300;
+        --ds-line-height: calc(1.6 * var(--ds-font-size));
+        --ds-color: var(--ds-black);
+        --ds-color-transparent: rgba(0,0,0,0);
+        --ds-contrast: var(--ds-grey-dark);
+        --ds-background: var(--ds-white);
+        --ds-background-transparent: rgba(255,255,255,0);
+        --ds-heading-weight: 400;
+        --ds-heading-multiplier: 1.27201965;
+        --ds-spacing: var(--ds-line-height);
+      }
+      /* ds-hidden */
+      .ds-hidden {
+        max-height: 0;
+        overflow: hidden;
+      }
+      /* ds-icon */
+      .ds-icon {
+        display: inline-block;
+        height: var(--ds-line-height);
+        width: 1em;
+        vertical-align: bottom;
+      }
+      
+      .ds-icon-feather {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: square;
+        stroke-linejoin: square;
+        fill: none;
+      }
+      /* ds-screen-size */
+      :root {
+        --ds-screen-size: tiny;
+      }
+      @media (min-width: 480px)  {
+        :root {
+          --ds-screen-size: small;
+        }
+      }
+      @media (min-width: 640px) {
+        :root {
+          --ds-screen-size: tablet;
+        }
+      }
+      @media (min-width: 992px) {
+        :root {
+          --ds-screen-size: medium;
+        }
+      }
+      @media (min-width: 1200px) {
+        :root {
+          --ds-screen-size: large;
+        }
+      }
+      @media (min-width: 1800px) {
+        :root {
+          --ds-screen-size: extra-large;
+        }
+      }
+      /* ds-shadow */
+      .ds-shadow-tiny {
+        box-shadow: var(--ds-shadow-tiny);
+      }
+      .ds-shadow-small {
+        box-shadow: var(--ds-shadow-small);
+      }
+      .ds-shadow-medium {
+        box-shadow: var(--ds-shadow-medium);
+      }
+      .ds-shadow-large {
+        box-shadow: var(--ds-shadow-large);
+      }
+      /* ds-space */
+      .ds-space-margin-up {
+        margin-top: calc(-1 * var(--ds-spacing));
+      }
+      .ds-space-none {
+        margin: 0;
+      }
+      .ds-space {
+        margin: var(--ds-line-height);
+      }
+      .ds-space-vertical {
+        margin: var(--ds-line-height) 0;
+      }
+      .ds-space-horizontal {
+        margin-left: var(--ds-spacing);
+        margin-right: var(--ds-spacing);
+      }
+      .ds-space-left {
+        margin-left: var(--ds-spacing);
+      }
+      .ds-space-right {
+        margin-right: var(--ds-spacing);
+      }
+      .ds-space-top {
+        margin-top: var(--ds-spacing);
+      }
+      .ds-space-bottom {
+        margin-bottom: var(--ds-spacing);
+      }
+      
+      .ds-space-inside {
+        padding: 0 var(--ds-spacing);
+      }
+      .ds-space-inside::before,
+      .ds-space-inside::after {
+        content: "";
+        display: block;
+        height: 0;
+      }
+      .ds-space-inside::before {
+        margin-bottom: var(--ds-spacing);
+      }
+      .ds-space-inside::after {
+        margin-top: var(--ds-spacing);
+      }
+      
+      /* extra */
+      @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
       
       html, body {
-      	margin: 0;
-      	padding: 0;
-      	width: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
       }
       main {
-      	padding: 0px 15px;
+        padding: 0px 15px;
       }
       [data-simply-command] {
-      	cursor: pointer; /* Dear iOS, why don't you have a click event when the cursor is not a pointer? */
+        cursor: pointer; /* Dear iOS, why don't you have a click event when the cursor is not a pointer? */
       }
       textarea {
-      	width: 100%;
-      	height: 120px;
-      	color: #e0e0e0;
-      	background-color: #151515;
-      	border: 0;
-      	padding: 10px;
+        width: 100%;
+        height: 120px;
+        color: #e0e0e0;
+        background-color: #151515;
+        border: 0;
+        padding: 10px;
       }
       input:not([type]),
       input[type=text] {
-      	color: #e0e0e0;
-      	background-color: #151515;
-      	border: 0;
-      	padding: 5px;
+        color: #e0e0e0;
+        background-color: #151515;
+        border: 0;
+        padding: 5px;
       }
+      /* simply-toast */
+      :root {
+        --simply-toast-height: 60px;
+        --simply-toast-hide-delay: 3s;
+        --simply-toast-show-duration: 0.3s;
+        --simply-toast-hide-duration: 0.5s;
+        --simply-toast-margin: 20px;
+        --simply-toast-error-color: rgb(253, 143, 143);
+        --simply-toast-warning-color: #FFFFCC;
+        --simply-toast-info-color: rgb(140, 180, 250);
+        --simply-toast-white: #FFF;
+        --simply-toast-grey-50: #a8b4c0;
+        --simply-toast-grey-80: #4d565c;
+        --simply-toast-font-size: calc(1.1 * 1rem);
+        --simply-toast-font-weight: 300;
+        --simply-toast-line-height: calc(1.5 * var(--simply-toast-font-size));
+        --simply-toast-color: var(--simplycode-grey-medium);
+        --simply-toast-contrast: var(--simplycode-grey-medium);
+        --simply-toast-background:var(--simplycode-white);
+        --simply-toast-heading-weight: 900;
+        --simply-toast-heading-multiplier: 1.1;
+      }
+      
+      ul.simply-toasts,
+      ol.simply-toasts,
+      .simply-toasts {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 101;
+        display: block;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-width: 50%;
+        min-width: 300px;
+      }
+      .simply-toast,
+      li.simply-toast {
+        min-width: 300px;
+        float: right;
+        clear: both;
+        margin-right: 0;
+        margin-top: 60px;
+        background-color: var(--simply-toast-grey-80);
+        color: var(--simply-toast-white);
+        display: block;
+        border-left: 10px solid var(--simply-toast-grey-50);
+        padding: 20px;
+        border-radius: 2px;
+      }
+      .simply-toast-error,
+      li.simply-toast-error {
+        border-color: var(--simply-toast-error-color);
+      }
+      .simply-toast-info,
+      li.simply-toast-info {
+        border-color: var(--simply-toast-info-color);
+      }
+      .simply-toast-warning,
+      li.simply-toast-warning {
+        border-color: var(--simply-toast-warning-color);
+      }
+      
+      @keyframes simply-toast-show {
+        0% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+        50% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+        75% {
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(1);
+          transform-origin: right;
+          opacity: 1;
+        }
+      }
+      @keyframes simply-toast-hide {
+        0% {
+          transform: scaleX(1);
+          transform-origin: right;
+          opacity: 1;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(0);
+          transform-origin: right;
+          opacity: 0;
+        }
+      }
+      @keyframes simply-toast-move {
+        0% {
+          transform: translateY(-80px); /* toast-height + toast-margin */
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      .simply-toast[data-state="new"] {
+        animation: simply-toast-show var(--simply-toast-show-duration) forwards;
+      }
+      .simply-toast-autohide[data-state="new"] {
+        animation: simply-toast-show var(--simply-toast-show-duration);
+        animation-delay: 0s;
+      }
+      .simply-toast-autohide.simply-toast-animated[data-state="shown"] {
+        animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
+        animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
+      }
+      .simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
+        animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
+        animation-delay: 0s, var(--simply-toast-hide-delay);
+      }
+      
+      /* simplycode-component-list */
+      :root {
+        --simplycode-component-list-spacing-row: calc(0.5 * var(--ds-spacing));
+        --simplycode-component-list-spacing-column: calc(0.5 * var(--ds-spacing));
+        --simplycode-component-list-min-colwidth: 10rem;
+        --simplycode-component-list-item-font-size: calc(0.9 * var(--ds-font-size));
+        --simplycode-component-list-item-background: var(--ds-grey-90);
+        --simplycode-component-list-item-background-active: var(--ds-grey-80);
+        --simplycode-component-list-item-color: inherit;
+        --simplycode-component-list-item-color-active: inherit;
+        --simplycode-component-list-item-min-height: 4rem;
+      }
+      
+      .simplycode-component-list {
+        display: grid;
+        grid-column-gap: var(--simplycode-component-list-spacing-column);
+        grid-row-gap: var(--simplycode-component-list-spacing-row);
+        grid-template-columns: repeat(auto-fit, minmax(var(--simplycode-component-list-min-colwidth), 1fr));
+      
+        font-size: var(--simplycode-component-list-item-font-size);
+        line-height: 1.6em;
+        margin-bottom: var(--simplycode-component-list-spacing-column);
+      }
+      .simplycode-component-list-item {
+        background-color: var(--simplycode-component-list-item-background);
+        padding: calc(0.5 * var(--simplycode-component-list-spacing-column));
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0;
+        min-height: var(--simplycode-component-list-item-min-height);
+      }
+      
+      .simplycode-component-list-item,
+      a.simplycode-component-list-item,
+      a.simplycode-component-list-item * {
+        text-decoration: none;
+        color: var(--simplycode-component-list-item-color);
+      }
+      .simplycode-component-list-item:hover,
+      a.simplycode-component-list-item:hover,
+      a.simplycode-component-list-item:active {
+        background-color: var(--simplycode-component-list-item-background-active);
+        color: var(--simplycode-component-list-item-color-active);
+      }
+      
+      .simplycode-component-list-item > :first-child {
+        margin-top: 0;
+      }
+      .simplycode-component-list-item > :last-child {
+        margin-bottom: 0;
+      }
+      /* simplycode-ds-mapping */
+      /* simplycode-ds-core-colors */
+      :root {
+        --ds-primary: var(--simplycode-highlight-light);
+        --ds-primary-dark: var(--simplycode-highlight-dark);
+        --ds-primary-contrast: var(--simplycode-highlight-color);
+        --ds-primary-light: var(--simplycode-highlight-light);
+        --ds-primary-gradient: var(--simplycode-highlight-gradient);
+        --ds-primary-bump: #b65cfc;
+        --ds-primary-gradient-bump: linear-gradient( 180deg, var(--ds-primary-bump), var(--simplycode-highlight-light) 95%, var(--simplycode-highlight-dark) 100%);
+      
+        --ds-support: #06CC06;
+        --ds-support-dark: #05BB05;
+        --ds-support-light: #07DE07;
+        --ds-support-contrast: #FFF;
+        --ds-support-gradient: linear-gradient( to left, var(--ds-support-light), var(--ds-support-dark) );
+      
+        --ds-heading-font: var(--simplycode-font-family);
+      }
+      
       /* style */
       :root {
-          --highlight-dark: #f16623;
-          --highlight-light: #ff8003;
-          --highlight-color: #fff;
-          --highlight-background: linear-gradient( to left, var(--highlight-light), var(--highlight-dark) );
+        --simplycode-highlight-dark: #f16623;
+        --simplycode-highlight-light: #ff8003;
+        --simplycode-highlight-color: #fff;
+        --simplycode-highlight-background: linear-gradient( to left, var(--simplycode-highlight-light), var(--simplycode-highlight-dark) );
       
-          --support-dark: #444;
-          --support-light: #484848;
-          --support-color: #eee;
-          --support-background: linear-gradient( to left, var(--support-light), var(--support-dark) );
+        --simplycode-support-dark: #444;
+        --simplycode-support-light: #484848;
+        --simplycode-support-color: #eee;
+        --simplycode-support-background: linear-gradient( to left, var(--simplycode-support-light), var(--simplycode-support-dark) );
       
-          --grey-dark: #38393c;
-          --grey-medium: #7f8185;
-          --grey-light: #e9ebec;
-          --grey-dark: #38393c;
-          --black: #000;
-          --white: #fff;
-          --grey-background: var(--grey-dark);
+        --simplycode-grey-dark: #38393c;
+        --simplycode-grey-medium: #7f8185;
+        --simplycode-grey-light: #e9ebec;
+        --simplycode-grey-dark: #38393c;
+        --simplycode-black: #000;
+        --simplycode-white: #fff;
+        --simplycode-grey-background: var(--simplycode-grey-dark);
       
-          --font-family: 'Alegreya Sans', sans-serif;
-          --font-size: 14px;
-          --line-height: 1.5em;
-          --color: #7f8185;
-          --background: #333;
+        --simplycode-font-family: 'Alegreya Sans', sans-serif;
+        --simplycode-font-size: 14px;
+        --simplycode-line-height: 1.5em;
+        --simplycode-color: #7f8185;
+        --simplycode-background: #333;
       }
       
       /* general styling on default elements */
       
       html, body {
-          margin: 0;
-          padding: 0;
-          font-family: var(--font-family);
-          font-size: var(--font-size);
-          line-height: var(--line-height);
-          color: var(--color); 
-          background-color: var(--background);
+        margin: 0;
+        padding: 0;
+        font-family: var(--simplycode-font-family);
+        font-size: var(--simplycode-font-size);
+        line-height: var(--simplycode-line-height);
+        color: var(--simplycode-color); 
+        background-color: var(--simplycode-background);
       }
       body {
-          overflow-y: scroll;
+        overflow-y: scroll;
       }
       body:last-child {
-          margin-bottom: 1.5em;
+        margin-bottom: 1.5em;
       }
       h1 {
-          font-size: 2em;
-          font-weight: 300;
-          line-height: 1.1em;
-          margin: 0;
-          margin-bottom: 0.5em;
+        font-size: 2em;
+        font-weight: 300;
+        line-height: 1.1em;
+        margin: 0;
+        margin-bottom: 0.5em;
       }
       
       h2 {
-          font-size: 1.6em;
-          font-weight: 400;
-          line-height: 1.1em;
-          margin: 0;
-          margin-bottom: 0.5em;
+        font-size: 1.6em;
+        font-weight: 400;
+        line-height: 1.1em;
+        margin: 0;
+        margin-bottom: 0.5em;
       }
       
       * {
-          box-sizing: border-box;
+        box-sizing: border-box;
       }
       
       img {
-          display: block;
-          max-width: 100%;
+        display: block;
+        max-width: 100%;
       }
       
       a {
-          color: var(--highlight-dark);
+        color: var(--simplycode-highlight-dark);
       }
       a:visited {
-          color: var(--highlight-dark);
+        color: var(--simplycode-highlight-dark);
       }
       
       /* custom styling for custom elements */
       
       .simplycode-button,
       a.simplycode-button {
-          background: var(--support-background);
-          color: var(--support-color);
-          padding: 0.3em 0.5em;
-          margin: 0 0.3em;
-          border: 1px solid #ccc;
-          text-decoration: none;
+        background: var(--simplycode-support-background);
+        color: var(--simplycode-support-color);
+        padding: 0.3em 0.5em;
+        margin: 0 0.3em;
+        border: 1px solid #ccc;
+        text-decoration: none;
       }
       
       .simplycode-button:first-child {
-          margin-left: 0;
+        margin-left: 0;
       }
       .simplycode-button:last-child {
-          margin-right: 0;
+        margin-right: 0;
       }
       .simplycode-button.highlight {
-          background: var(--highlight-background);
-          color: var(--highlight-color);
+        background: var(--simplycode-highlight-background);
+        color: var(--simplycode-highlight-color);
       }
       
       .text-content {
-          padding: 2.2375em;
-          max-width: 50em;
+        padding: 2.2375em;
+        max-width: 50em;
       }
       .text-content *:first-child {
-          margin-top: 0;
+        margin-top: 0;
       }
       
       body {
         display: grid; 
         grid-template-columns: 210px 2fr 2fr; 
-        grid-template-rows: 60px 2fr 2fr; 
+        grid-template-rows: 80px 2fr 2fr; 
         gap: 0px 0px; 
         grid-template-areas: 
           "header header header"
@@ -151,269 +827,128 @@
           "nav pane pane"
       }
       body > header {
-          grid-area: header;
+        grid-area: header;
       }
       body > nav {
-          grid-area: nav;
+        grid-area: nav;
       }
       body > div.main {
-          grid-area: pane;
+        grid-area: pane;
       }
       nav ul ul .simplycode-expand {
-          display: none;
-          padding: 0 1.7em;
+        display: none;
+        padding: 0 1.7em;
       }
       nav ul {
-          list-style: none;
-          margin: 0 0.5em;
-          padding: 0;
+        list-style: none;
+        margin: 0 0.5em;
+        padding: 0;
       }
       nav ul ul {
-          padding: 0 1.7em;
+        padding: 0 1.7em;
       }
       
       nav > ul > li[data-simply-command=expandMenu][open]::before {
-          content: "[-] ";
-          font-family: monospace;
+        content: "[-] ";
+        font-family: monospace;
       }
       nav > ul > li[data-simply-command=expandMenu]::before {
-          content: "[+] ";
-          font-family: monospace;
+        content: "[+] ";
+        font-family: monospace;
       }
       .simplycode-part {
-          margin-top: 1em;
+        margin-top: 1em;
       }
       
       .simplycode-part-header {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
       .simplycode-part-header .simplycode-options {
-          text-align: right;
+        text-align: right;
       }
       .simplycode-part .simplycode-tab {
-          padding: 10px 5px;
-          margin: 0;
-          background-color: #151515;
-          color: #ddd;
-          border: 0;
-          text-align: center;
-          margin-right: 5px;
+        padding: 10px 5px;
+        margin: 0;
+        background-color: #151515;
+        color: #ddd;
+        border: 0;
+        text-align: center;
+        margin-right: 5px;
       }
       .simplycode-part .simplycode-tab input[type=radio] {
-          display: none;
+        display: none;
       }
       .simplycode-part .simplycode-tab input[type=radio]:checked ~ span {
-          font-weight: bold;
-          border-bottom: 2px solid var(--support-background);
+        font-weight: bold;
+        border-bottom: 2px solid var(--simplycode-support-background);
       }
       .simplycode-part .simplycode-editor-code {
-          display: grid;
-          grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr;
       }
       .simplycode-part .simplycode-dual {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
       .simplycode-part .simplycode-dual-preview {
-          display: grid;
-          grid-template-columns: auto 480px;
+        display: grid;
+        grid-template-columns: auto 480px;
       }
       .simplycode-test-header {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
       .simplycode-test-header .simplycode-options {
-          text-align: right;
+        text-align: right;
       }
       .simplycode-component summary {
-          font-size: 1.2em;
+        font-size: 1.2em;
       }
       .simplycode-component {
-          margin: 10px 0px;
+        margin: 10px 0px;
       }
       .simplycode-header {
-          display: grid;
-          grid-template-columns: 3fr 1fr;
-          vertical-align: middle;
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        vertical-align: middle;
       }
       .simplycode-header .simplycode-controls {
-          text-align: right;
+        text-align: right;
       }
       .simplycode-header h1 span {
-          white-space: nowrap;
+        white-space: nowrap;
       }
       .simplycode-component summary .simplycode-controls {
-          display: none;
-          margin-left: 1em;
+        display: none;
+        margin-left: 1em;
       }
       .simplycode-component[open] summary .simplycode-controls {
-          display: inline-block;
+        display: inline-block;
       }
       header {
-          position: fixed;
-          padding: 8px 10px 6px 10px;
-          left: 0;
-          right: 0;
-          display: grid;
-          grid-template-columns: 2fr 1fr;
-          background-color: #404040;
-          border-bottom: 2px solid #2222;
-          vertical-align: middle;
-          z-index: 1;
+        position: fixed;
+        padding: 8px 10px 6px 10px;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        background-color: #404040;
+        border-bottom: 2px solid #2222;
+        vertical-align: middle;
+        z-index: 200;
       }
       header h1 {
-          margin: 0;
+        margin: 0;
       }
       header .simplycode-controls {
-          padding-top: 5px;
-          padding-right: 5px;
-          text-align: right;
+        padding-top: 5px;
+        padding-right: 5px;
+        text-align: right;
       }
       .simplycode-editor-code textarea {
-          margin-top: -1px;
+        margin-top: -1px;
       }
-      
-      ul.simplycode-components-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 10px;
-          margin-bottom: 1em;
-      }
-      ul.simplycode-components-list li {
-          border: 1px solid #555;
-          background-color: #2a2a2a;
-          padding: 10px;
-          border-radius: 2px;
-      }
-      
-      /* Components: Toast */
-      
-      :root {
-          --simply-toast-height: 60px;
-          --simply-toast-hide-delay: 3s;
-          --simply-toast-show-duration: 0.3s;
-          --simply-toast-hide-duration: 0.5s;
-          --simply-toast-margin: 20px;
-          --simply-error-color: rgb(253, 143, 143);
-          --simply-warning-color: #FFFFCC;
-          --simply-info-color: rgb(140, 180, 250);
-          --simply-white: #FFF;
-          --simply-grey-50: #a8b4c0;
-          --simply-grey-80: #4d565c;
-          --simply-font-size: calc(1.1 * 1rem);
-          --simply-font-weight: 300;
-          --simply-line-height: calc(1.5 * var(--simply-font-size));
-          --simply-color: var(--grey-medium);
-          --simply-contrast: var(--grey-medium);
-          --simply-background:var(--white);
-          --simply-heading-weight: 900;
-          --simply-heading-multiplier: 1.1;
-      }
-      
-      ul.simply-toasts,
-      ol.simply-toasts,
-      .simply-toasts {
-          position: fixed;
-          right: 0;
-          top: 0;
-          z-index: 101;
-          display: block;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          max-width: 50%;
-          min-width: 300px;
-      }
-      .simply-toast,
-      li.simply-toast {
-          min-width: 300px;
-          float: right;
-          clear: both;
-          margin-right: 0;
-          margin-top: 60px;
-          background-color: var(--simply-grey-80);
-          color: var(--simply-white);
-          display: block;
-          border-left: 10px solid var(--simply-grey-50);
-          padding: 20px;
-          border-radius: 2px;
-      }
-      .simply-toast-error,
-      li.simply-toast-error {
-          border-color: var(--simply-error-color);
-      }
-      .simply-toast-info,
-      li.simply-toast-info {
-          border-color: var(--simply-info-color);
-      }
-      .simply-toast-warning,
-      li.simply-toast-warning {
-          border-color: var(--simply-warning-color);
-      }
-      
-      @keyframes simply-toast-show {
-          0% {
-              transform: scaleX(0);
-              transform-origin: right;
-              opacity: 0;
-          }
-          50% {
-              transform: scaleX(0);
-              transform-origin: right;
-              opacity: 0;
-          }
-          75% {
-              opacity: 1;
-          }
-          100% {
-              transform: scaleX(1);
-              transform-origin: right;
-              opacity: 1;
-          }
-      }
-      @keyframes simply-toast-hide {
-          0% {
-              transform: scaleX(1);
-              transform-origin: right;
-              opacity: 1;
-          }
-          50% {
-              opacity: 1;
-          }
-          100% {
-              transform: scaleX(0);
-              transform-origin: right;
-              opacity: 0;
-          }
-      }
-      @keyframes simply-toast-move {
-          0% {
-              transform: translateY(-80px); /* toast-height + toast-margin */
-          }
-          100% {
-              transform: translateY(0px);
-          }
-      }
-      .simply-toast[data-state="new"] {
-          animation: simply-toast-show var(--simply-toast-show-duration) forwards;
-      }
-      .simply-toast-autohide[data-state="new"] {
-          animation: simply-toast-show var(--simply-toast-show-duration);
-          animation-delay: 0s;
-      }
-      .simply-toast-autohide.simply-toast-animated[data-state="shown"] {
-          animation: simply-toast-hide var(--simply-toast-hide-duration) forwards;
-          animation-delay: calc(var(--simply-toast-hide-delay) - var(--simply-toast-show-duration));
-      }
-      .simply-toast-autohide:not(.simply-toast-animated)[data-state="shown"] {
-          animation: simply-toast-move var(--simply-toast-show-duration), simply-toast-hide var(--simply-toast-hide-duration) forwards;
-          animation-delay: 0s, var(--simply-toast-hide-delay);
-      }
-      
       /* QUnit iframe */
       .qunit-code {
         display: none;
@@ -445,6 +980,7 @@
       .simplycode-part[data-deleted="true"] {
         opacity: 0.3;
       }
+      
       /* simply dragdrop */
       [data-simply-list].simply-dragdrop-receiving {
         outline: 2px dashed var(--highlight-dark);
@@ -523,6 +1059,160 @@
         position: absolute;
         background-color: white;
       }
+      /* simply-logo */
+      :root {
+        --simply-logo-color-primary: var(--simplycode-highlight-dark);
+        --simply-logo-color-secondary: white;
+      }
+      /* simply-toolbar-button */
+      .simply-toolbar-button {
+        height: var(--simply-toolbar-button-height);
+        border-top: 1px solid transparent;
+        border-bottom: 2px solid transparent;
+        transition: background 0.2s ease;
+        font-size: var(--simply-toolbar-button-font-size);
+        letter-spacing: 0;
+        font-family: var(--simply-toolbar-button-font);
+        white-space: nowrap;
+        user-select: none;
+        vertical-align: top;
+        min-width: var(--simply-toolbar-button-width);
+        text-align: center;
+        cursor: pointer;
+        padding: 0 4px;
+        text-transform: none;
+        background: transparent;
+        outline: none;
+        box-shadow: none;
+        border-radius: 0;
+        color: var(--simply-toolbar-button-color);
+        margin: 0;
+      }
+      .simply-toolbar-button:hover {
+        border-bottom: 2px solid var(--simply-toolbar-button-primary);
+        box-shadow: none;
+      }
+      .simply-toolbar-button .ds-icon {
+        height: 26px;
+        font-size: 26px;
+        padding: 0 4px;
+        display: block;
+        margin: 6px auto -14px;
+        position: relative;
+      }
+      .simply-toolbar-button-expands:not(:focus)::after,
+      .simply-toolbar-button-expands:not(.ds-selected)::after {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        margin-left: -3px;
+        width: 0;
+        border-top: 3px solid #888;
+        border-bottom: 0;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+      }
+      .simply-toolbar-button:focus,
+      .simply-toolbar-button.ds-selected {
+        background-color: var(--ds-grey-80);
+        border-left-color: var(--ds-black);
+        border-top-color: var(--ds-black);
+        border-right-color: var(--ds-grey-60);
+      }
+      .simply-toolbar-button[disabled] {
+        background-color: transparent;
+        color: var(--ds-grey-60);
+      }
+      /* simply-toolbar */
+      :root {
+        --simply-toolbar-height: 60px;
+        --simply-toolbar-primary: var(--simplycode-highlight-dark);
+        --simply-toolbar-button-font: arial, helvetica, sans-serif;
+        --simply-toolbar-button-font-size: 11px;
+        --simply-toolbar-button-width: 60px;
+        --simply-toolbar-button-height: var(--simply-toolbar-height);
+        --simply-toolbar-button-color: var(--ds-white);
+        --simply-toolbar-button-primary: var(--simply-toolbar-primary);
+        --simply-toolbar-title-width: 70px;
+        --simply-toolbar-title-height: var(--simply-toolbar-height);
+      }
+      .simply-toolbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-top: 1px solid var(--simply-toolbar-button-primary);
+        background: linear-gradient(180deg, var(--ds-white) 0, var(--ds-white) 95%, var(--ds-grey-40) 100%);
+        white-space: nowrap;
+        min-width: 100%;
+        min-height: var(--simply-toolbar-height);
+        display: flex;
+      }
+      .simply-toolbar-title {
+        padding: 0 10px;
+        font-size: 16px;
+        width: var(--simply-toolbar-title-width);
+        font-family: sans-serif;
+        text-transform: none;
+        border: 0;
+        height: var(--simply-toolbar-button-height);
+        cursor: default;
+        border-radius: 0;
+        box-shadow: 0;
+        outline: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .simply-toolbar-highlight {
+        background: var(--ds-primary-gradient-bump);
+        color: var(--ds-primary-contrast);
+      }
+      .simply-toolbar .simply-toolbar-title {
+        margin-top: 0;
+      }
+      .simply-toolbar-spacer {
+        border-left: 1px solid #ccc;
+        height: var(--simply-toolbar-height);
+        position: absolute;
+        display: inline-block;
+      }
+      .simply-toolbar-button-expands:not(.ds-selected)::after {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        margin-left: -3px;
+        width: 0;
+        border-top: 3px solid #888;
+        border-bottom: 0;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+      }
+      .simply-toolbar-push-right {
+        margin-left: auto;
+      }
+      .simply-toolbar-title img {
+        height: 30px;
+      }
+      .simply-toolbar input[type="text"] {
+        margin-right:0;
+        margin-bottom: 0;
+        margin-top: 10px;
+        font-size: small;
+        line-height: 1.2em;
+        height: 35px;
+      }
+      .simply-toolbar.simply-toolbar-main {
+        border-top-width: 5px;
+      }
+      
+      .simply-toolbar {
+        background: linear-gradient(var(--ds-grey-90) 0%, var(--ds-grey-90) 95%, black 100%);
+        color: var(--ds-white);
+      }
     </style>
     <!-- /Component CSS -->
     <!-- Page CSS -->
@@ -545,7 +1235,15 @@
     </style>
     <!-- /Page CSS -->
     <!-- Head HTML -->
-    
+    <!-- cocon -->
+    <style>
+      @font-face {
+        font-family: 'Cocon';
+        font-style: normal;
+        font-weight: 500;
+        src: local('Cocon'), url('/assets/fonts/CoconRegularFont.woff') format('woff');
+      }
+    </style>
     <!-- /Head HTML -->
     <script>
       var simplyDataApi = {};
@@ -686,6 +1384,7 @@
               switch(componentPart.id) {
                 case "meta.json":
                   componentPart.id = "meta";
+                  component.description = componentPart.description;
                   break;
                 case "routes":
                   if (typeof componentPart.contents === "object") {
@@ -783,6 +1482,22 @@
                     componentPart.contents = JSON.stringify(Object.values(contents));
                   }
                   break;
+                case "builderTemplates":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      partId = partFile.id;
+                      if (typeof contents[partId] === "undefined") {
+                        contents[partId] = {
+                          base : componentPart.id,
+                          builder : partId
+                        }
+                      }
+                      contents[partId]['code'] = partFile.contents;
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
                 case "rawApi":
                 case "dataApi":
                   if (typeof componentPart.contents === "object") {
@@ -859,6 +1574,44 @@
                           if (typeof contents[testSetPartId] === "undefined") {
                             contents[testSetPartId] = {
                               command : testSetPartId
+                            }
+                          }
+                          testSet.contents.forEach(function(test) {
+                            if (typeof tests[testSet.id] === "undefined") {
+                              tests[testSet.id] = [];
+                            }
+                            tests[testSet.id].push({
+                              name : test.id.replace(/\.js$/, ''),
+                              "test-code" : test.contents
+                            });
+                          });
+                          contents[testSet.id]['tests'] = Object.values(tests[testSet.id]);
+                        });
+                      }
+                    });
+                    componentPart.contents = JSON.stringify(Object.values(contents));
+                  }
+                  break;
+                case "shortcuts":
+                  if (typeof componentPart.contents === "object") {
+                    var contents = {};
+                    componentPart.contents.forEach(function(partFile) {
+                      if (partFile.id.match(/\.js$/)) {
+                        partId = partFile.id.replace(/\.js$/, '');
+                        if (typeof contents[partId] === "undefined") {
+                          contents[partId] = {
+                            shortcut : partId
+                          }
+                        }
+                        contents[partId]['code'] = partFile.contents;
+                      }
+                      if (partFile.id.match(/^tests$/)) {
+                        tests = {};
+                        partFile.contents.forEach(function(testSet) {
+                          testSetPartId = testSet.id;
+                          if (typeof contents[testSetPartId] === "undefined") {
+                            contents[testSetPartId] = {
+                              shortcut : testSetPartId
                             }
                           }
                           testSet.contents.forEach(function(test) {
@@ -1046,13 +1799,14 @@
                 return simplyRawApi.putRaw(basePath + "/meta.json", {}, JSON.stringify(contents));
                 break;
               case "routes":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".json"));
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".json", {},
@@ -1067,12 +1821,13 @@
                 break;
               case "componentCss":
               case "pageCss":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".css"));
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".css", {},
@@ -1082,7 +1837,7 @@
                 });
                 break;
               case "componentTemplates":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.component) {
                     throw new Error("Required part name is empty");
                   }
@@ -1091,6 +1846,7 @@
                     if (componentPart.sampledata) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.component + ".json"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else { 
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.component + ".html", {},
@@ -1106,7 +1862,7 @@
                 });
                 break;
               case "pageTemplates":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.page) {
                     throw new Error("Required part name is empty");
                   }
@@ -1115,6 +1871,7 @@
                     if (componentPart.sampledata) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.page + ".json"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.page + ".html", {},
@@ -1129,14 +1886,31 @@
                   }
                 });
                 break;
+              case "builderTemplates":
+                contents.forEach(function(componentPart, componentIndex) {
+                  if (!componentPart.builder) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.builder + ".html"));
+                    contents.splice(componentIndex, 1);
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.builder, {},
+                      componentPart.code
+                    ));
+                  }
+                });
+                break;
               case "rawApi":
               case "dataApi":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.method) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.method + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.method + ".js", {},
@@ -1146,7 +1920,7 @@
                 });
                 break;
               case "actions":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.action) {
                     throw new Error("Required part name is empty");
                   }
@@ -1155,18 +1929,20 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.action + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.action + ".js", {},
                       componentPart.code
                     ));
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.action + "/" + test.name + ".js", {},
@@ -1179,7 +1955,7 @@
                 });
                 break;
               case "commands":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.command) {
                     throw new Error("Required part name is empty");
                   }
@@ -1188,18 +1964,20 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.command + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.command + ".js", {},
                       componentPart.code
                     ));
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.command + "/" + test.name + ".js", {},
@@ -1211,8 +1989,43 @@
                   }
                 });
                 break;
+              case "shortcuts":
+                contents.forEach(function(componentPart, componentIndex) {
+                  if (!componentPart.shortcut) {
+                    throw new Error("Required part name is empty");
+                  }
+                  if (componentPart.deleted == "true") {
+                    results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.shortcut + ".js"));
+                    if (componentPart.tests && componentPart.tests.length) {
+                      results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.shortcut + "/"));
+                    }
+                    contents.splice(componentIndex, 1);
+                  } else {
+                    results.push(simplyRawApi.putRaw(
+                      basePath + "/" + part + "/" + componentPart.shortcut + ".js", {},
+                      componentPart.code
+                    ));
+                    if (componentPart.tests) {
+                      componentPart.tests.forEach(function(test, testIndex) {
+                        if (!test.name) {
+                          throw new Error("Required test name is empty");
+                        }
+                        if (test.deleted == "true") {
+                          results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.shortcut + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
+                        } else {
+                          results.push(simplyRawApi.putRaw(
+                            basePath + "/" + part + "/tests/" + componentPart.shortcut + "/" + test.name + ".js", {},
+                            test['test-code']
+                          ));
+                        }
+                      });
+                    }
+                  }
+                });
+                break;
               case "dataSources":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.dataSource) {
                     throw new Error("Required part name is empty");
                   }
@@ -1224,6 +2037,7 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.dataSource + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     if (componentPart['get-code']) {
                       results.push(simplyRawApi.putRaw(
@@ -1250,12 +2064,13 @@
                       ));
                     }
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.dataSource + "/" + test.name + ".js", {},
@@ -1268,7 +2083,7 @@
                 });
                 break;
               case "transformers":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.transformer) {
                     throw new Error("Required part name is empty");
                   }
@@ -1278,6 +2093,7 @@
                     if (componentPart.tests && componentPart.tests.length) {
                       results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.transformer + "/"));
                     }
+                    contents.splice(componentIndex, 1);
                   } else {
                     if (componentPart['render-code']) {
                       results.push(simplyRawApi.putRaw(
@@ -1292,12 +2108,13 @@
                       ));
                     }
                     if (componentPart.tests) {
-                      componentPart.tests.forEach(function(test) {
+                      componentPart.tests.forEach(function(test, testIndex) {
                         if (!test.name) {
                           throw new Error("Required test name is empty");
                         }
                         if (test.deleted == "true") {
                           results.push(simplyRawApi.delete(basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js"));
+                          componentPart.tests.splice(testIndex, 1);
                         } else {
                           results.push(simplyRawApi.putRaw(
                             basePath + "/" + part + "/tests/" + componentPart.transformer + "/" + test.name + ".js", {},
@@ -1310,12 +2127,13 @@
                 });
                 break;
               case "sorters":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.sorter) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.sorter + ".js"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.sorter + ".js", {},
@@ -1327,12 +2145,13 @@
               case "headHtml":
               case "bodyHtml":
               case "footHtml":
-                contents.forEach(function(componentPart) {
+                contents.forEach(function(componentPart, componentIndex) {
                   if (!componentPart.name) {
                     throw new Error("Required part name is empty");
                   }
                   if (componentPart.deleted == "true") {
                     results.push(simplyRawApi.delete(basePath + "/" + part + "/" + componentPart.name + ".html"));
+                    contents.splice(componentIndex, 1);
                   } else {
                     results.push(simplyRawApi.putRaw(
                       basePath + "/" + part + "/" + componentPart.name + ".html", {},
@@ -1427,6 +2246,69 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.description = component.contents.description;
+              });
+              return components;
+            });
+          },
+          "deleteBuilder" : function(component) {
+            return simplyRawApi.delete("builders/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteBuilder failed", response.status);
+            });
+          },
+          "deleteBuilderPart" : function(component, part) {
+            return simplyRawApi.delete("builders/" + component + "/" + part)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("deleteBuilderPart failed", response.status);
+            });
+          },
+          "getBuilder" : function(component) {
+            return simplyRawApi.get("builders/" + component)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("getBuilder failed", response.status);
+            })
+              .then(function(component) {
+              return simplyDataApi.mergeComponent(component);
+            });
+          },
+          "saveBuilderPart" : function(component, part, contents) {
+            return simplyDataApi.savePart("builders/" + component, part, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              // retry the call once
+              return simplyDataApi.savePart("builders/" + component, part, contents)
+                .then(function(response) {
+                if (response.status === 200) {
+                  return response.json();
+                }
+                throw new Error("saveBuilderPart failed", response.status);
+              });
+            });
+          },
+          "listBuilders" : function() {
+            return simplyRawApi.get("builders")
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("listBuilders failed", response.status);
+            })
+              .then(function(components) {
+              components.forEach(function(component) {
+                simplyDataApi.mergeComponent(component.contents);
+                component.description = component.contents.description;
               });
               return components;
             });
@@ -1488,6 +2370,7 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.description = component.contents.description;
               });
               return components;
             });
@@ -1562,8 +2445,8 @@
               .catch(function() {
               let defaults = {
                 "componentPreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\"&gt;\n      &#123;&#123;componentPreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
-                "fullApp.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      var simplyDataApi = &#123;&#125;;\n      var simplyApp = &#123;&#125;;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        simply.bind = false;\n        /* Raw API */\n        var simplyRawApi = &#123;\n          &#123;&#123;rawApi&#125;&#125;\n        &#125;;\n        /* End of Raw API */\n        /* Data API */\n        simplyDataApi = &#123;\n          &#123;&#123;dataApi&#125;&#125;\n        &#125;;\n        /* End of Data API */\n        simplyApp = simply.app(&#123;\n          /* Actions */\n          actions: &#123;\n            &#123;&#123;actions&#125;&#125;\n          &#125;,\n          /* /Actions */\n          /* Commands */\n          commands: &#123;\n            &#123;&#123;commands&#125;&#125;\n          &#125;,\n          /* /Commands */\n          /* Routes */\n          routes: &#123;\n            &#123;&#123;routes&#125;&#125;\n          &#125;\n          /* /Routes */\n        &#125;);\n      &#125;);\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Body HTML --&gt;\n    &#123;&#123;bodyHtml&#125;&#125;\n    &lt;!-- /Body HTML --&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n    &lt;!-- Page HTML templates --&gt;\n    &#123;&#123;pageTemplates&#125;&#125;\n    &lt;!-- /Page HTML templates --&gt;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
-                "pagePreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n      &#123;&#123;pagePreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;"
+                "fullApp.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      var simplyDataApi = &#123;&#125;;\n      var simplyApp = &#123;&#125;;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        simply.bind = false;\n        /* Raw API */\n        var simplyRawApi = &#123;\n          &#123;&#123;rawApi&#125;&#125;\n        &#125;;\n        /* End of Raw API */\n        /* Data API */\n        simplyDataApi = &#123;\n          &#123;&#123;dataApi&#125;&#125;\n        &#125;;\n        /* End of Data API */\n        simplyApp = simply.app(&#123;\n          /* Actions */\n          actions: &#123;\n            &#123;&#123;actions&#125;&#125;\n          &#125;,\n          /* /Actions */\n          /* Commands */\n          commands: &#123;\n            &#123;&#123;commands&#125;&#125;\n          &#125;,\n          /* /Commands */\n          /* Keyboard shortcuts */\n          keyboard: &#123;\n            &#123;&#123;shortcuts&#125;&#125;\n          &#125;,\n          /* /Keyboard shortcuts */\n          /* Routes */\n          routes: &#123;\n            &#123;&#123;routes&#125;&#125;\n          &#125;\n          /* /Routes */\n        &#125;);\n      &#125;);\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Body HTML --&gt;\n    &#123;&#123;bodyHtml&#125;&#125;\n    &lt;!-- /Body HTML --&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\" data-simply-field=\"page\" data-simply-content=\"template\"&gt;\n    &lt;!-- Page HTML templates --&gt;\n    &#123;&#123;pageTemplates&#125;&#125;\n    &lt;!-- /Page HTML templates --&gt;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
+                "pagePreview.html" : "&lt;!DOCTYPE HTML&gt;\n&lt;html lang=\"en\"&gt;\n  &lt;head&gt;\n    &lt;meta charset=\"utf-8\"&gt;\n    &lt;!-- Component CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;componentCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Component CSS --&gt;\n    &lt;!-- Page CSS --&gt;\n    &lt;style&gt;\n      &#123;&#123;pageCss&#125;&#125;\n    &lt;/style&gt;\n    &lt;!-- /Page CSS --&gt;\n    &lt;!-- Head HTML --&gt;\n    &#123;&#123;headHtml&#125;&#125;\n    &lt;!-- /Head HTML --&gt;\n    &lt;script&gt;\n      function clone(ob) &#123;\n        return JSON.parse(JSON.stringify(ob));\n      &#125;\n      function updateDataSource(name) &#123;\n        document.querySelectorAll('[data-simply-data=\"'+name+'\"]').forEach(function(list) &#123;\n          editor.list.applyDataSource(list, name);\n          list.dataBindingPaused = 0;\n        &#125;);\n      &#125;\n    &lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- Component HTML templates --&gt;\n    &#123;&#123;componentTemplates&#125;&#125;\n    &lt;!-- /Component HTML templates --&gt;\n    &lt;div class=\"main\"&gt;\n      &#123;&#123;pagePreview&#125;&#125;\n    &lt;/div&gt;\n    &lt;script src=\"js/simply.everything.js\"&gt;&lt;/script&gt;\n    &lt;script src=\"js/simply-edit.js\" data-simply-storage=\"none\" data-api-key=\"muze\"&gt;&lt;/script&gt;\n    &lt;script&gt;\n      /* Transformers */\n      editor.transformers = &#123;\n        &#123;&#123;transformers&#125;&#125;\n      &#125;;\n      /* /Transformers */\n    &lt;/script&gt;\n    &lt;script&gt;\n      /* Sorters */\n      editor.sorters = &#123;\n        &#123;&#123;sorters&#125;&#125;\n      &#125;;\n      /* /Sorters */\n    &lt;/script&gt;\n    &lt;script&gt;\n      window.addEventListener(\"simply-content-loaded\", function() &#123;\n        /* Data sources */\n        &#123;&#123;dataSources&#125;&#125;\n        /* /Data sources */\n      &#125;);\n    &lt;/script&gt;\n    &lt;!-- Foot HTML --&gt;\n    &#123;&#123;footHtml&#125;&#125;\n    &lt;!-- /Foot HTML --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;"
               };
           
               let elements = {};
@@ -1610,6 +2493,7 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.description = component.contents.description;
               });
               return components;
             });
@@ -1621,6 +2505,15 @@
                 return response.json();
               }
               throw new Error("saveAppHtml failed", response.status);
+            });
+          },
+          "saveBuild" : function(target, contents) {
+            return simplyRawApi.putRaw(target, {}, contents)
+              .then(function(response) {
+              if (response.status === 200) {
+                return response.json();
+              }
+              throw new Error("saveBuild failed", response.status);
             });
           }
         };
@@ -1635,6 +2528,7 @@
                 'component', // componentTemplates
                 'action', // actions
                 'command', // commands
+                'shortcuts', // shortcuts 
                 'page', // pageTemplates
                 'method', // rawApi, dataApi
                 'dataSource', // dataSources
@@ -1647,6 +2541,8 @@
                   return 'component';
                 case 'actions':
                   return 'action';
+                case 'shortcuts':
+                  return 'shortcut';
                 case 'commands':
                   return 'command';
                 case 'pageTemplates':
@@ -1663,6 +2559,40 @@
                 default:
                   return 'name';
               }
+            },
+            "build" : function(builderTemplate, data) {
+              var build = builderTemplate;
+              let replacements = {
+                "shortcuts" : editor.transformers.simplyPreviewShortcuts.render(data.shortcuts ?? []),
+                "actions" : editor.transformers.simplyPreviewActions.render(data.actions ?? []),
+                "commands" : editor.transformers.simplyPreviewCommands.render(data.commands ?? []),
+                "dataApi" : editor.transformers.simplyPreviewDataApi.render(data.dataApi ?? []),
+                "rawApi" : editor.transformers.simplyPreviewRawApi.render(data.rawApi ?? []),
+                "routes" : editor.transformers.simplyPreviewRoutes.render(data.routes ?? []),
+                "dataSources" : editor.transformers.simplyPreviewDataSources.render(data.dataSources ?? []),
+                "transformers" : editor.transformers.simplyPreviewTransformers.render(data.transformers ?? []),
+                "sorters" : editor.transformers.simplyPreviewSorters.render(data.sorters ?? []),
+                "pageTemplates" :editor.transformers.simplyPreviewPageTemplates.render(data.pageTemplates ?? []),
+                "pageCss" : editor.transformers.simplyPreviewPageCss.render(data.pageCss ?? []),
+                "componentCss" : editor.transformers.simplyPreviewComponentCss.render(data.componentCss ?? []),
+                "componentTemplates" : editor.transformers.simplyPreviewComponentTemplates.render(data.componentTemplates ?? []),
+                "headHtml": editor.transformers.simplyPreviewHeadHtml.render(data.headHtml ?? []),
+                "footHtml": editor.transformers.simplyPreviewFootHtml.render(data.footHtml ?? []),
+                "bodyHtml" : editor.transformers.simplyPreviewBodyHtml.render(data.bodyHtml ?? [])
+              };
+            
+              Object.keys(replacements).forEach(function(replacement) {
+                matches = build.match("(\\s*){{" + replacement + "}}");
+                if (matches) {
+                  let indentedNewline = matches[1];
+                  if (indentedNewline == '') {
+                    indentedNewline = "\n";
+                  }
+                  build = build.replace("{{" + replacement + "}}", replacements[replacement].replace(/\n/g, indentedNewline));
+                }
+              });
+            
+              return build;
             },
             "browse" : function(path) {
               return simplyDataApi.browse(path)
@@ -1690,6 +2620,13 @@
                     },
                     {
                       item : {
+                        innerHTML : "Pages",
+                        href : "#pages",
+                        "data-path" : "pages"
+                      }
+                    },
+                    {
+                      item : {
                         innerHTML : "Page frame",
                         href : "#page-frame",
                         "data-path" : "page-frame"
@@ -1697,9 +2634,9 @@
                     },
                     {
                       item : {
-                        innerHTML : "Pages",
-                        href : "#pages",
-                        "data-path" : "pages"
+                        innerHTML : "Builders",
+                        href : "#builders",
+                        "data-path" : "builders"
                       }
                     }
                   ]
@@ -1737,6 +2674,41 @@
             },
             "listBaseComponents" : function() {
               return simplyDataApi.listBaseComponents()
+                .catch(function(error) {
+                return [];
+              });
+            },
+            "deleteBuilder" : function(component) {
+              return simplyDataApi.deleteBuilder(component);
+            },
+            "getBuilder" : function(component) {
+              return simplyDataApi.getBuilder(component);
+            },
+            "saveBuilder" : function(component) {
+              var promises = [];
+              for (var name in component.parts) {
+                if (component.parts[name].length) { 
+                  promises.push(simplyDataApi.saveBuilderPart(component.id, name, component.parts[name]));
+                } else {
+                  editor.pageData.parts.forEach(function(part) {
+                    if (part.id == name) {
+                      promises.push(simplyDataApi.deleteBuilderPart(component.id, name));
+                    }
+                  });
+                }
+              };
+            
+              var meta = clone(component);
+              delete meta.parts;
+              promises.push(simplyDataApi.saveBuilderPart(meta.id, "meta", meta));
+            
+              return Promise.all(promises)
+                .then(function() {
+                return true;
+              });
+            },
+            "listBuilders" : function() {
+              return simplyDataApi.listBuilders()
                 .catch(function(error) {
                 return [];
               });
@@ -1849,6 +2821,27 @@
                 appData.pageFrame = frame;
               })
               .then(function() {
+                return simplyApp.actions.listBuilders()
+                .then(function(builders) {
+                  builders.forEach(function(builder) {
+                    builder.contents.forEach(function(part) {
+                      if (part.id == "meta") {
+                        return;
+                      };
+            
+                      if (typeof appData[part.id] === "undefined") {
+                        appData[part.id] = [];
+                      }
+                      parts = JSON.parse(part.contents);
+                      parts.forEach(function(entry) {
+                        entry.base = builder.id;
+                        appData[part.id].push(entry);
+                      });
+                    });
+                  });
+                });
+              })
+              .then(function() {
                 var promises = [
                   simplyApp.actions.listBaseComponents(),
                   simplyApp.actions.listComponents(),
@@ -1954,6 +2947,9 @@
             },
             "saveAppHtml" : function(appHtml) {
               return simplyDataApi.saveAppHtml(appHtml);
+            },
+            "saveBuild" : function(target, contents) {
+              return simplyDataApi.saveBuild(target, contents);
             }
           },
           /* /Actions */
@@ -2066,6 +3062,9 @@
             "addBodyHtml" : function(el) {
               editor.pageData.component.parts.bodyHtml.push({});
             },
+            "addBuilderTemplate" : function(el) {
+              editor.pageData.component.parts.builderTemplates.push({});
+            },
             "addCommand" : function(el) {
               editor.pageData.component.parts.commands.push({});
             },
@@ -2102,6 +3101,9 @@
             "addRoute" : function(el) {
               editor.pageData.component.parts.routes.push({});
             },
+            "addShortcut" : function(el) {
+              editor.pageData.component.parts.shortcuts.push({});
+            },
             "addSorter" : function(el) {
               editor.pageData.component.parts.sorters.push({});
             },
@@ -2112,7 +3114,7 @@
               if (!confirm("Delete this?")) {
                 return;
               }
-              el.dataBinding.config.data.deleted = true;
+              el.dataBinding.config.data.deleted = "true";
             },
             "initEditors" : function(el) {
               if (el.parentNode.hasAttribute("open")) {
@@ -2122,6 +3124,7 @@
               }
               simplyApp.commands.codeMirrorInit();
               simplyApp.commands.autoRunTests();
+              simplyApp.commands.autoRunPreviews();
             },
             "collapseMenu" : function(el) {
               if (!el.hasAttribute("open")) {
@@ -2160,6 +3163,9 @@
                 document.location.href = el.querySelector("[href]").getAttribute("href");
               }
             },
+            "preview" : function(el) {
+              document.location.hash="publish";
+            },
             "deleteBaseComponent" : function() {
               if (!confirm("Delete base component?")) {
                 return;
@@ -2196,6 +3202,44 @@
                   "state" : "new"
                 });
                 document.location.hash="base/" + newComponent.id;
+              });
+            },
+            "deleteBuilder" : function() {
+              if (!confirm("Delete builder?")) {
+                return;
+              }
+              simplyApp.actions.deleteBuilder(
+                editor.pageData.component.id
+              )
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder deleted.",
+                  "state" : "new"
+                });
+                document.location.hash="builders/";
+              });
+            },
+            "saveBuilder" : function() {
+              simplyApp.actions.saveBuilder(editor.pageData.component)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder saved.",
+                  "state" : "new"
+                });
+              });
+            },
+            "createBuilder" : function() {
+              var newComponent = editor.pageData.newComponent;
+              simplyApp.actions.saveBuilder(newComponent)
+                .then(function() {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "info",
+                  "message" : "Builder created.",
+                  "state" : "new"
+                });
+                document.location.hash="builders/" + newComponent.id;
               });
             },
             "deleteComponent" : function() {
@@ -2284,17 +3328,34 @@
                 document.location.hash="pages/" + newComponent.id;
               });
             },
+            "runBuilders" : async function() {
+              var appData = await simplyApp.actions.getAppData();
+              appData.builderTemplates.forEach(function(builderTemplate) {
+                let buildContents = simplyApp.actions.build(builderTemplate.code, appData);
+                simplyApp.actions.saveBuild("dist/" + builderTemplate.base + "/" + builderTemplate.builder, buildContents)
+                .then(function() {
+                  editor.pageData.alerts.unshift({
+                    "data-simply-template" : "info",
+                    "message" : builderTemplate.base + "/" + builderTemplate.builder + " published!",
+                    "state" : "new"
+                  });
+                });
+              });
+            }   ,
             "saveAppHtml" : function() {
               var appHtml = document.querySelector(".simplycode-preview-code").innerText;
               appHtml = appHtml.replaceAll(/^(\n)+/g, '');
               appHtml = appHtml.replaceAll(/(\n)+/g, '\n');
               simplyApp.actions.saveAppHtml(appHtml)
-                .then(function() {
+              .then(function() {
                 editor.pageData.alerts.unshift({
                   "data-simply-template" : "info",
                   "message" : "App published!",
                   "state" : "new"
                 });
+              })
+              .then(function() {
+                simplyApp.commands.runBuilders();
               });
             }
           },
@@ -2395,6 +3456,7 @@
                     footHtml : [],
                     commands : [],
                     actions : [],
+                    shortcuts : [],
                     routes : [],
                     rawApi : []
                   };
@@ -2408,6 +3470,44 @@
                 editor.pageData.parts = parts;
                 editor.pageData.count = count;
                 editor.pageData.page = "Edit base component";
+              });
+            },
+            "#builders/:component" : function(params) {
+              editor.pageData.app = {};
+              simplyApp.actions.getAppData()
+                .then(function(appData) {
+                editor.pageData.app = appData;
+              })
+                .then(function() {
+                return simplyApp.actions.getBuilder(params.component);
+              })
+                .then(function(parts) {
+                var component = {
+                  id : params.component
+                };
+            
+                parts = parts.filter(function(part) {
+                  if (part.id == "meta") {
+                    component = JSON.parse(part.contents);
+                    component.id = params.component;
+                    return false;
+                  }
+                  return true;
+                });
+                if (typeof component.parts === "undefined") {
+                  component.parts = {
+                    builderTemplates : []
+                  };
+                }
+                var count = {};
+                parts.forEach(function(part) {
+                  component.parts[part.id] = JSON.parse(part.contents);
+                  count[part.id] = component.parts[part.id].length;
+                });
+                editor.pageData.component = component;
+                editor.pageData.parts = parts;
+                editor.pageData.count = count;
+                editor.pageData.page = "Edit builder";
               });
             },
             "#components/:component" : function(params) {
@@ -2438,6 +3538,7 @@
                     componentCss : [],
                     commands : [],
                     actions : [],
+                    shortcuts : [],
                     dataApi : [],
                     routes : [],
                     transformers : [],
@@ -2454,11 +3555,6 @@
                 editor.pageData.parts = parts;
                 editor.pageData.count = count;
                 editor.pageData.page = "Edit component";
-              })
-                .then(function() {
-                setTimeout(function() { // FIXME: Wait for the CSS to be available;
-                  simplyApp.commands.autoRunPreviews();
-                }, 1000);
               });
             },
             "#pages/:component" : function(params) {
@@ -2489,6 +3585,7 @@
                     pageCss : [],
                     commands : [],
                     actions : [],
+                    shortcuts : [],
                     dataApi : [],
                     routes : [],
                     transformers : [],
@@ -2505,11 +3602,6 @@
                 editor.pageData.parts = parts;
                 editor.pageData.count = count;
                 editor.pageData.page = "Edit page";
-              })
-                .then(function() {
-                setTimeout(function() { // FIXME: Wait for the CSS to be available;
-                  simplyApp.commands.autoRunPreviews();
-                }, 1000);
               });
             },
             "#base" : function() {
@@ -2517,6 +3609,13 @@
                 .then(function(components) {
                 editor.pageData.components = components;
                 editor.pageData.page = "Base components";
+              });
+            },
+            "#builders" : function() {
+              simplyApp.actions.listBuilders()
+                .then(function(components) {
+                editor.pageData.components = components;
+                editor.pageData.page = "Builders";
               });
             },
             "#components" : function() {
@@ -2634,14 +3733,26 @@
         </template>
       </ul>
     </div>
+    <!-- Toast catchall -->
+    <script>
+      window.onerror = function(errorMessage, url, line) {
+        editor.pageData.alerts.unshift({
+          "data-simply-template" : "error",
+          "message" : errorMessage, 
+          "state" : "new"
+        });
+      }
+    </script>
     <!-- Toast styles -->
     <style>
       .simply-toasts {
         position: relative;
         z-index: 101;
       }
+      .simply-toasts:has(.simply-empty) {
+        display: none;
+      }
     </style>
-    
     <!-- /Body HTML -->
     <!-- Component HTML templates -->
     <template id="componentActions">
@@ -2718,6 +3829,44 @@
               <div class="simplycode-editor-code">
                 <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<link rel='stylesheet'..."></textarea>
                 <simply-render rel="componentHtmlValidator"></simply-render>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
+    <template id="componentBuilderTemplate">
+      <details class="simplycode-component">
+      <summary data-simply-command="initEditors" title="These templates are used as a boilerplate to build your project.">
+        <span data-simply-field="count.builderTemplates" data-simply-content="attributes" data-simply-attributes="data-count">
+          Builder HTML template
+        </span>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addBuilderTemplate">Add builder HTML template</button>
+        </span>
+      </summary>
+      <div class="simplycode-code-method" data-simply-list="component.parts.builderTemplates">
+        <template>
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="builder" placeholder="Builder name">
+                <label class="simplycode-tab">
+                  <input type="radio" name="builderEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+              </div>
+              <div class="simplycode-options">
+                <button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-simply-command="deleteEntry">Delete HTML</button>
+              </div>
+            </div>
+            <div class="simplycode-editors">
+              <div class="simplycode-editor-code" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+                <template data-simply-template="code">
+                  <textarea data-codemirror-mode="htmlmixed" data-simply-field="code" placeholder="<main><div>Builder contents</div></main>"></textarea>
+                </template>
               </div>
             </div>
           </div>
@@ -3185,7 +4334,7 @@
     <pre class="head">
       &lt;meta charset="utf-8">
       &lt;title>QUnit test&lt;/title>
-      &lt;link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.19.0.css">
+      &lt;link rel="stylesheet" href="/js/qunit/qunit.css">
       &lt;style>
         html,body { padding: 0; margin: 0 }
         #qunit-header { display: none; }
@@ -3201,7 +4350,7 @@
     <pre class="body">
       &lt;div id="qunit">&lt;/div>
       &lt;div id="qunit-fixture">&lt;/div>
-      &lt;script src="//code.jquery.com/qunit/qunit-1.19.0.js">&lt;/script>
+      &lt;script src="/js/qunit/qunit.js">&lt;/script>
     </pre>
     <pre class="actions">
       &lt;script>
@@ -3255,7 +4404,7 @@
     <pre class="head">
       &lt;meta charset="utf-8">
       &lt;title>QUnit test&lt;/title>
-      &lt;link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.19.0.css">
+      &lt;link rel="stylesheet" href="/js/qunit/qunit.css">
       &lt;style>
         html,body { padding: 0; margin: 0 }
         #qunit-header { display: none; }
@@ -3271,7 +4420,7 @@
     <pre class="body">
       &lt;div id="qunit">&lt;/div>
       &lt;div id="qunit-fixture">&lt;/div>
-      &lt;script src="//code.jquery.com/qunit/qunit-1.19.0.js">&lt;/script>
+      &lt;script src="/js/qunit/qunit.js">&lt;/script>
     </pre>
     <pre class="commands">
       &lt;script>
@@ -3400,6 +4549,54 @@
       </div>
     </details>
     </template>
+    <template id="componentShortcuts">
+      <details class="simplycode-component">
+      <summary data-simply-command="initEditors" title="Shortcuts are keyboard shortcuts selected to call specific actions.">
+        <span data-simply-field="count.shortcuts" data-simply-content="attributes" data-simply-attributes="data-count">
+          Shortcuts
+        </span>
+        <span class="simplycode-controls">
+          <button class="simplycode-button" data-simply-command="addShortcut">Add shortcuts</button>
+        </span>
+      </summary>
+      <div class="simplycode-code-method" data-simply-list="component.parts.shortcuts">
+        <template>
+          <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
+            <div class="simplycode-part-header">
+              <div class="simplycode-tabs">
+                <input class="simplycode-tab" data-simply-field="shortcut" placeholder="shortcut-key">
+                <label class="simplycode-tab">
+                  <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
+                  <span>Code</span>
+                </label>
+                <label class="simplycode-tab">
+                  <input type="radio" name="actionEditor" value="tests" data-simply-field="editor">
+                  <span>Tests</span>
+                </label>
+              </div>
+              <div class="simplycode-options">
+    			<button class="simplycode-button" draggable="true">Drag to move</button>
+                <button class="simplycode-button" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted" data-deleted="false" data-simply-command="deleteEntry">Delete shortcut</button>
+              </div>
+            </div>
+            <div class="simplycode-editors" data-simply-field="editor" data-simply-content="template" data-simply-default-template="code">
+              <template data-simply-template="code">
+                <div class="simplycode-editor-code">
+                  <textarea data-codemirror-mode="javascript" data-simply-field="code" placeholder="function() {...}"></textarea>
+                  <simply-render rel="componentQUnitActionRunner"></simply-render>
+                </div>
+              </template>
+              <template data-simply-template="tests">
+                <div class="simplycode-editor-code">
+                  <simply-render rel="componentQUnitTests"></simply-render>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </details>
+    </template>
     <template id="componentSorters">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Sorters are utility function that are used to sort arrays, used in datasources, actions.">
@@ -3481,10 +4678,7 @@
     </details>
     </template>
     <template id="header">
-      <h1>Simply Code - Build something awesome!</h1>
-    <div class="simplycode-controls">
-      <a href="#publish" class="simplycode-button">Preview and publish!</a>
-    </div>
+      <simply-render rel="simply-toolbar"></simply-render>
     </template>
     <template id="componentHtmlValidator">
       <div data-simply-field="code" data-simply-transformer="validateHtml"></div>
@@ -3543,6 +4737,257 @@
       </div>
     </div>
     </template>
+    <template id="logo">
+      <svg viewbox="0 0 520 300" xmlns="http://www.w3.org/2000/svg">
+      <style type="text/css">
+        .st0 {
+          fill: var(--simply-logo-color-secondary);
+        }	
+        .st1 {
+          fill: var(--simply-logo-color-primary);
+        }
+        text {
+          font-family: Cocon;
+          font-size: 143px;
+          letter-spacing: -7px;
+          fill: var(--simply-logo-color-primary);
+          text-anchor: middle;
+        }
+      </style>
+      <g class="simply">
+        <path fill="black" id="s" d="m74.400002,87.400002c-16.200005,-2.599998 -21.400002,-3.800003 -21.400002,-9.599998c0,-4.100006 2.900002,-9 16.800003,-9c9.099998,0 17.299995,1.899994 23.599998,5.299995l0,-4.299995c0,-10.700005 -10.099998,-17.200005 -27,-17.200005c-17,0 -35.300003,8.599998 -35.300003,27.400002c0,11.5 6.300003,17.599998 20.5,19.599998c16.599998,2.300003 21.400002,4 21.400002,10.300003c0,9.099998 -11.900002,9.099998 -16.300003,9.099998c-11,0 -18.599998,-2.699997 -23.699997,-5.5l0,4c0,4.399994 0,17.800003 28.199997,17.800003c21,0 34.100006,-10.199997 34.100006,-26.5c0.099991,-14.800003 -11.300003,-19.800003 -20.900002,-21.400002z" class="st0"/>
+        <path fill="black" id="im" d="m187.600006,72.5c9.199997,0 13.900009,5.599998 13.900009,16.5l0,29.599998c0,10.599998 3.799988,14.099998 15.199997,14.099998l7.399994,0l0,-43.399994c0,-13.900002 7.300018,-16.800003 13.300018,-16.800003c10.099976,0 14.5,5.300003 14.5,17.300003l0,28.899994c0,9.199997 2.599976,14.100006 16.099976,14.100006l7.300018,0l0,-42.5c0,-24.300003 -12.700012,-37.700005 -35.900024,-37.700005c-11.199982,0 -20.5,8.300003 -23.699997,13.599998l-2.699997,4.400002l-1.899994,-4.799995c-2.200012,-5.5 -10.800003,-13.100002 -23.100006,-13.100002c-8.300003,0 -15.399994,1.599998 -21.199997,4.799999c-10.800003,5.900002 -16.5,17 -16.5,32.099998l0,12.200005c0,7.599998 -3.5,11.5 -11.199997,12.199997l-0.200012,0l-0.199997,0c-7.699997,-0.599998 -11.300003,-4.5 -11.300003,-12.199997l0,-27c0,-13.5 -4.099991,-17.200005 -19,-17.200005l-4.399994,0l0,48.400002c0,7.300003 1.800003,12.900002 5.199997,16.699997c5,5.5 15.699997,11.400009 29.400009,11.400009l0.599991,0c3.900009,0 7.199997,-0.5 10,-1.200012l0.600006,-0.099991c6.800003,-1.699997 10.800003,-4.100006 13,-5.699997l0.599991,-0.400009c2.800003,-2.099991 10.300003,-9.699997 10.400009,-20l0,-16.699997c0.300003,-6.900002 1.899994,-17.5 13.800003,-17.5z" class="st0"/>
+        <path id="i-dot" d="m115,45.099998c6.800003,0 12.300003,-5.199997 12.300003,-11.599998c0,-6.400002 -5.5,-11.6 -12.300003,-11.6c-6.899994,0 -12.5,5.199999 -12.5,11.6c0,6.400002 5.600006,11.599998 12.5,11.599998z" class="st1"/>
+        <path fill="black" id="p" d="m328.600006,52.599998c-27.899994,0 -43.299988,15.800003 -43.299988,44.5l0,43.900002c0,12.199997 4.5,17.5 14.899994,17.5l7.799988,0l0,-38.099998c0,0 0.200012,2.900002 4.900024,8.299995c5.5,5.600006 10.299988,6.5 19,6.5c21.899994,0 36.599976,-17.299995 36.599976,-43.099998c0,-23.299995 -16.399994,-39.5 -39.899994,-39.5zm1.600006,62.900002c-9.799988,0 -19.100006,-6.199997 -19.100006,-23.800003c0,-12.199997 8.100006,-19.799995 15.899994,-19.799995c11.800018,0 18.900024,5.400002 18.900024,23.199997c-0.000031,12.400002 -6.700012,20.400002 -15.700012,20.400002z" class="st0"/>
+        <path id="l" d="m400.799988,103.699997l0,-60.199997c0,-12.200001 -4.600006,-17.200001 -15.899994,-17.200001l-7.5,0l0,81.600002c0,19.200005 13.299988,26.099998 25.799988,26.099998c4.800018,0 16.100006,-1 16.100006,-10.699997l0,-7.300003l-3.700012,0c-6.399963,0 -14.799988,-1.300003 -14.799988,-12.300003z" class="st0"/>
+        <path fill="black" id="y" d="m483,55l-11.399994,0c-2.100006,15.800003 -8.300018,37.099998 -14.399994,49.5l-2.5,5.099998l-2.200012,-5.199997c-4.5,-10.300003 -10.299988,-26.599998 -13.100006,-39.700005c-1.399994,-6.399994 -7.899994,-9.699997 -13.600006,-9.699997l-11.799988,0c4,21.400002 17.799988,56.099998 29.600006,73.600006l0.799988,1.199997l-0.600006,1.300003c-3.5,8 -8.099976,11.299988 -16.199982,12l-10,0.699997l0,4.5c0,8.599991 7.699982,11.699997 14.299988,11.699997c16.100006,0 21.300018,-3.800003 44.200012,-47.800003c9.300018,-17.799995 16.800018,-41.5 16.800018,-49.299995c-0.300049,-3.300003 -1.300049,-7.900002 -9.900024,-7.900002z" class="st0"/>
+      </g>
+      <text x="50%" y="276">
+        code
+      </text>
+    </svg>
+    </template>
+    <template id="simply-toolbar-base-component">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button data-simply-accesskey="Control+s" class="ds-button simply-toolbar-button" data-simply-command="saveBaseComponent">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="deleteBaseComponent">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-builder">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button data-simply-accesskey="Control+s" class="ds-button simply-toolbar-button" data-simply-command="saveBuilder">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="deleteBuilder">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-component">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button data-simply-accesskey="Control+s" class="ds-button simply-toolbar-button" data-simply-command="saveComponent">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="deleteComponent">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-default">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-page-frame">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button data-simply-accesskey="Control+s" class="ds-button simply-toolbar-button" data-simply-command="savePageFrame">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-page">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button data-simply-accesskey="Control+s" class="ds-button simply-toolbar-button" data-simply-command="savePage">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="deletePage">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar-publish">
+      <div class="simply-toolbar-title">
+      <simply-render rel="logo"></simply-render>
+    </div>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#save">
+        </use></svg>
+      Save
+    </button>
+    <button disabled class="ds-button simply-toolbar-button">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#trash">
+        </use></svg>
+      Delete
+    </button>
+    <span class="simply-toolbar-push-right"></span>
+    <button class="ds-button simply-toolbar-button" data-simply-command="preview">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#eye">
+        </use></svg>
+      Preview
+    </button>
+    <button class="ds-button simply-toolbar-button" data-simply-command="saveAppHtml">
+      <svg class="ds-icon ds-icon-feather">
+        <use xlink:href="/assets/img/feather-sprite.svg#check">
+        </use></svg>
+      Publish
+    </button>
+    </template>
+    <template id="simply-toolbar">
+      <nav class="simply-toolbar simply-toolbar-main" data-simply-field="page" data-simply-section="simply-code-management" data-simply-content="template" data-simply-default-template="default" data-simply-default-value="default">
+      <template data-simply-template="default" rel="simply-toolbar-default"></template>
+      <template data-simply-template="Edit builder" rel="simply-toolbar-builder"></template>
+      <template data-simply-template="Edit page" rel="simply-toolbar-page"></template>
+      <template data-simply-template="Edit component" rel="simply-toolbar-component"></template>
+      <template data-simply-template="Edit base component" rel="simply-toolbar-base-component"></template>
+      <template data-simply-template="Edit page frame" rel="simply-toolbar-page-frame"></template>
+      <template data-simply-template="Publish App" rel="simply-toolbar-publish"></template>
+    </nav>
+    </template>
     <!-- /Component HTML templates -->
     <header data-simply-path="/" data-simply-field="header" data-simply-content="template" data-simply-default-value="Header">
       <template data-simply-template='Header' rel="header"></template>
@@ -3556,16 +5001,13 @@
       <main>
       <div class="simplycode-header">
         <h1>Edit base component: <span data-simply-field="component.id"></span></h1>
-        <div class="simplycode-controls">
-          <button class="simplycode-button" data-simply-command="saveBaseComponent">Save</button>
-          <button class="simplycode-button" data-simply-command="deleteBaseComponent">Delete</button>
-        </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
       <simply-render rel="componentHeadHtml"></simply-render>
       <simply-render rel="componentBodyHtml"></simply-render>
       <simply-render rel="componentFootHtml"></simply-render>
       <simply-render rel="componentCommands"></simply-render>
+      <simply-render rel="componentShortcuts"></simply-render>
       <simply-render rel="componentActions"></simply-render>
       <simply-render rel="componentRoutes"></simply-render>
       <simply-render rel="componentRawApi"></simply-render>
@@ -3574,14 +5016,14 @@
     <template data-simply-template="Base components">
       <main>
       <h1>Base components</h1>
-      <ul class="simplycode-components-list" data-simply-list="components">
+      <div class="simplycode-component-list" data-simply-list="components">
         <template>
-          <li data-simply-command="navigate">
-            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="baseComponentLink"><span data-simply-field="id"></span></a>
-            <p data-simply-field="description"></p>
-          </li>
+          <a class="simplycode-component-list-item" data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="baseComponentLink">
+            <h3 data-simply-field="id"></h3>
+            <p class="ds-margin-up" data-simply-field="description"></p>
+          </a>
         </template>
-      </ul>
+      </div>
       <h1>Add base component</h1>
       <div class="simplycode-part">
         <div class="simplycode-part-header">
@@ -3600,19 +5042,55 @@
       </div>
     </main>
     </template>
+    <template data-simply-template="Edit builder">
+      <main>
+      <div class="simplycode-header">
+        <h1>Edit builder: <span data-simply-field="component.id"></span></h1>
+      </div>
+      <simply-render rel="componentDescription"></simply-render>
+      <simply-render rel="componentBuilderTemplate"></simply-render>
+    </main>
+    </template>
+    <template data-simply-template="Builders">
+      <main>
+      <h1>Builders</h1>
+      <div class="simplycode-component-list" data-simply-list="components">
+        <template>
+          <a class="simplycode-component-list-item" data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="builderLink">
+            <h3 data-simply-field="id"></h3>
+            <p class="ds-margin-up" data-simply-field="description"></p>
+          </a>
+        </template>
+      </div>
+      <h1>Add builder</h1>
+      <div class="simplycode-part">
+        <div class="simplycode-part-header">
+          <div class="simplycode-tabs">
+            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+          </div>
+          <div class="simplycode-options">
+            <button class="simplycode-button" data-simply-command="createBuilder">Create</button>
+          </div>
+        </div>
+        <div class="simplycode-editors">
+          <div class="simplycode-editor-code">
+            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    </template>
     <template data-simply-template="Edit component">
       <main>
       <div class="simplycode-header">
         <h1>Edit component: <span data-simply-field="component.id"></span></h1>
-        <div class="simplycode-controls">
-          <button class="simplycode-button" data-simply-command="saveComponent">Save</button>
-          <button class="simplycode-button" data-simply-command="deleteComponent">Delete</button>
-        </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
       <simply-render rel="componentComponentTemplate"></simply-render>
       <simply-render rel="componentComponentCss"></simply-render>
       <simply-render rel="componentCommands"></simply-render>
+      <simply-render rel="componentShortcuts"></simply-render>
       <simply-render rel="componentActions"></simply-render>
       <simply-render rel="componentDataApi"></simply-render>
       <simply-render rel="componentRoutes"></simply-render>
@@ -3624,14 +5102,14 @@
     <template data-simply-template="List components">
       <main>
       <h1>Components</h1>
-      <ul class="simplycode-components-list" data-simply-list="components">
+      <div class="simplycode-component-list" data-simply-list="components">
         <template>
-          <li data-simply-command="navigate">
-            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink"><span data-simply-field="id"></span></a>
-            <p data-simply-field="description"></p>
-          </li>
+          <a class="simplycode-component-list-item data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink">
+            <h3 data-simply-field="id"></h3>
+            <p class="ds-margin-up" data-simply-field="description"></p>
+          </a>
         </template>
-      </ul>
+      </div>
       <h1>Add component</h1>
       <div class="simplycode-part">
         <div class="simplycode-part-header">
@@ -3655,15 +5133,12 @@
       <main>
       <div class="simplycode-header">
         <h1>Edit page: <span data-simply-field="component.id"></span></h1>
-        <div class="simplycode-controls">
-          <button class="simplycode-button" data-simply-command="savePage">Save</button>
-          <button class="simplycode-button" data-simply-command="deletePage">Delete</button>
-        </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
       <simply-render rel="componentPageTemplate"></simply-render>
       <simply-render rel="componentPageCss"></simply-render>
       <simply-render rel="componentCommands"></simply-render>
+      <simply-render rel="componentShortcuts"></simply-render>
       <simply-render rel="componentActions"></simply-render>
       <simply-render rel="componentDataApi"></simply-render>
       <simply-render rel="componentRoutes"></simply-render>
@@ -3676,9 +5151,6 @@
       <main>
       <div class="simplycode-header">
         <h1>Edit page frame</h1>
-        <div class="simplycode-controls">
-          <button class="simplycode-button" data-simply-command="savePageFrame">Save</button>
-        </div>
       </div>
       <simply-render rel="componentDescription"></simply-render>
       <simply-render rel="componentPageFrame"></simply-render>
@@ -3687,14 +5159,14 @@
     <template data-simply-template="Pages">
       <main>
       <h1>Pages</h1>
-      <ul class="simplycode-components-list" data-simply-list="components">
+      <div class="simplycode-component-list" data-simply-list="components">
         <template>
-          <li data-simply-command="navigate">
-            <a href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="pageLink"><span data-simply-field="id"></span></a>
-            <p data-simply-field="description"></p>
-          </li>
+          <a class="simplycode-component-list-item" data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="pageLink">
+            <h3 data-simply-field="id"></h3>
+            <p class="ds-margin-up" data-simply-field="description"></p>
+          </a>
         </template>
-      </ul>
+      </div>
       <h1>Add page</h1>
       <div class="simplycode-part">
         <div class="simplycode-part-header">
@@ -3729,9 +5201,6 @@
     <template data-simply-template="Publish App">
       <main>
       <h1>App preview</h1>
-      <div class="field">
-        <button class="simplycode-button" data-simply-command="saveAppHtml">Publish App</button>
-      </div>
       <simply-render rel="fullAppPreview"></simply-render>
     </main>
     </template>
@@ -3828,6 +5297,7 @@
             let replacements = {
               "componentPreview" : data,
               "actions" : editor.transformers.simplyPreviewActions.render(editor.pageData.app.actions ?? []),
+              "shortcuts" : editor.transformers.simplyPreviewShortcuts.render(editor.pageData.app.shortcuts ?? []),
               "commands" : editor.transformers.simplyPreviewCommands.render(editor.pageData.app.commands ?? []),
               "dataApi" : editor.transformers.simplyPreviewDataApi.render(editor.pageData.app.dataApi ?? []),
               "rawApi" : editor.transformers.simplyPreviewRawApi.render(editor.pageData.app.rawApi ?? []),
@@ -3955,6 +5425,7 @@
             var fullApp = data.pageFrame.fullApp;
             let replacements = {
               "actions" : editor.transformers.simplyPreviewActions.render(data.actions ?? []),
+              "shortcuts" : editor.transformers.simplyPreviewShortcuts.render(data.shortcuts ?? []),
               "commands" : editor.transformers.simplyPreviewCommands.render(data.commands ?? []),
               "dataApi" : editor.transformers.simplyPreviewDataApi.render(data.dataApi ?? []),
               "rawApi" : editor.transformers.simplyPreviewRawApi.render(data.rawApi ?? []),
@@ -4009,6 +5480,7 @@
             let replacements = {
               "pagePreview" : data,
               "actions" : editor.transformers.simplyPreviewActions.render(editor.pageData.app.actions ?? []),
+              "shortcuts" : editor.transformers.simplyPreviewShortcuts.render(editor.pageData.app.shortcuts ?? []),
               "commands" : editor.transformers.simplyPreviewCommands.render(editor.pageData.app.commands ?? []),
               "dataApi" : editor.transformers.simplyPreviewDataApi.render(editor.pageData.app.dataApi ?? []),
               "rawApi" : editor.transformers.simplyPreviewRawApi.render(editor.pageData.app.rawApi ?? []),
@@ -4097,6 +5569,19 @@
             return this.originalData;
           }
         },
+        "simplyPreviewShortcuts" : {
+          render : function(data) {
+            this.originalData = data;
+            methods = [];
+            data.forEach(function(method) {
+              methods.push('"' + method.shortcut + '" : ' + method.code);
+            });
+            return methods.join(",\n");
+          },
+          extract : function(data) {
+            return this.originalData;
+          }
+        },
         "simplyPreviewSorters" : {
           render : function(data) {
             this.originalData = data;
@@ -4133,6 +5618,18 @@
             this.simplyData = data;
             return {
               href : "#base/" + data,
+              innerHTML: data
+            };
+          },
+          extract : function(data) {
+            return this.simplyData;
+          }
+        },
+        "builderLink" : {
+          render : function(data) {
+            this.simplyData = data;
+            return {
+              href : "#builders/" + data,
               innerHTML: data
             };
           },
@@ -4228,6 +5725,12 @@
             var newname = event.data.arguments[1];
             var oldname = event.data.arguments[2];
     
+            if (typeof editor.pageData.app === "undefined") {
+              editor.pageData.app = {};
+            }
+            if (typeof editor.pageData.app[component] === "undefined") {
+              editor.pageData.app[component] = [];
+            }
             editor.pageData.app[component].forEach(function(appPart) {
               if (appPart[componentNameField] == oldname) {
                 appPart[componentNameField] = newname;
@@ -4241,7 +5744,10 @@
           autoRunPreviewTimeout = window.setTimeout(function() {
             // Update the app data for the preview
             for (component in editor.pageData.component.parts) {
-              if (!editor.pageData.app[component]) {
+              if (typeof editor.pageData.app === "undefined") {
+                editor.pageData.app = {};
+              }
+              if (typeof editor.pageData.app[component] === "undefined") {
                 editor.pageData.app[component] = [];
               }
               var componentNameField = simplyApp.actions.getComponentNameField(component);

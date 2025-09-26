@@ -9,6 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make-mac": "electron-forge make --platform darwin",
+    "make-macintel": "electron-forge make --platform darwin --arch=\"arm64\"",
     "postinstall": "scripts/post-install.sh",
     "publish": "electron-forge publish"
   },
@@ -30,18 +31,23 @@
     "@electron-forge/plugin-fuses": "^7.5.0",
     "@electron-forge/publisher-github": "^7.5.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^30.5.1",
+    "electron": "^37.1.0",
     "electron-installer-debian": "^3.2.0",
     "electron-installer-redhat": "^3.4.0"
   },
   "optionalDependencies": {
     "@electron-forge/maker-dmg": "^7.5.0",
     "appdmg": "^0.6.6",
-    "electron-installer-dmg": "^4.0.0"
+    "electron-installer-dmg": "^5.0.1"
   },
   "dependencies": {
+    "codemirror": "^5.65.2",
     "electron-squirrel-startup": "^1.0.1",
-    "simplycode": "github:simplyedit/simplycode"
+    "qunit": "^2.24.1",
+    "node-abi": "^4.11.0",
+    "simplycode": "github:simplyedit/simplycode",
+    "simplyedit": "github:simplyedit/simplyedit",
+    "simplyview": "github:simplyedit/simplyview"
   },
   "config": {
     "forge": "forge.config.js"
