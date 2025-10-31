@@ -10,7 +10,7 @@
     "make": "electron-forge make",
     "make-mac": "electron-forge make --platform darwin",
     "make-macintel": "electron-forge make --platform darwin --arch=\"arm64\"",
-    "postinstall": "scripts/post-install.sh",
+    "postinstall": "bash scripts/post-install.sh",
     "publish": "electron-forge publish"
   },
   "productName": "simplycode",
