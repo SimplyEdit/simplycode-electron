@@ -22,7 +22,8 @@ jobs:
         run: npm install
       - name: publish
         run: npm run publish
-
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   publish_for_mac:
     runs-on: macos-latest
     steps:
@@ -34,6 +35,8 @@ jobs:
         run: npm install
       - name: publish
         run: npm run publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish_for_win:
     runs-on: windows-latest
@@ -46,3 +49,5 @@ jobs:
         run: npm install
       - name: publish
         run: npm run publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
