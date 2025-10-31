@@ -37,7 +37,6 @@ jobs:
         node-version: 22
     - name: install dependencies
       run: npm install
-      shell: bash 
     - name: build
       run: npm run package
 
