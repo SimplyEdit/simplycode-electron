@@ -10,7 +10,7 @@
     "make": "electron-forge make",
     "make-mac": "electron-forge make --platform darwin",
     "make-macintel": "electron-forge make --platform darwin --arch=\"arm64\"",
-    "postinstall": "scripts/post-install.sh",
+    "postinstall": "bash scripts/post-install.sh",
     "publish": "electron-forge publish"
   },
   "productName": "simplycode",
@@ -31,11 +31,11 @@
     "@electron-forge/plugin-fuses": "^7.5.0",
     "@electron-forge/publisher-github": "^7.5.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^37.3.1",
-    "electron-installer-debian": "^3.2.0",
-    "electron-installer-redhat": "^3.4.0"
+    "electron": "^37.3.1"
   },
   "optionalDependencies": {
+    "electron-installer-redhat": "^3.4.0",
+    "electron-installer-debian": "^3.2.0",
     "@electron-forge/maker-dmg": "^7.5.0",
     "appdmg": "^0.6.6",
     "electron-installer-dmg": "^5.0.1"
