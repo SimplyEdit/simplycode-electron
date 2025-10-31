@@ -44,7 +44,7 @@ module.exports = {
           owner: 'SimplyEdit',
           name: 'simplycode-electron'
         },
-        prerelease: true
+        prerelease: false
       }
     }
   ],
