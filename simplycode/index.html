@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <!-- Component CSS -->
     <style>
-      /* extra */
+      /* extra (component/0-ds-styling) */
       @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
-      /* style */
+      /* style (component/0-ds-styling) */
       /* ds-alert-root */
       :root {
         --ds-alert-text-color: var(--ds-black);
@@ -486,7 +486,7 @@
         margin-top: var(--ds-spacing);
       }
       
-      /* extra */
+      /* extra (component/1-styling) */
       @import url('https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400i,700,700i');
       
       html, body {
@@ -515,7 +515,7 @@
         border: 0;
         padding: 5px;
       }
-      /* simply-toast */
+      /* simply-toast (component/1-styling) */
       :root {
         --simply-toast-height: 60px;
         --simply-toast-hide-delay: 3s;
@@ -638,7 +638,7 @@
         animation-delay: 0s, var(--simply-toast-hide-delay);
       }
       
-      /* simplycode-component-list */
+      /* simplycode-component-list (component/1-styling) */
       :root {
         --simplycode-component-list-spacing-row: calc(0.5 * var(--ds-spacing));
         --simplycode-component-list-spacing-column: calc(0.5 * var(--ds-spacing));
@@ -689,7 +689,7 @@
       .simplycode-component-list-item > :last-child {
         margin-bottom: 0;
       }
-      /* simplycode-ds-mapping */
+      /* simplycode-ds-mapping (component/1-styling) */
       /* simplycode-ds-core-colors */
       :root {
         --ds-primary: var(--simplycode-highlight-light);
@@ -709,7 +709,7 @@
         --ds-heading-font: var(--simplycode-font-family);
       }
       
-      /* style */
+      /* style (component/1-styling) */
       :root {
         --simplycode-highlight-dark: #f16623;
         --simplycode-highlight-light: #ff8003;
@@ -949,7 +949,7 @@
       .simplycode-editor-code textarea {
         margin-top: -1px;
       }
-      /* QUnit iframe */
+      /* QUnit iframe (component/component-qunit-tests) */
       .qunit-code {
         display: none;
       }
@@ -958,7 +958,7 @@
         width: 100%;
         height: 0px;
       }
-      /* code-method block */
+      /* code-method block (component/components-generic) */
       .simplycode-code-method {
         width: 100%;
       }
@@ -976,12 +976,12 @@
       .simplycode-component summary span[data-count="0"]:after {
         content: '';
       }
-      /* deleted-parts */
+      /* deleted-parts (component/components-generic) */
       .simplycode-part[data-deleted="true"] {
         opacity: 0.3;
       }
       
-      /* simply dragdrop */
+      /* simply dragdrop (component/dragdrop) */
       [data-simply-list].simply-dragdrop-receiving {
         outline: 2px dashed var(--highlight-dark);
       }
@@ -996,7 +996,7 @@
       [draggable] {
         cursor: move;
       }
-      /* HTML validator */
+      /* HTML validator (component/html-validator) */
       .simplycode-html-valid,
       .simplycode-html-invalid {
         padding: 4px 10px;
@@ -1026,7 +1026,7 @@
       .simplycode-html-message [data-simply-field=firstLine]:not(:empty):after {
         content: " - ";
       }
-      /* App full preview */
+      /* App full preview (component/previews) */
       .simplycode-preview-code {
         display: none;
       }
@@ -1059,12 +1059,12 @@
         position: absolute;
         background-color: white;
       }
-      /* simply-logo */
+      /* simply-logo (component/simply-logo) */
       :root {
         --simply-logo-color-primary: var(--simplycode-highlight-dark);
         --simply-logo-color-secondary: white;
       }
-      /* simply-toolbar-button */
+      /* simply-toolbar-button (component/simply-toolbar) */
       .simply-toolbar-button {
         height: var(--simply-toolbar-button-height);
         border-top: 1px solid transparent;
@@ -1125,7 +1125,7 @@
         background-color: transparent;
         color: var(--ds-grey-60);
       }
-      /* simply-toolbar */
+      /* simply-toolbar (component/simply-toolbar) */
       :root {
         --simply-toolbar-height: 60px;
         --simply-toolbar-primary: var(--simplycode-highlight-dark);
@@ -1217,7 +1217,7 @@
     <!-- /Component CSS -->
     <!-- Page CSS -->
     <style>
-      /* simplycode-fullscreen-preview */
+      /* simplycode-fullscreen-preview (page/preview) */
       main.simplycode-fullscreen-preview iframe {
         position: fixed;
         top: 0;
@@ -1235,7 +1235,7 @@
     </style>
     <!-- /Page CSS -->
     <!-- Head HTML -->
-    <!-- cocon -->
+    <!-- cocon (baseComponent/font-cocon) -->
     <style>
       @font-face {
         font-family: 'Cocon';
@@ -1252,6 +1252,7 @@
         simply.bind = false;
         /* Raw API */
         var simplyRawApi = {
+          // baseComponent/raw-api
           "delete" : function(endpoint, params={}) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1268,6 +1269,7 @@
               method: "DELETE"
             });
           },
+          // baseComponent/raw-api
           "encodeGetParams" : function(params) {
             if (!params) {
               return "";
@@ -1276,6 +1278,7 @@
               return "?" + keyvalue.map(encodeURIComponent).join("=")
             }).join("&");
           },
+          // baseComponent/raw-api
           "get" : function(endpoint, params={}) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1291,10 +1294,12 @@
               headers: this.headers
             });
           },
+          // baseComponent/raw-api
           "headers" : {
           	'Accept': 'application/json',
           	'Content-Type': 'application/json'
           },
+          // baseComponent/raw-api
           "post" : function(endpoint, params={}) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1312,6 +1317,7 @@
               body: JSON.stringify(params, null, "\t")
             });
           },
+          // baseComponent/raw-api
           "postRaw" : function(endpoint, params={}, body) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1329,6 +1335,7 @@
               body: body
             });
           },
+          // baseComponent/raw-api
           "put" : function(endpoint, params={}) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1346,6 +1353,7 @@
               body: JSON.stringify(params, null, "\t")
             });
           },
+          // baseComponent/raw-api
           "putRaw" : function(endpoint, params={}, body) {
             if (!params.token && editor.pageData.token) {
               params.token = editor.pageData.token;
@@ -1363,11 +1371,13 @@
               body: body
             });
           },
+          // baseComponent/raw-api
           "url" : "/api/"
         };
         /* End of Raw API */
         /* Data API */
         simplyDataApi = {
+          // component/data-format
           "deletePart" : function(basePath, part) {
             switch (part) {
               case "meta":
@@ -1378,6 +1388,7 @@
                 break;
             }
           },
+          // component/data-format
           "mergeComponent" : function(component) {
             // this function morphs the component parts for seperate files back into one structure.
             component.forEach(function(componentPart) {
@@ -1782,6 +1793,7 @@
             });
             return component;
           },
+          // component/data-format
           "mergePageFrame" : function(component) {
             var contents = {};
             component.forEach(function(partFile) {
@@ -1791,6 +1803,7 @@
             });
             return component;
           },
+          // component/data-format
           "savePart" : function(basePath, part, contents) {
             var results = [];
           
@@ -2179,6 +2192,7 @@
               return responses[0];
             });
           },
+          // component/navigation
           "browse" : function(path) {
             return simplyRawApi.get(path)
               .then(function(response) {
@@ -2188,6 +2202,7 @@
               throw new Error("browse failed", response.status);
             });
           },
+          // page/base-component
           "deleteBaseComponent" : function(component) {
             return simplyRawApi.delete("base-components/" + component)
               .then(function(response) {
@@ -2197,6 +2212,7 @@
               throw new Error("deleteComponent failed", response.status);
             });
           },
+          // page/base-component
           "deleteBaseComponentPart" : function(component, part) {
             return simplyRawApi.delete("base-components/" + component + "/" + part)
               .then(function(response) {
@@ -2207,6 +2223,7 @@
               // allowed while data upgrade is needed
             });
           },
+          // page/base-component
           "getBaseComponent" : function(component) {
             return simplyRawApi.get("base-components/" + component)
               .then(function(response) {
@@ -2219,6 +2236,7 @@
               return simplyDataApi.mergeComponent(component);
             });
           },
+          // page/base-component
           "saveBaseComponentPart" : function(component, part, contents) {
             return simplyDataApi.savePart("base-components/" + component, part, contents)
               .then(function(response) {
@@ -2235,6 +2253,7 @@
               });
             });
           },
+          // page/base-components
           "listBaseComponents" : function() {
             return simplyRawApi.get("base-components")
               .then(function(response) {
@@ -2246,11 +2265,13 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.baseType = 'baseComponent';
                 component.description = component.contents.description;
               });
               return components;
             });
           },
+          // page/builder
           "deleteBuilder" : function(component) {
             return simplyRawApi.delete("builders/" + component)
               .then(function(response) {
@@ -2260,6 +2281,7 @@
               throw new Error("deleteBuilder failed", response.status);
             });
           },
+          // page/builder
           "deleteBuilderPart" : function(component, part) {
             return simplyRawApi.delete("builders/" + component + "/" + part)
               .then(function(response) {
@@ -2269,6 +2291,7 @@
               throw new Error("deleteBuilderPart failed", response.status);
             });
           },
+          // page/builder
           "getBuilder" : function(component) {
             return simplyRawApi.get("builders/" + component)
               .then(function(response) {
@@ -2281,6 +2304,7 @@
               return simplyDataApi.mergeComponent(component);
             });
           },
+          // page/builder
           "saveBuilderPart" : function(component, part, contents) {
             return simplyDataApi.savePart("builders/" + component, part, contents)
               .then(function(response) {
@@ -2297,6 +2321,7 @@
               });
             });
           },
+          // page/builders
           "listBuilders" : function() {
             return simplyRawApi.get("builders")
               .then(function(response) {
@@ -2308,11 +2333,13 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.baseType = 'builder';
                 component.description = component.contents.description;
               });
               return components;
             });
           },
+          // page/component
           "deleteComponent" : function(component) {
               return simplyRawApi.delete("components/" + component)
               .then(function(response) {
@@ -2322,6 +2349,7 @@
                   throw new Error("deleteComponent failed", response.status);
               });
           },
+          // page/component
           "deleteComponentPart" : function(component, part) {
            return simplyRawApi.delete("components/" + component + "/" + part)
               .then(function(response) {
@@ -2331,6 +2359,7 @@
               throw new Error("deleteComponentPart failed", response.status);
             });
           },
+          // page/component
           "getComponent" : function(component) {
             return simplyRawApi.get("components/" + component)
             .then(function(response) {
@@ -2343,6 +2372,7 @@
               return simplyDataApi.mergeComponent(component);
             });
           },
+          // page/component
           "saveComponentPart" : function(component, part, contents) {
             return simplyDataApi.savePart("components/" + component, part, contents)
               .then(function(response) {
@@ -2359,6 +2389,7 @@
               });
             });
           },
+          // page/component-list
           "listComponents" : function() {
             return simplyRawApi.get("components")
               .then(function(response) {
@@ -2371,10 +2402,12 @@
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
                 component.description = component.contents.description;
+                component.baseType = 'component';
               });
               return components;
             });
           },
+          // page/page
           "deletePage" : function(component) {
             return simplyRawApi.delete("pages/" + component)
               .then(function(response) {
@@ -2384,6 +2417,7 @@
               throw new Error("deleteComponent failed", response.status);
             });
           },
+          // page/page
           "deletePagePart" : function(component, part) {
             return simplyRawApi.delete("pages/" + component + "/" + part)
               .then(function(response) {
@@ -2393,6 +2427,7 @@
               throw new Error("deletePagePart failed", response.status);
             });
           },
+          // page/page
           "getPage" : function(component) {
             return simplyRawApi.get("pages/" + component)
               .then(function(response) {
@@ -2405,6 +2440,7 @@
               return simplyDataApi.mergeComponent(component);
             });
           },
+          // page/page
           "savePagePart" : function(component, part, contents) {
             return simplyDataApi.savePart("pages/" + component, part, contents)
               .then(function(response) {
@@ -2421,6 +2457,7 @@
               });
             });
           },
+          // page/page-frame
           "deletePageFramePart" : function(part) {
             return simplyRawApi.delete("page-frame/" + part)
               .then(function(response) {
@@ -2431,6 +2468,7 @@
               // allowed while data upgrade is needed
             });
           },
+          // page/page-frame
           "getPageFrame" : function() {
             return simplyRawApi.get("page-frame")
               .then(function(response) {
@@ -2463,6 +2501,7 @@
               return simplyDataApi.mergePageFrame(component);
             });
           },
+          // page/page-frame
           "savePageFramePart" : function(part, contents) {
             if (part == "meta") {
               return '"ok"';
@@ -2482,6 +2521,7 @@
               });
             });
           },
+          // page/pages
           "listPages" : function() {
             return simplyRawApi.get("pages")
               .then(function(response) {
@@ -2493,11 +2533,13 @@
               .then(function(components) {
               components.forEach(function(component) {
                 simplyDataApi.mergeComponent(component.contents);
+                component.baseType = 'page';
                 component.description = component.contents.description;
               });
               return components;
             });
           },
+          // page/publish
           "saveAppHtml" : function(appHtml) {
             return simplyRawApi.putRaw("generated.html", {}, appHtml)
               .then(function(response) {
@@ -2507,6 +2549,7 @@
               throw new Error("saveAppHtml failed", response.status);
             });
           },
+          // page/publish
           "saveBuild" : function(target, contents) {
             return simplyRawApi.putRaw(target, {}, contents)
               .then(function(response) {
@@ -2521,6 +2564,7 @@
         simplyApp = simply.app({
           /* Actions */
           actions: {
+            // baseComponent/automatic-preview
             "getComponentNameField" : function(component) { 
               /*
               var nameOptions = [
@@ -2560,6 +2604,7 @@
                   return 'name';
               }
             },
+            // component/component-builder-template
             "build" : function(builderTemplate, data) {
               var build = builderTemplate;
               let replacements = {
@@ -2594,12 +2639,14 @@
             
               return build;
             },
+            // component/navigation
             "browse" : function(path) {
               return simplyDataApi.browse(path)
                 .catch(function(error) {
                 return [];
               });
             },
+            // component/navigation
             "getMainMenu" : function() {
               return new Promise(function(resolve, reject) {
                 return resolve(
@@ -2643,12 +2690,15 @@
                 );
               });
             },
+            // page/base-component
             "deleteBaseComponent" : function(component) {
               return simplyDataApi.deleteBaseComponent(component);
             },
+            // page/base-component
             "getBaseComponent" : function(component) {
               return simplyDataApi.getBaseComponent(component);
             },
+            // page/base-component
             "saveBaseComponent" : function(component) {
               var promises = [];
               for (var name in component.parts) {
@@ -2672,18 +2722,22 @@
                 return true;
               });
             },
+            // page/base-components
             "listBaseComponents" : function() {
               return simplyDataApi.listBaseComponents()
                 .catch(function(error) {
                 return [];
               });
             },
+            // page/builder
             "deleteBuilder" : function(component) {
               return simplyDataApi.deleteBuilder(component);
             },
+            // page/builder
             "getBuilder" : function(component) {
               return simplyDataApi.getBuilder(component);
             },
+            // page/builder
             "saveBuilder" : function(component) {
               var promises = [];
               for (var name in component.parts) {
@@ -2707,18 +2761,22 @@
                 return true;
               });
             },
+            // page/builders
             "listBuilders" : function() {
               return simplyDataApi.listBuilders()
                 .catch(function(error) {
                 return [];
               });
             },
+            // page/component
             "deleteComponent" : function(component) {
                 return simplyDataApi.deleteComponent(component);
             },
+            // page/component
             "getComponent" : function(component) {
               return simplyDataApi.getComponent(component);
             },
+            // page/component
             "saveComponent" : function(component) {
               var promises = [];
               for (var name in component.parts) {
@@ -2742,18 +2800,22 @@
                 return true;
               });
             },
+            // page/component-list
             "listComponents" : function() {
               return simplyDataApi.listComponents()
                 .catch(function(error) {
                 return [];
               });
             },
+            // page/page
             "deletePage" : function(component) {
               return simplyDataApi.deletePage(component);
             },
+            // page/page
             "getPage" : function(component) {
               return simplyDataApi.getPage(component);
             },
+            // page/page
             "savePage" : function(component) {
               var promises = [];
               for (var name in component.parts) {
@@ -2777,12 +2839,14 @@
                 return true;
               });
             },
+            // page/page-frame
             "getPageFrame" : function() {
               return simplyDataApi.getPageFrame()
               .catch(function(error) {
                 return [];
               });
             },
+            // page/page-frame
             "savePageFrame" : function(component) {
               var promises = [];
               for (var name in component.parts) {
@@ -2800,12 +2864,14 @@
                 return true;
               });
             },
+            // page/pages
             "listPages" : function() {
               return simplyDataApi.listPages()
                 .catch(function(error) {
                 return [];
               });
             },
+            // page/publish
             "getAppData" : function() {
               var appData = {
               };
@@ -2862,6 +2928,7 @@
                       }
                       parts = JSON.parse(part.contents);
                       parts.forEach(function(entry) {
+                        entry.base = component.baseType + "/" + component.id;
                         appData[part.id].push(entry);
                       });
                     });
@@ -2891,6 +2958,7 @@
                 return appData;
               });
             },
+            // page/publish
             "getBaseComponents" : function() {
               var promises = [];
               return simplyApp.actions.listBaseComponents()
@@ -2903,6 +2971,7 @@
                 return Promise.all(promises);
               });
             },
+            // page/publish
             "getComponents" : function() {
               var promises = [];
               return simplyApp.actions.listComponents()
@@ -2915,6 +2984,7 @@
                 return Promise.all(promises);
               });
             },
+            // page/publish
             "getPages" : function() {
               var promises = [];
               return simplyApp.actions.listPages()
@@ -2927,6 +2997,7 @@
                 return Promise.all(promises);
               });
             },
+            // page/publish
             "getRouteWeight" : function(route) {
               var pathicles = route.route.split("/");
               var weight = "";
@@ -2945,9 +3016,11 @@
               }
               return parseInt(weight);
             },
+            // page/publish
             "saveAppHtml" : function(appHtml) {
               return simplyDataApi.saveAppHtml(appHtml);
             },
+            // page/publish
             "saveBuild" : function(target, contents) {
               return simplyDataApi.saveBuild(target, contents);
             }
@@ -2955,6 +3028,7 @@
           /* /Actions */
           /* Commands */
           commands: {
+            // baseComponent/automatic-preview
             "autoRunPreviews" : function(el) {
               var previewRunners = document.querySelectorAll("iframe.simplycode-full-preview");
               previewRunners.forEach(function(previewRunner) {
@@ -2987,6 +3061,7 @@
                 });
               });
             },
+            // baseComponent/automatic-preview
             "resetPreview" : function(el) {
               return new Promise(function(resolve, reject) {
                 var newRunner = el.cloneNode(false);
@@ -2997,15 +3072,32 @@
                 el.remove();
               });
             },
+            // baseComponent/automatic-tests
             "autoRunTests" : function(el) {
               var testRunners = document.querySelectorAll(".simplycode-component[open] iframe.qunit");
               testRunners.forEach(function(testRunner) {
                 testRunner.contentWindow.document.testRunner = testRunner;
-                testRunner.contentWindow.document.open();
-                testRunner.contentWindow.document.write(testRunner.parentNode.querySelector(".qunit-code").innerText);
-                testRunner.contentWindow.document.close();
+                simplyApp.commands.resetTests(testRunner)
+                .then(function(testRunner) {
+                  testRunner.contentWindow.document.testRunner = testRunner;
+                  testRunner.contentWindow.document.open();
+                  testRunner.contentWindow.document.write(testRunner.parentNode.querySelector(".qunit-code").innerText);
+                  testRunner.contentWindow.document.close();
+                });
               });
             },
+            // baseComponent/automatic-tests
+            "resetTests" : function(el) {
+              return new Promise(function(resolve, reject) {
+                var newRunner = el.cloneNode(false);
+                newRunner.addEventListener("load", function() {
+                  resolve(newRunner);
+                });
+                el.parentNode.insertBefore(newRunner, el);
+                el.remove();
+              });
+            },
+            // baseComponent/codemirror
             "codeMirrorInit" : function() {
               var textareas = document.querySelectorAll(".simplycode-component[open] textarea[data-codemirror-mode]:not([style])");
               textareas.forEach(function(textarea) {
@@ -3056,66 +3148,86 @@
                 });
               });
             },
+            // component/component-actions
             "addAction" : function(el) {
               editor.pageData.component.parts.actions.push({});
             },
+            // component/component-body-html
             "addBodyHtml" : function(el) {
               editor.pageData.component.parts.bodyHtml.push({});
             },
+            // component/component-builder-template
             "addBuilderTemplate" : function(el) {
               editor.pageData.component.parts.builderTemplates.push({});
             },
+            // component/component-commands
             "addCommand" : function(el) {
               editor.pageData.component.parts.commands.push({});
             },
+            // component/component-component-css
             "addComponentCss" : function(el) {
               editor.pageData.component.parts.componentCss.push({});
             },
+            // component/component-component-html
             "addComponentTemplate" : function(el) {
               editor.pageData.component.parts.componentTemplates.push({});
             },
+            // component/component-data-api
             "addDataApiMethod" : function(el) {
               editor.pageData.component.parts.dataApi.push({});
             },
+            // component/component-data-sources
             "addDataSource" : function(el) {
               editor.pageData.component.parts.dataSources.push({});
             },
+            // component/component-foot-html
             "addFootHtml" : function(el) {
               editor.pageData.component.parts.footHtml.push({});
             },
+            // component/component-head-html
             "addHeadHtml" : function(el) {
               editor.pageData.component.parts.headHtml.push({});
             },
+            // component/component-page-css
             "addPageCss" : function(el) {
               editor.pageData.component.parts.pageCss.push({});
             },
+            // component/component-page-template
             "addPageTemplate" : function(el) {
               editor.pageData.component.parts.pageTemplates.push({});
             },
+            // component/component-qunit-tests
             "addTest" : function(el) {
               el.previousElementSibling.dataBinding.config.data.tests.push({});
             },
+            // component/component-raw-api
             "addRawApiMethod" : function(el) {
               editor.pageData.component.parts.rawApi.push({});
             },
+            // component/component-routes
             "addRoute" : function(el) {
               editor.pageData.component.parts.routes.push({});
             },
+            // component/component-shortcuts
             "addShortcut" : function(el) {
               editor.pageData.component.parts.shortcuts.push({});
             },
+            // component/component-sorters
             "addSorter" : function(el) {
               editor.pageData.component.parts.sorters.push({});
             },
+            // component/component-transformers
             "addTransformer" : function(el) {
               editor.pageData.component.parts.transformers.push({});
             },
+            // component/components-generic
             "deleteEntry" : function(el) {
               if (!confirm("Delete this?")) {
                 return;
               }
               el.dataBinding.config.data.deleted = "true";
             },
+            // component/components-generic
             "initEditors" : function(el) {
               if (el.parentNode.hasAttribute("open")) {
                 el.parentNode.removeAttribute("open");
@@ -3126,6 +3238,23 @@
               simplyApp.commands.autoRunTests();
               simplyApp.commands.autoRunPreviews();
             },
+            // component/components-generic
+            "preSaveCheck" : function(el) {
+              if (document.querySelector(":invalid")) {
+                editor.pageData.alerts.unshift({
+                  "data-simply-template" : "error",
+                  "message" : "Not all required fields have been filled out.",
+                  "state" : "new"
+                });
+                document.querySelectorAll("details:has(:invalid)").forEach(function(item) {
+                  item.setAttribute("open", true);
+                });
+                document.querySelector(":invalid:not(form)").focus();
+                return false;
+              }
+              return true;
+            },
+            // component/navigation
             "collapseMenu" : function(el) {
               if (!el.hasAttribute("open")) {
                 return simplyApp.commands.expandMenu(el);
@@ -3133,6 +3262,7 @@
               el.removeAttribute("open");
               el.querySelector("ul").dataBinding.set([]);
             },
+            // component/navigation
             "expandMenu" : function(el) {
               if (el.hasAttribute("open")) {
                 return simplyApp.commands.collapseMenu(el);
@@ -3156,6 +3286,7 @@
                 el.querySelector("ul").dataBinding.set(menu);
               });
             },
+            // component/navigation
             "navigate" : function(el) {
               if (el.hasAttribute("href")) {
                 document.location.href = el.getAttribute("href");
@@ -3163,9 +3294,11 @@
                 document.location.href = el.querySelector("[href]").getAttribute("href");
               }
             },
+            // component/simply-toolbar
             "preview" : function(el) {
               document.location.hash="publish";
             },
+            // page/base-component
             "deleteBaseComponent" : function() {
               if (!confirm("Delete base component?")) {
                 return;
@@ -3182,7 +3315,11 @@
                 document.location.hash="base/";
               });
             },
+            // page/base-component
             "saveBaseComponent" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               simplyApp.actions.saveBaseComponent(editor.pageData.component)
                 .then(function() {
                 editor.pageData.alerts.unshift({
@@ -3192,7 +3329,11 @@
                 });
               });
             },
+            // page/base-components
             "createBaseComponent" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               var newComponent = editor.pageData.newComponent;
               simplyApp.actions.saveBaseComponent(newComponent)
                 .then(function() {
@@ -3204,6 +3345,7 @@
                 document.location.hash="base/" + newComponent.id;
               });
             },
+            // page/builder
             "deleteBuilder" : function() {
               if (!confirm("Delete builder?")) {
                 return;
@@ -3220,7 +3362,11 @@
                 document.location.hash="builders/";
               });
             },
+            // page/builder
             "saveBuilder" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               simplyApp.actions.saveBuilder(editor.pageData.component)
                 .then(function() {
                 editor.pageData.alerts.unshift({
@@ -3230,7 +3376,11 @@
                 });
               });
             },
+            // page/builders
             "createBuilder" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               var newComponent = editor.pageData.newComponent;
               simplyApp.actions.saveBuilder(newComponent)
                 .then(function() {
@@ -3242,6 +3392,7 @@
                 document.location.hash="builders/" + newComponent.id;
               });
             },
+            // page/component
             "deleteComponent" : function() {
               if (!confirm("Delete component?")) {
                 return;
@@ -3258,7 +3409,11 @@
                 document.location.hash="components/";
               });
             },
+            // page/component
             "saveComponent" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               simplyApp.actions.saveComponent(editor.pageData.component)
               .then(function() {
                 editor.pageData.alerts.unshift({
@@ -3268,7 +3423,11 @@
                 });
               });
             },
+            // page/component-list
             "createComponent" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               var newComponent = editor.pageData.newComponent;
               simplyApp.actions.saveComponent(newComponent)
                 .then(function() {
@@ -3280,6 +3439,7 @@
                 document.location.hash="components/" + newComponent.id;
               });
             },
+            // page/page
             "deletePage" : function() {
               if (!confirm("Delete page?")) {
                 return;
@@ -3296,7 +3456,11 @@
                 document.location.hash="pages/";
               });
             },
+            // page/page
             "savePage" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               simplyApp.actions.savePage(editor.pageData.component)
                 .then(function() {
                 editor.pageData.alerts.unshift({
@@ -3306,6 +3470,7 @@
                 });
               });
             },
+            // page/page-frame
             "savePageFrame" : function() {
               simplyApp.actions.savePageFrame(editor.pageData.component)
                 .then(function() {
@@ -3316,7 +3481,11 @@
                 });
               });
             },
+            // page/pages
             "createPage" : function() {
+              if (!simplyApp.commands.preSaveCheck()) {
+                return;
+              }
               var newComponent = editor.pageData.newComponent;
               simplyApp.actions.savePage(newComponent)
                 .then(function() {
@@ -3328,6 +3497,7 @@
                 document.location.hash="pages/" + newComponent.id;
               });
             },
+            // page/publish
             "runBuilders" : async function() {
               var appData = await simplyApp.actions.getAppData();
               appData.builderTemplates.forEach(function(builderTemplate) {
@@ -3342,6 +3512,7 @@
                 });
               });
             }   ,
+            // page/publish
             "saveAppHtml" : function() {
               var appHtml = document.querySelector(".simplycode-preview-code").innerText;
               appHtml = appHtml.replaceAll(/^(\n)+/g, '');
@@ -3362,6 +3533,7 @@
           /* /Commands */
           /* Routes */
           routes: {
+            // page/preview
             "#preview/components/:component/:partType/:part" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3398,6 +3570,7 @@
                 }, 1000);
               });
             },
+            // page/preview
             "#preview/pages/:page/:partType/:part" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3434,6 +3607,7 @@
                 }, 1000);
               });
             },
+            // page/base-component
             "#base/:component" : function(params) {
               simplyApp.actions.getBaseComponent(params.component)
                 .then(function(parts) {
@@ -3472,6 +3646,7 @@
                 editor.pageData.page = "Edit base component";
               });
             },
+            // page/builder
             "#builders/:component" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3510,6 +3685,7 @@
                 editor.pageData.page = "Edit builder";
               });
             },
+            // page/component
             "#components/:component" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3557,6 +3733,7 @@
                 editor.pageData.page = "Edit component";
               });
             },
+            // page/page
             "#pages/:component" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3604,6 +3781,7 @@
                 editor.pageData.page = "Edit page";
               });
             },
+            // page/base-components
             "#base" : function() {
               simplyApp.actions.listBaseComponents()
                 .then(function(components) {
@@ -3611,6 +3789,7 @@
                 editor.pageData.page = "Base components";
               });
             },
+            // page/builders
             "#builders" : function() {
               simplyApp.actions.listBuilders()
                 .then(function(components) {
@@ -3618,6 +3797,7 @@
                 editor.pageData.page = "Builders";
               });
             },
+            // page/component-list
             "#components" : function() {
                 simplyApp.actions.listComponents()
                 .then(function(components) {
@@ -3625,6 +3805,7 @@
                     editor.pageData.page = "List components";
                 });
             },
+            // page/page-frame
             "#page-frame" : function() {
               simplyApp.actions.getPageFrame()
                 .then(function(parts) {
@@ -3651,6 +3832,7 @@
                 editor.pageData.page = "Edit page frame";
               });
             },
+            // page/pages
             "#pages" : function() {
               simplyApp.actions.listPages()
                 .then(function(components) {
@@ -3658,6 +3840,7 @@
                 editor.pageData.page = "Pages";
               });
             },
+            // page/preview
             "#preview" : function(params) {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3669,6 +3852,7 @@
                 simplyApp.commands.autoRunPreviews();
               });
             },
+            // page/publish
             "#publish" : function() {
               editor.pageData.app = {};
               simplyApp.actions.getAppData()
@@ -3680,6 +3864,7 @@
                 simplyApp.commands.autoRunPreviews();
               });
             },
+            // baseComponent/home
             "/" : function() {
                 simplyApp.actions.listComponents()
                 .then(function(components) {
@@ -3704,7 +3889,7 @@
   </head>
   <body>
     <!-- Body HTML -->
-    <!-- Load main menu -->
+    <!-- Load main menu (baseComponent/main-menu) -->
     <script>
       window.addEventListener("simply-content-loaded", function() {
         simplyApp.actions.getMainMenu()
@@ -3713,7 +3898,7 @@
         });
       });
     </script>
-    <!-- HTML structure -->
+    <!-- HTML structure (baseComponent/toasts) -->
     <div class="simply-toasts">
       <ul class="simply-toasts simply-space" data-simply-list="alerts">
         <template data-simply-template="error">
@@ -3733,7 +3918,7 @@
         </template>
       </ul>
     </div>
-    <!-- Toast catchall -->
+    <!-- Toast catchall (baseComponent/toasts) -->
     <script>
       window.onerror = function(errorMessage, url, line) {
         editor.pageData.alerts.unshift({
@@ -3743,7 +3928,7 @@
         });
       }
     </script>
-    <!-- Toast styles -->
+    <!-- Toast styles (baseComponent/toasts) -->
     <style>
       .simply-toasts {
         position: relative;
@@ -3755,6 +3940,7 @@
     </style>
     <!-- /Body HTML -->
     <!-- Component HTML templates -->
+    <!-- component/component-actions-->
     <template id="componentActions">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Actions provide the internal API for the app to use. It is called by routes and commands, and makes use of the Data API. Actions should not do any DOM access.">
@@ -3770,7 +3956,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="action" placeholder="Action name, eg getItemList">
+                <input class="simplycode-tab" required data-simply-field="action" placeholder="Action name, eg getItemList">
                 <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -3803,6 +3989,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-body-html-->
     <template id="componentBodyHtml">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These are added to the top of the &lt;body&gt; of the HTML">
@@ -3818,7 +4005,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
+                <input class="simplycode-tab" required data-simply-field="name" placeholder="Name">
               </div>
               <div class="simplycode-options">
     			<button class="simplycode-button" draggable="true">Drag to move</button>
@@ -3836,6 +4023,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-builder-template-->
     <template id="componentBuilderTemplate">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are used as a boilerplate to build your project.">
@@ -3851,7 +4039,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="builder" placeholder="Builder name">
+                <input class="simplycode-tab" data-simply-field="builder" required placeholder="Builder name">
                 <label class="simplycode-tab">
                   <input type="radio" name="builderEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -3874,6 +4062,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-commands-->
     <template id="componentCommands">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Commands come from user interaction on the DOM, for instance clicking a button. Commands are aware of the DOM, and use actions to execute logic.">
@@ -3889,7 +4078,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="command" placeholder="Command name, eg getItemList">
+                <input class="simplycode-tab" data-simply-field="command" required placeholder="Command name, eg getItemList">
                 <label class="simplycode-tab">
                   <input type="radio" name="commandEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -3923,6 +4112,7 @@
     </details>
     
     </template>
+    <!-- component/component-component-css-->
     <template id="componentComponentCss">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Set component CSS - this CSS is globally available.">
@@ -3938,7 +4128,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name this CSS collection">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Name this CSS collection">
               </div>
               <div class="simplycode-options">
     			<button class="simplycode-button" draggable="true">Drag to move</button>
@@ -3955,6 +4145,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-component-html-->
     <template id="componentComponentTemplate">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are used to build up page templates.">
@@ -3970,7 +4161,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="component" placeholder="Component name">
+                <input class="simplycode-tab" data-simply-field="component" required placeholder="Component name">
                 <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -4004,6 +4195,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-data-api-->
     <template id="componentDataApi">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="The Data API layer provides functions to load en store data types. Makes use of the Raw API and provides data for actions">
@@ -4019,7 +4211,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+                <input class="simplycode-tab" data-simply-field="method" required placeholder="API method name, eg getItemList">
               </div>
               <div class="simplycode-options">
     			<button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4036,6 +4228,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-data-sources-->
     <template id="componentDataSources">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Data sources provide list information from an external data source. Use this to provide lists that are not part of the subject of the page. Used as data-simply-data on data-simply-lists">
@@ -4051,7 +4244,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="dataSource" placeholder="Data source name, eg itemList">
+                <input class="simplycode-tab" data-simply-field="dataSource" required placeholder="Data source name, eg itemList">
                 <label class="simplycode-tab" title="Load code is used to fetch the data source and render it in the list. Save code is used to gather data from the data source and save it back to where it came from.">
                   <input type="radio" checked name="dataSourceEditor" value="code" data-simply-field="editor">
                   <span>Load/Save</span>
@@ -4113,6 +4306,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-description-->
     <template id="componentDescription">
       <details class="simplycode-component">
       <summary title="Describe this component for your own use.">
@@ -4121,6 +4315,7 @@
       <textarea placeholder="Describe this component" data-simply-field="component.description"></textarea>
     </details>
     </template>
+    <!-- component/component-foot-html-->
     <template id="componentFootHtml">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are added just before the &lt;/body&gt; in the HTML">
@@ -4136,7 +4331,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Name">
               </div>
               <div class="simplycode-options">
     			<button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4154,6 +4349,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-head-html-->
     <template id="componentHeadHtml">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These are added to the &lt;head&gt; section of the HTML">
@@ -4169,7 +4365,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Name">
               </div>
               <div class="simplycode-options">
                 <button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4187,6 +4383,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-page-css-->
     <template id="componentPageCss">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Set page specific CSS - this CSS is only used for this page and is removed when we are on another page.">
@@ -4202,7 +4399,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name this CSS collection">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Name this CSS collection">
               </div>
               <div class="simplycode-options">
                 <button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4219,6 +4416,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-page-frame-->
     <template id="componentPageFrame">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These make up the page frame together with the Simply App parts.">
@@ -4273,6 +4471,7 @@
       </div>  
     </details>
     </template>
+    <!-- component/component-page-template-->
     <template id="componentPageTemplate">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="These templates are used in routes to set the HTML of the requested page.">
@@ -4288,7 +4487,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="page" placeholder="Page name">
+                <input class="simplycode-tab" data-simply-field="page" required placeholder="Page name">
                 <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -4322,6 +4521,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-qunit-tests-->
     <template id="componentQUnitActionRunner">
       <div class="qunit-runner">
             <iframe class="qunit"></iframe>
@@ -4392,6 +4592,7 @@
           </div>
     
     </template>
+    <!-- component/component-qunit-tests-->
     <template id="componentQUnitCommandRunner">
             <div class="qunit-runner">
             <iframe class="qunit"></iframe>
@@ -4461,6 +4662,7 @@
             </div>
           </div>
     </template>
+    <!-- component/component-qunit-tests-->
     <template id="componentQUnitTests">
       <div class="simplycode-editor-qunit-tests">
       <div class="simplycode-tests" data-simply-list="tests">
@@ -4468,7 +4670,7 @@
           <div class="simplycode-test" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-test-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Test name">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Test name">
               </div>
               <div class="simplycode-options">
                 <button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4484,6 +4686,7 @@
       <button class="simplycode-button" data-simply-command="addTest">Add test</button>
     </div>
     </template>
+    <!-- component/component-raw-api-->
     <template id="componentRawApi">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="The Raw API layer provides lower level functions to access an API. It handles things like authentication, connection, encoding and the likes. It exposes 'get', 'post' methods.">
@@ -4499,7 +4702,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="method" placeholder="API method name, eg getItemList">
+                <input class="simplycode-tab" data-simply-field="method" required placeholder="API method name, eg getItemList">
               </div>
               <div class="simplycode-options">
                 <button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4516,6 +4719,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-routes-->
     <template id="componentRoutes">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Routes provide a translation from a URL to something the app should do. Routes make use of actions to fetch or store data">
@@ -4531,7 +4735,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="name" placeholder="Name of the route">
+                <input class="simplycode-tab" data-simply-field="name" required placeholder="Name of the route">
                 <input class="simplycode-tab" data-simply-field="route" placeholder="#route/:variable">
               </div>
               <div class="simplycode-options">
@@ -4549,6 +4753,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-shortcuts-->
     <template id="componentShortcuts">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Shortcuts are keyboard shortcuts selected to call specific actions.">
@@ -4564,7 +4769,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="shortcut" placeholder="shortcut-key">
+                <input class="simplycode-tab" data-simply-field="shortcut" required placeholder="shortcut-key">
                 <label class="simplycode-tab">
                   <input type="radio" name="actionEditor" checked value="code" data-simply-field="editor">
                   <span>Code</span>
@@ -4597,6 +4802,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-sorters-->
     <template id="componentSorters">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Sorters are utility function that are used to sort arrays, used in datasources, actions.">
@@ -4612,7 +4818,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="sorter" placeholder="Sorter name, eg sortByDescription">
+                <input class="simplycode-tab" data-simply-field="sorter" required placeholder="Sorter name, eg sortByDescription">
               </div>
               <div class="simplycode-options">
                 <button class="simplycode-button" draggable="true">Drag to move</button>
@@ -4629,6 +4835,7 @@
       </div>
     </details>
     </template>
+    <!-- component/component-transformers-->
     <template id="componentTransformers">
       <details class="simplycode-component">
       <summary data-simply-command="initEditors" title="Transformers provide a last moment change to data, just before it is rendered. Use as a value of data-simply-transform on a data-simply-field">
@@ -4644,7 +4851,7 @@
           <div class="simplycode-part" data-simply-field="deleted" data-simply-content="attributes" data-simply-attributes="data-deleted">
             <div class="simplycode-part-header">
               <div class="simplycode-tabs">
-                <input class="simplycode-tab" data-simply-field="transformer" placeholder="Transformer name, eg itemNameFromId">
+                <input class="simplycode-tab" data-simply-field="transformer" required placeholder="Transformer name, eg itemNameFromId">
                 <label class="simplycode-tab" title="Render code transforms the data from what is stored into what the user sees. Extract takes the data as provided from the DOM and transforms it for storage">
                   <input type="radio" checked name="transformerEditor" value="code" data-simply-field="editor">
                   <span>Render/Extract</span>
@@ -4677,9 +4884,11 @@
       </div>
     </details>
     </template>
+    <!-- component/header-->
     <template id="header">
       <simply-render rel="simply-toolbar"></simply-render>
     </template>
+    <!-- component/html-validator-->
     <template id="componentHtmlValidator">
       <div data-simply-field="code" data-simply-transformer="validateHtml"></div>
     <div class="simplycode-html-messages" data-simply-list="validateResult.messages">
@@ -4691,6 +4900,7 @@
       </template>
     </div>
     </template>
+    <!-- component/navigation-->
     <template id="menu">
       <ul data-simply-list="menu">
       <template>
@@ -4701,6 +4911,7 @@
       </template>
     </ul>
     </template>
+    <!-- component/previews-->
     <template id="componentPreview">
       <div class="simplycode-component-preview-container">
       <iframe class="simplycode-component-preview"></iframe>
@@ -4716,12 +4927,14 @@
       </div>
     </div>
     </template>
+    <!-- component/previews-->
     <template id="fullAppPreview">
       <div class="simplycode-full-preview-container">
       <iframe class="simplycode-full-preview"></iframe>
       <div class="simplycode-preview-code" data-simply-field="app" data-simply-transformer="simplyPreviewFullApp"></div>
     </div>
     </template>
+    <!-- component/previews-->
     <template id="pagePreview">
       <div class="simplycode-component-preview-container">
       <iframe class="simplycode-component-preview"></iframe>
@@ -4737,6 +4950,7 @@
       </div>
     </div>
     </template>
+    <!-- component/simply-logo-->
     <template id="logo">
       <svg viewbox="0 0 520 300" xmlns="http://www.w3.org/2000/svg">
       <style type="text/css">
@@ -4767,6 +4981,7 @@
       </text>
     </svg>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-base-component">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4797,6 +5012,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-builder">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4827,6 +5043,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-component">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4857,6 +5074,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-default">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4887,6 +5105,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-page-frame">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4917,6 +5136,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-page">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4947,6 +5167,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar-publish">
       <div class="simply-toolbar-title">
       <simply-render rel="logo"></simply-render>
@@ -4977,6 +5198,7 @@
       Publish
     </button>
     </template>
+    <!-- component/simply-toolbar-->
     <template id="simply-toolbar">
       <nav class="simply-toolbar simply-toolbar-main" data-simply-field="page" data-simply-section="simply-code-management" data-simply-content="template" data-simply-default-template="default" data-simply-default-value="default">
       <template data-simply-template="default" rel="simply-toolbar-default"></template>
@@ -4997,22 +5219,26 @@
     </nav>
     <div class="main" data-simply-field="page" data-simply-content="template">
     <!-- Page HTML templates -->
+    <!-- page/base-component-->
     <template data-simply-template="Edit base component">
       <main>
       <div class="simplycode-header">
         <h1>Edit base component: <span data-simply-field="component.id"></span></h1>
       </div>
-      <simply-render rel="componentDescription"></simply-render>
-      <simply-render rel="componentHeadHtml"></simply-render>
-      <simply-render rel="componentBodyHtml"></simply-render>
-      <simply-render rel="componentFootHtml"></simply-render>
-      <simply-render rel="componentCommands"></simply-render>
-      <simply-render rel="componentShortcuts"></simply-render>
-      <simply-render rel="componentActions"></simply-render>
-      <simply-render rel="componentRoutes"></simply-render>
-      <simply-render rel="componentRawApi"></simply-render>
+      <form action="#">
+        <simply-render rel="componentDescription"></simply-render>
+        <simply-render rel="componentHeadHtml"></simply-render>
+        <simply-render rel="componentBodyHtml"></simply-render>
+        <simply-render rel="componentFootHtml"></simply-render>
+        <simply-render rel="componentCommands"></simply-render>
+        <simply-render rel="componentShortcuts"></simply-render>
+        <simply-render rel="componentActions"></simply-render>
+        <simply-render rel="componentRoutes"></simply-render>
+        <simply-render rel="componentRawApi"></simply-render>
+      </form>
     </main>
     </template>
+    <!-- page/base-components-->
     <template data-simply-template="Base components">
       <main>
       <h1>Base components</h1>
@@ -5024,33 +5250,39 @@
           </a>
         </template>
       </div>
-      <h1>Add base component</h1>
-      <div class="simplycode-part">
-        <div class="simplycode-part-header">
-          <div class="simplycode-tabs">
-            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+      <form action="#">
+        <h1>Add base component</h1>
+        <div class="simplycode-part">
+          <div class="simplycode-part-header">
+            <div class="simplycode-tabs">
+              <input data-simply-field="newComponent.id" class="simplycode-tab" required placeholder="Name your component">
+            </div>
+            <div class="simplycode-options">
+              <button class="simplycode-button" data-simply-command="createBaseComponent">Create</button>
+            </div>
           </div>
-          <div class="simplycode-options">
-            <button class="simplycode-button" data-simply-command="createBaseComponent">Create</button>
+          <div class="simplycode-editors">
+            <div class="simplycode-editor-code">
+              <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+            </div>
           </div>
         </div>
-        <div class="simplycode-editors">
-          <div class="simplycode-editor-code">
-            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
-          </div>
-        </div>
-      </div>
+      </form>
     </main>
     </template>
+    <!-- page/builder-->
     <template data-simply-template="Edit builder">
       <main>
       <div class="simplycode-header">
         <h1>Edit builder: <span data-simply-field="component.id"></span></h1>
       </div>
-      <simply-render rel="componentDescription"></simply-render>
-      <simply-render rel="componentBuilderTemplate"></simply-render>
+      <form action="#">
+        <simply-render rel="componentDescription"></simply-render>
+        <simply-render rel="componentBuilderTemplate"></simply-render>
+      </form>
     </main>
     </template>
+    <!-- page/builders-->
     <template data-simply-template="Builders">
       <main>
       <h1>Builders</h1>
@@ -5062,100 +5294,114 @@
           </a>
         </template>
       </div>
-      <h1>Add builder</h1>
-      <div class="simplycode-part">
-        <div class="simplycode-part-header">
-          <div class="simplycode-tabs">
-            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+      <form action="#">
+        <h1>Add builder</h1>
+        <div class="simplycode-part">
+          <div class="simplycode-part-header">
+            <div class="simplycode-tabs">
+              <input required data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+            </div>
+            <div class="simplycode-options">
+              <button class="simplycode-button" data-simply-command="createBuilder">Create</button>
+            </div>
           </div>
-          <div class="simplycode-options">
-            <button class="simplycode-button" data-simply-command="createBuilder">Create</button>
+          <div class="simplycode-editors">
+            <div class="simplycode-editor-code">
+              <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+            </div>
           </div>
         </div>
-        <div class="simplycode-editors">
-          <div class="simplycode-editor-code">
-            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
-          </div>
-        </div>
-      </div>
+      </form>
     </main>
     
     </template>
+    <!-- page/component-->
     <template data-simply-template="Edit component">
       <main>
       <div class="simplycode-header">
         <h1>Edit component: <span data-simply-field="component.id"></span></h1>
       </div>
-      <simply-render rel="componentDescription"></simply-render>
-      <simply-render rel="componentComponentTemplate"></simply-render>
-      <simply-render rel="componentComponentCss"></simply-render>
-      <simply-render rel="componentCommands"></simply-render>
-      <simply-render rel="componentShortcuts"></simply-render>
-      <simply-render rel="componentActions"></simply-render>
-      <simply-render rel="componentDataApi"></simply-render>
-      <simply-render rel="componentRoutes"></simply-render>
-      <simply-render rel="componentTransformers"></simply-render>
-      <simply-render rel="componentDataSources"></simply-render>
-      <simply-render rel="componentSorters"></simply-render>
+      <form action="#">
+        <simply-render rel="componentDescription"></simply-render>
+        <simply-render rel="componentComponentTemplate"></simply-render>
+        <simply-render rel="componentComponentCss"></simply-render>
+        <simply-render rel="componentCommands"></simply-render>
+        <simply-render rel="componentShortcuts"></simply-render>
+        <simply-render rel="componentActions"></simply-render>
+        <simply-render rel="componentDataApi"></simply-render>
+        <simply-render rel="componentRoutes"></simply-render>
+        <simply-render rel="componentTransformers"></simply-render>
+        <simply-render rel="componentDataSources"></simply-render>
+        <simply-render rel="componentSorters"></simply-render>
+      </form>
     </main>
     </template>
+    <!-- page/component-list-->
     <template data-simply-template="List components">
       <main>
       <h1>Components</h1>
       <div class="simplycode-component-list" data-simply-list="components">
         <template>
-          <a class="simplycode-component-list-item data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink">
+          <a class="simplycode-component-list-item" data-simply-command="navigate" href="#" data-simply-field="id" data-simply-content="fixed" data-simply-transformer="componentLink">
             <h3 data-simply-field="id"></h3>
             <p class="ds-margin-up" data-simply-field="description"></p>
           </a>
         </template>
       </div>
-      <h1>Add component</h1>
-      <div class="simplycode-part">
-        <div class="simplycode-part-header">
-          <div class="simplycode-tabs">
-            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+      <form action="#">
+        <h1>Add component</h1>
+        <div class="simplycode-part">
+          <div class="simplycode-part-header">
+            <div class="simplycode-tabs">
+              <input required data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+            </div>
+            <div class="simplycode-options">
+              <button class="simplycode-button" data-simply-command="createComponent">Create</button>
+            </div>
           </div>
-          <div class="simplycode-options">
-            <button class="simplycode-button" data-simply-command="createComponent">Create</button>
+          <div class="simplycode-editors">
+            <div class="simplycode-editor-code">
+              <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+            </div>
           </div>
         </div>
-        <div class="simplycode-editors">
-          <div class="simplycode-editor-code">
-            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
-          </div>
-        </div>
-      </div>
+      </form>
     </main>
-    
     </template>
+    <!-- page/page-->
     <template data-simply-template="Edit page">
       <main>
       <div class="simplycode-header">
         <h1>Edit page: <span data-simply-field="component.id"></span></h1>
       </div>
-      <simply-render rel="componentDescription"></simply-render>
-      <simply-render rel="componentPageTemplate"></simply-render>
-      <simply-render rel="componentPageCss"></simply-render>
-      <simply-render rel="componentCommands"></simply-render>
-      <simply-render rel="componentShortcuts"></simply-render>
-      <simply-render rel="componentActions"></simply-render>
-      <simply-render rel="componentDataApi"></simply-render>
-      <simply-render rel="componentRoutes"></simply-render>
-      <simply-render rel="componentTransformers"></simply-render>
-      <simply-render rel="componentDataSources"></simply-render>
-      <simply-render rel="componentSorters"></simply-render>
+      <form action="#">
+        <simply-render rel="componentDescription"></simply-render>
+        <simply-render rel="componentPageTemplate"></simply-render>
+        <simply-render rel="componentPageCss"></simply-render>
+        <simply-render rel="componentCommands"></simply-render>
+        <simply-render rel="componentShortcuts"></simply-render>
+        <simply-render rel="componentActions"></simply-render>
+        <simply-render rel="componentDataApi"></simply-render>
+        <simply-render rel="componentRoutes"></simply-render>
+        <simply-render rel="componentTransformers"></simply-render>
+        <simply-render rel="componentDataSources"></simply-render>
+        <simply-render rel="componentSorters"></simply-render>
+      </form>
     </main>
     </template>
+    <!-- page/page-frame-->
     <template data-simply-template="Edit page frame">
       <main>
       <div class="simplycode-header">
         <h1>Edit page frame</h1>
       </div>
-      <simply-render rel="componentDescription"></simply-render>
-      <simply-render rel="componentPageFrame"></simply-render>
+      <form action="#">
+        <simply-render rel="componentDescription"></simply-render>
+        <simply-render rel="componentPageFrame"></simply-render>
+      </form>
     </main>
     </template>
+    <!-- page/pages-->
     <template data-simply-template="Pages">
       <main>
       <h1>Pages</h1>
@@ -5167,30 +5413,33 @@
           </a>
         </template>
       </div>
-      <h1>Add page</h1>
-      <div class="simplycode-part">
-        <div class="simplycode-part-header">
-          <div class="simplycode-tabs">
-            <input data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+      <form action="#">
+        <h1>Add page</h1>
+        <div class="simplycode-part">
+          <div class="simplycode-part-header">
+            <div class="simplycode-tabs">
+              <input required data-simply-field="newComponent.id" class="simplycode-tab" placeholder="Name your component">
+            </div>
+            <div class="simplycode-options">
+              <button class="simplycode-button" data-simply-command="createPage">Create</button>
+            </div>
           </div>
-          <div class="simplycode-options">
-            <button class="simplycode-button" data-simply-command="createPage">Create</button>
+          <div class="simplycode-editors">
+            <div class="simplycode-editor-code">
+              <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
+            </div>
           </div>
         </div>
-        <div class="simplycode-editors">
-          <div class="simplycode-editor-code">
-            <textarea data-simply-field="newComponent.description" placeholder="Describe what this component should do, for your own use."></textarea>
-          </div>
-        </div>
-      </div>
+      </form>
     </main>
-    
     </template>
+    <!-- page/preview-->
     <template data-simply-template="preview-app">
       <main class="simplycode-fullscreen-preview">
       <simply-render rel="componentAppFullPreview"></simply-render>
     </main>
     </template>
+    <!-- page/preview-->
     <template data-simply-template="preview-component">
       <main class="simplycode-fullscreen-preview">
       <simply-render rel="componentPreview"></simply-render>
@@ -5198,6 +5447,7 @@
       <simply-render rel="componentPreviewAppFoot"></simply-render>
     </main>
     </template>
+    <!-- page/publish-->
     <template data-simply-template="Publish App">
       <main>
       <h1>App preview</h1>
@@ -5211,6 +5461,7 @@
     <script>
       /* Transformers */
       editor.transformers = {
+        // component/html-validator
         "validateHtml" : {
           render : function(data) {
             this.simplyData = data;
@@ -5249,12 +5500,13 @@
             return this.simplyData;
           }
         },
+        // component/previews
         "simplyPreviewActions" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.action + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.action + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5262,12 +5514,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewBodyHtml" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('<!-- ' + method.name + ' -->');
+              methods.push('<!-- ' + method.name + ' (' + method.base + ') -->');
               methods.push(method.code);
             });
             return methods.join("\n");
@@ -5276,12 +5529,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewCommands" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.command + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.command + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5289,6 +5543,7 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewComponent" : {
           render : function(data) {
             this.originalData = data;
@@ -5331,12 +5586,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewComponentCss" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('/* ' + method.name + ' */');
+              methods.push('/* ' + method.name + ' (' + method.base + ') */');
               methods.push(method.code);
             });
             return methods.join("\n");
@@ -5345,11 +5601,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewComponentTemplates" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
+              methods.push('<!-- ' + method.base + '-->');
               methods.push('<template id="' + method.component + '">');
               methods.push('  ' + method.code);
               methods.push('</template>');
@@ -5360,12 +5618,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewDataApi" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.method + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.method + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5373,11 +5632,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewDataSources" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
+              methods.push('// ' + method.base);
           	methods.push('editor.addDataSource("' + method.dataSource + '", {');
               methods.push('  load : function(el, callback) {');
               methods.push('    ' + method['load-code']);
@@ -5399,12 +5660,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewFootHtml" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('<!-- ' + method.name + ' -->');
+              methods.push('<!-- ' + method.name + ' (' + method.base + ') -->');
               methods.push(method.code);
             });
             return methods.join("\n");
@@ -5413,6 +5675,7 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewFullApp" : {
           render : function(data) {
             this.originalData = data;
@@ -5458,12 +5721,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewHeadHtml" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('<!-- ' + method.name + ' -->');
+              methods.push('<!-- ' + method.name + ' (' + method.base + ') -->');
               methods.push(method.code);
             });
             return methods.join("\n");
@@ -5472,6 +5736,7 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewPage" : {
           render : function(data) {
             this.originalData = data;
@@ -5514,12 +5779,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewPageCss" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('/* ' + method.name + ' */');
+              methods.push('/* ' + method.name + ' (' + method.base + ') */');
               methods.push(method.code);
             });
             return methods.join("\n");
@@ -5528,11 +5794,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewPageTemplates" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
+              methods.push('<!-- ' + method.base + '-->');
               methods.push('<template data-simply-template="' + method.page + '">');
               methods.push('  ' + method.code);
               methods.push('</template>');
@@ -5543,12 +5811,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewRawApi" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.method + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.method + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5556,12 +5825,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewRoutes" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.route + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.route + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5569,12 +5839,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewShortcuts" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.shortcut + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.shortcut + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5582,12 +5853,13 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewSorters" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
-              methods.push('"' + method.sorter + '" : ' + method.code);
+              methods.push('// ' + method.base + "\n" + '"' + method.sorter + '" : ' + method.code);
             });
             return methods.join(",\n");
           },
@@ -5595,12 +5867,14 @@
             return this.originalData;
           }
         },
+        // component/previews
         "simplyPreviewTransformers" : {
           render : function(data) {
             this.originalData = data;
             methods = [];
             data.forEach(function(method) {
               lines = [];
+              lines.push('// ' + method.base);
               lines.push('"' + method.transformer + '" : {');
               lines.push('  render : ' + method['render-code'].replace(/\n/g, "\n  ") + ',');
               lines.push('  extract : ' + method['extract-code'].replace(/\n/g, "\n  "));
@@ -5613,6 +5887,7 @@
             return this.originalData;
           }
         },
+        // page/base-components
         "baseComponentLink" : {
           render : function(data) {
             this.simplyData = data;
@@ -5625,6 +5900,7 @@
             return this.simplyData;
           }
         },
+        // page/builders
         "builderLink" : {
           render : function(data) {
             this.simplyData = data;
@@ -5637,6 +5913,7 @@
             return this.simplyData;
           }
         },
+        // page/component-list
         "componentLink" : {
           render : function(data) {
               this.simplyData = data;
@@ -5649,6 +5926,7 @@
               return this.simplyData;
           }
         },
+        // page/pages
         "pageLink" : {
           render : function(data) {
             this.simplyData = data;
@@ -5661,6 +5939,7 @@
             return this.simplyData;
           }
         },
+        // page/publish
         "htmlEscape" : {
           render : function(data) {
             this.simplyData = data;
@@ -5676,6 +5955,7 @@
             return this.simplyData;
           }
         },
+        // page/publish
         "indentCode" : {
           render : function(data) {
             this.simplyData = data;
@@ -5710,7 +5990,7 @@
       });
     </script>
     <!-- Foot HTML -->
-    <!-- Auto run preview -->
+    <!-- Auto run preview (baseComponent/automatic-preview) -->
     <script>
       document.addEventListener("simply-data-changed", function(event) {
         if (
@@ -5776,7 +6056,7 @@
         }
       });
     </script>
-    <!-- Auto run tests -->
+    <!-- Auto run tests (baseComponent/automatic-tests) -->
     <script>
       document.addEventListener("simply-data-changed", function(event) {
         if (
@@ -5793,17 +6073,17 @@
         }
       });
     </script>
-    <!-- Codemirror base -->
+    <!-- Codemirror base (baseComponent/codemirror) -->
     <script src="js/codemirror/lib/codemirror.js"></script>
-    <!-- Codemirror modes -->
+    <!-- Codemirror modes (baseComponent/codemirror) -->
     <script src="js/codemirror/mode/css/css.js"></script>
     <script src="js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script src="js/codemirror/mode/javascript/javascript.js"></script>
     <script src="js/codemirror/mode/xml/xml.js"></script>
-    <!-- Codemirror styles -->
+    <!-- Codemirror styles (baseComponent/codemirror) -->
     <link rel="stylesheet" href="js/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="js/codemirror/theme/base16-dark.css"/>
-    <!-- Data change codeMirror -->
+    <!-- Data change codeMirror (baseComponent/codemirror) -->
     <script>
       document.addEventListener("simply-data-changed", function(event) {
         if (
@@ -5821,7 +6101,7 @@
         }
       });
     </script>
-    <!-- HTML5 drag drop for lists -->
+    <!-- HTML5 drag drop for lists (baseComponent/dragdrop) -->
     <script>
       simply.dragdrop = {
         getDataBinding : function(el) {
@@ -5947,7 +6227,7 @@
       document.addEventListener("dragover", simply.dragdrop.dragOver);
       document.addEventListener("drop", simply.dragdrop.drop);
     </script>
-    <!-- component-parts-count -->
+    <!-- component-parts-count (baseComponent/list-counters) -->
     <script>
       document.addEventListener("simply-data-changed", function(event) {
         if (event.data.dataBinding.parentKey == "/component/parts/") {
@@ -5962,7 +6242,7 @@
         }
       });
     </script>
-    <!-- toastAnimation -->
+    <!-- toastAnimation (baseComponent/toasts) -->
     <script>
       var purgeTimer;
       function purgeToasts() {
