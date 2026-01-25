@@ -18,11 +18,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Set version from release tag
+      - name: Set version from release name
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "Setting version to $VERSION"
-          npm version $VERSION --no-git-tag-version
+          npm version "${{ github.event.release.name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
@@ -37,11 +35,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Set version from release tag
+      - name: Set version from release name
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "Setting version to $VERSION"
-          npm version $VERSION --no-git-tag-version
+          npm version "${{ github.event.release.name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
@@ -56,11 +52,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Set version from release tag
+      - name: Set version from release name
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "Setting version to $VERSION"
-          npm version $VERSION --no-git-tag-version
+          npm version "${{ github.event.release.name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
