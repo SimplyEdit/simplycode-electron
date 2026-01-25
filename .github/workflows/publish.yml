@@ -18,21 +18,17 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Set version from release tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Setting version to $VERSION"
+          npm version $VERSION --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
         run: npm run publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload Linux artifacts
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            out/make/deb/**/*.deb
-            out/make/rpm/**/*.rpm
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
 
   publish_for_mac:
     runs-on: macos-latest
@@ -41,17 +37,15 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Set version from release tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Setting version to $VERSION"
+          npm version $VERSION --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
         run: npm run publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload macOS artifact to release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            out/make/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,17 +56,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Set version from release tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Setting version to $VERSION"
+          npm version $VERSION --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
         run: npm run publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload Windows artifacts
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            out/make/squirrel.windows/**/*.exe
-            out/make/msi/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
