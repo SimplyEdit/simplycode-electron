@@ -75,17 +75,31 @@ installQunit() {
     cp -f "${sSourceDir}/qunit/qunit/qunit.css"* "${sTargetDir}/qunit/qunit.css"
 }
 
+installJsZip() {
+    local sSourceDir sTargetDir
+
+    sSourceDir="${npm_config_local_prefix}/node_modules"
+    sTargetDir="${npm_config_local_prefix}/simplycode/js"
+
+    mkdir -p \
+        "${sTargetDir}/jszip/"
+
+    cp -f "${sSourceDir}/jszip/dist/jszip.js"* "${sTargetDir}/jszip/jszip.js"
+}
+
 if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
     export -f installSimplyEdit
     export -f installSimplyView
     export -f installCodeMirror
     export -f installSimplyCode
     export -f installQunit
+    export -f installJsZip
 else
     installSimplyEdit
     installSimplyView
     installSimplyCode
     installCodeMirror
     installQunit
+    installJsZip
     exit $?
 fi
