@@ -2,7 +2,7 @@ name: Release macOS dmg
 on:
   workflow_dispatch:
   push:
-    branches: [ GovertDev ]
+    branches: [ main ]
 jobs:
   build_on_mac:
     runs-on: macos-latest
