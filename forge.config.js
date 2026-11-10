@@ -27,13 +27,6 @@ module.exports = {
         options: {
         },
       }
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      platforms: ['linux'],
-      config: {
-        bin: 'simplycode',
-      }
     }
   ],
   publishers: [
