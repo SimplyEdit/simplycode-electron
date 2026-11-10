@@ -20,7 +20,7 @@ jobs:
           node-version: 22
       - name: Set version from release name
         run: |
-          npm version "${{ github.event.release.name }}" --no-git-tag-version
+          npm version "${{ github.event.release.tag_name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
@@ -37,7 +37,7 @@ jobs:
           node-version: 22
       - name: Set version from release name
         run: |
-          npm version "${{ github.event.release.name }}" --no-git-tag-version
+          npm version "${{ github.event.release.tag_name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
@@ -54,7 +54,7 @@ jobs:
           node-version: 22
       - name: Set version from release name
         run: |
-          npm version "${{ github.event.release.name }}" --no-git-tag-version
+          npm version "${{ github.event.release.tag_name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
       - name: publish
