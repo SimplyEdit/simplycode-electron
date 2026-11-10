@@ -2,7 +2,7 @@ name: Release app
 on:
   workflow_dispatch:
   push:
-    branches: [ GovertDev ]
+    branches: [ main ]
 jobs:
   build_on_linux:
       runs-on: ubuntu-latest
