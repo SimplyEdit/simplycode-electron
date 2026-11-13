@@ -23,6 +23,9 @@ jobs:
           npm version "${{ github.event.release.tag_name }}" --no-git-tag-version
       - name: install dependencies
         run: npm install
+      # Patches electron-installer-redhat to fix RPM build
+      - name: Patch node_modules
+        run: patch-package
       - name: publish
         run: npm run publish
         env:
